@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets locaux
+.env
+
+# Données générées (reproductibles avec `python -m simulation`)
+data/
+
+# Fichiers d'IDE
+.idea/
+.vscode/
+
+# Caches des outils
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
