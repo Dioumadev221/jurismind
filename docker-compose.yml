@@ -1,0 +1,25 @@
+# Services d'infrastructure pour le développement local.
+# Ollama tourne nativement sous Windows (plus rapide sur CPU que dans Docker).
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: jurismind-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-jurismind}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jurismind}
+      POSTGRES_DB: ${POSTGRES_DB:-jurismind}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Scripts exécutés une seule fois, à la création du volume.
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jurismind} -d ${POSTGRES_DB:-jurismind}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:
