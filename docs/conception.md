@@ -55,6 +55,33 @@ avec des réponses **fiables**, des données **isolées** et un **minimum d'hall
 
 Règle d'or : **l'IA ne voit que ce que l'utilisateur qui l'interroge a le droit de voir**, et **toute action qui sort du système est validée par un humain**.
 
+JurisMind ne remplace pas le logiciel du cabinet : le dossier continue d'y être géré. JurisMind est un assistant posé par-dessus, qui lit ces données et ne modifie que ce qui le concerne (extractions, brouillons, rattachement des emails, tâches CRM validées).
+
+### 3.1 Matrice des droits
+
+Principe : **tout le monde prépare, seul un avocat engage le cabinet.** Les droits ci-dessous s'appliquent aux dossiers dont la personne fait partie de l'équipe (`acces_dossiers`).
+
+| Action dans JurisMind | Associé / Avocat | Juriste | Assistant(e) | Admin |
+|---|:---:|:---:|:---:|:---:|
+| Voir le dossier, ses documents et ses échanges | ✅ | ✅ | ✅ (hors confidentiel) | ❌ |
+| Poser des questions à l'IA sur le dossier | ✅ | ✅ | ✅ | ❌ |
+| Demander un résumé ou une chronologie | ✅ | ✅ | ✅ | ❌ |
+| Faire analyser un document (extraction) | ✅ | ✅ | ✅ | ❌ |
+| **Valider** une extraction faite par l'IA | ✅ | ✅ | ❌ | ❌ |
+| Trier un email et le rattacher au dossier | ✅ | ✅ | ✅ | ❌ |
+| Faire préparer un brouillon de courrier | ✅ | ✅ | ✅ | ❌ |
+| **Valider** un envoi ou une tâche proposés par l'IA | ✅ | ❌ | ❌ | ❌ |
+| Gérer les comptes et les accès, lancer les synchronisations | ❌ | ❌ | ❌ | ✅ |
+
+Deux mécanismes complémentaires :
+
+| Question | Mécanisme | Où |
+|---|---|---|
+| **Quels dossiers** je vois ? | Équipe du dossier (`acces_dossiers`) + Row-Level Security | PostgreSQL (§9) |
+| **Quelles actions** je peux faire ? | Rôle de l'utilisateur (+ distinction avocat / juriste) | API |
+
+Les dossiers confidentiels n'ont simplement pas d'assistant(e) dans leur équipe. L'admin n'est dans aucune équipe : il ne voit le contenu d'aucun dossier. Les emails pas encore rattachés à un dossier sont visibles des avocats et assistant(e)s, pour le tri.
+
 ---
 
 ## 4. Fonctionnalités (= l'offre, point par point)
@@ -179,27 +206,33 @@ Question + utilisateur + périmètre (client / dossier)
 
 ### 7.1 Modèle JurisMind
 
+Tables en place (`src/jurismind/db/models/`, migrations Alembic dans `migrations/`) :
+
 ```
-users(id, email, password_hash, role [admin|avocat|assistant], is_active)
-clients(id, external_id, name, kind [personne|societe], identifiers jsonb, ...)
-matters(id, external_id, client_id, reference, title, kind, status, confidential)
-matter_members(matter_id, user_id)                      -- qui voit quel dossier
-parties(id, matter_id, name, role)
-documents(id, matter_id, external_id, title, doc_type, sha256,
-          storage_uri, ocr_applied, created_at)
-communications(id, matter_id, client_id, channel, direction,
-               sender, recipients, subject, body, sent_at)
-chunks(id, matter_id, document_id | communication_id, content,
-       page, embedding vector(1024), tsv tsvector, metadata jsonb)
-extractions(id, document_id, schema_name, data jsonb, status, validated_by)
-conversations / messages(..., citations jsonb)
-agent_runs(id, user_id, agent, input, output, status, latency_ms)
-pending_actions(id, agent_run_id, action_type, payload, status, decided_by)
-jobs(id, kind, payload jsonb, status, attempts, run_after, error)
-audit_log(id, user_id, action, resource, details jsonb, at)   -- ajout seul
+utilisateurs(id, external_id, email, nom_complet, mot_de_passe_hash,
+             role [admin|avocat|assistant], actif)
+clients(id, external_id, type [societe|particulier], nom, forme_juridique,
+        rccm, ninea, adresse, ville, telephone, email)
+contacts(id, external_id, client_id, prenom, nom, fonction, email, telephone)
+dossiers(id, external_id, reference, client_id, intitule, type [contentieux|conseil],
+         matiere, statut [en_cours|clos|archive], date_ouverture, date_cloture,
+         juridiction, numero_rg, enjeu_fcfa, confidentiel)
+acces_dossiers(dossier_id, utilisateur_id, est_responsable)   -- qui voit quel dossier
+parties(id, external_id, dossier_id, qualite [adverse|avocat_adverse|huissier|tiers],
+        nom, adresse, email, telephone)
+documents(id, external_id, dossier_id, titre, categorie_source, categorie_detectee,
+          sens, date_document, auteur, chemin_fichier, format, empreinte_sha256,
+          statut_traitement, ocr_utilise, texte)
+communications(id, external_id, dossier_id?, canal, sens, date_echange,
+               expediteur, destinataires[], objet, corps)
+pieces_jointes(communication_id, document_id)
+extraits(id, dossier_id?, document_id | communication_id, position, page, contenu,
+         embedding vector(1024), recherche_texte tsvector (calculé), metadonnees jsonb)
 ```
 
-`matter_id` est copié sur `chunks` pour filtrer les droits directement dans la requête vectorielle. `external_id` garde le lien avec la base d'origine (synchronisation idempotente).
+À venir : `extractions`, `conversations` / `messages`, `agent_runs`, `actions_en_attente`, `taches` (file de tâches), `journal_audit`.
+
+`dossier_id` est copié sur `extraits` pour filtrer les droits directement dans la requête vectorielle. `external_id` garde le lien avec la base d'origine (synchronisation idempotente). Toutes les tables métier portent `cree_le` / `modifie_le`.
 
 ### 7.2 Données simulées (`simulation/`)
 
@@ -225,7 +258,10 @@ audit_log(id, user_id, action, resource, details jsonb, at)   -- ajout seul
 
 ## 9. Isolation et sécurité (F12)
 
-1. Droits vérifiés à trois niveaux : **API**, **outils des agents**, **base (RLS)** sur `user_id` ↔ `matter_members`.
+1. Droits vérifiés à trois niveaux : **API**, **outils des agents**, **base (RLS)** sur `utilisateur_id` ↔ `acces_dossiers`.
+   - Deux rôles PostgreSQL : `jurismind` (propriétaire, super-utilisateur : migrations et synchronisation, **ignore** la RLS) et `jurismind_app` (application, **soumis** à la RLS).
+   - L'application pose l'utilisateur courant par transaction : `set_config('app.utilisateur_id', …, true)` (`session_utilisateur()`), relu par la fonction SQL `utilisateur_courant()`.
+   - Sans utilisateur posé, aucune ligne n'est visible (fermé par défaut).
 2. Filtrage **avant** la recherche : un extrait interdit n'arrive jamais au LLM.
 3. Rôles : l'admin gère sans lire le contenu des dossiers ; l'assistant ne voit pas les dossiers marqués confidentiels.
 4. Contenu des documents et emails traité comme **données**, jamais comme instructions (injection de prompt) ; écritures uniquement après validation humaine.
@@ -249,7 +285,7 @@ audit_log(id, user_id, action, resource, details jsonb, at)   -- ajout seul
 | 1 | PostgreSQL + pgvector (Docker), configuration | — | ✅ |
 | 2a | Système existant simulé : base legacy + CRM factice (API) | — | ✅ |
 | 2b | Système existant simulé : fichiers des documents (PDF, DOCX, scans) | — | ✅ |
-| 3 | Modèle de données JurisMind, migrations, utilisateurs, droits, RLS, audit + `LLMProvider` Ollama/OpenAI | F12 | |
+| 3 | Modèle de données JurisMind, migrations, utilisateurs, droits, RLS, audit + `LLMProvider` Ollama/OpenAI | F12 | en cours : tables, migrations et RLS ✅ ; tests, audit, LLM à venir |
 | 4 | Connecteurs + ingestion (OCR, découpage, embeddings) | F1, F4 | |
 | 5 | Recherche hybride + RAG cité + évaluation | F2, F3, F11 | |
 | 6 | Extraction structurée + agent analyse de documents | F5, F8 | |
