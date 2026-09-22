@@ -17,6 +17,7 @@ from jurismind.db.models.metier import (
     TypeClient,
     TypeDossier,
 )
+from jurismind.db.models.systeme import EntreeAudit, StatutTache, Tache
 from jurismind.db.models.utilisateur import Role, Utilisateur
 
 __all__ = [
@@ -28,13 +29,16 @@ __all__ = [
     "Contact",
     "Document",
     "Dossier",
+    "EntreeAudit",
     "Extrait",
     "Partie",
     "QualitePartie",
     "Role",
     "SensEchange",
     "StatutDossier",
+    "StatutTache",
     "StatutTraitement",
+    "Tache",
     "TypeClient",
     "TypeDossier",
     "Utilisateur",

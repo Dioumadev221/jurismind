@@ -31,7 +31,7 @@ from jurismind.db.session import get_engine
 
 BASE_DE_TEST = "jurismind_test"
 TABLES = (
-    "extraits, pieces_jointes, communications, documents, parties, "
+    "journal_audit, taches, extraits, pieces_jointes, communications, documents, parties, "
     "acces_dossiers, dossiers, contacts, clients, utilisateurs"
 )
 
