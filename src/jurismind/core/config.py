@@ -21,6 +21,13 @@ class Settings(BaseSettings):
 
     ollama_base_url: str = "http://localhost:11434"
 
+    # --- Modèles ---
+    llm_fournisseur: str = "ollama"  # ollama | openai
+    modele_rapide: str = "qwen2.5:3b"  # chat, routage, tri des emails
+    modele_qualite: str = "qwen2.5:latest"  # extraction, résumés (en tâche de fond)
+    modele_embeddings: str = "bge-m3"
+    openai_api_key: SecretStr | None = None
+
     def _dsn(self, database: str, user: str, password: SecretStr) -> str:
         return (
             f"postgresql+psycopg://{user}:{password.get_secret_value()}"
