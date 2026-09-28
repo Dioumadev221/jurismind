@@ -21,6 +21,12 @@ class Settings(BaseSettings):
 
     ollama_base_url: str = "http://localhost:11434"
 
+    # --- Documents du cabinet ---
+    # Racine du serveur de fichiers où sont rangés les documents des dossiers.
+    documents_dir: str = "data/cabinet/documents"
+    # Chemin de tesseract.exe s'il n'est pas dans le PATH (Windows).
+    tesseract_exe: str | None = None
+
     # --- CRM du cabinet ---
     crm_base_url: str = "http://localhost:8100"
     crm_api_key: SecretStr = SecretStr("crm-dev-key")
