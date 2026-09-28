@@ -230,7 +230,9 @@ extraits(id, dossier_id?, document_id | communication_id, position, page, conten
          embedding vector(1024), recherche_texte tsvector (calculé), metadonnees jsonb)
 ```
 
-À venir : `extractions`, `conversations` / `messages`, `agent_runs`, `actions_en_attente`, `taches` (file de tâches), `journal_audit`.
+Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (opportunités, comptes rendus, tâches du CRM), `journal_audit`, `taches`.
+
+À venir : `extractions`, `conversations` / `messages`, `agent_runs`, `actions_en_attente`.
 
 `dossier_id` est copié sur `extraits` pour filtrer les droits directement dans la requête vectorielle. `external_id` garde le lien avec la base d'origine (synchronisation idempotente). Toutes les tables métier portent `cree_le` / `modifie_le`.
 
@@ -287,7 +289,7 @@ extraits(id, dossier_id?, document_id | communication_id, position, page, conten
 | 2b | Système existant simulé : fichiers des documents (PDF, DOCX, scans) | — | ✅ |
 | 3 | Modèle de données JurisMind, migrations, utilisateurs, droits, RLS, audit + `LLMProvider` Ollama/OpenAI | F12 | en cours : tables, migrations et RLS ✅ ; tests, audit, LLM à venir |
 | 4a | Connecteur `legacy` : traduction, fusion prudente des doublons, synchronisation idempotente | F1 | ✅ |
-| 4b | Connecteur CRM (clé d'API, pagination, erreurs 429/503) | F1 | |
+| 4b | Connecteur CRM : rapprochement par indices, reprise sur erreur 429/503 | F1 | ✅ |
 | 4c | Ingestion : OCR, découpage, embeddings | F4 | |
 | 5 | Recherche hybride + RAG cité + évaluation | F2, F3, F11 | |
 | 6 | Extraction structurée + agent analyse de documents | F5, F8 | |

@@ -1,3 +1,4 @@
+from jurismind.db.models.crm import ElementCrm, TypeElementCrm
 from jurismind.db.models.documents import (
     Canal,
     Communication,
@@ -31,6 +32,7 @@ __all__ = [
     "Contact",
     "Document",
     "Dossier",
+    "ElementCrm",
     "EntreeAudit",
     "Extrait",
     "Partie",
@@ -43,5 +45,6 @@ __all__ = [
     "Tache",
     "TypeClient",
     "TypeDossier",
+    "TypeElementCrm",
     "Utilisateur",
 ]

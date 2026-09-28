@@ -50,6 +50,8 @@ class Client(Base, Horodatage):
     ville: Mapped[str | None] = mapped_column(String(60))
     telephone: Mapped[str | None] = mapped_column(String(20))
     email: Mapped[str | None] = mapped_column(String(255))
+    # Compte correspondant dans le CRM du cabinet, quand le rapprochement a réussi.
+    crm_id: Mapped[str | None] = mapped_column(String(40), unique=True)
 
     dossiers: Mapped[list["Dossier"]] = relationship(back_populates="client")
     contacts: Mapped[list["Contact"]] = relationship(back_populates="client", cascade="all, delete-orphan")

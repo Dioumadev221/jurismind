@@ -21,6 +21,10 @@ class Settings(BaseSettings):
 
     ollama_base_url: str = "http://localhost:11434"
 
+    # --- CRM du cabinet ---
+    crm_base_url: str = "http://localhost:8100"
+    crm_api_key: SecretStr = SecretStr("crm-dev-key")
+
     # --- Modèles ---
     llm_fournisseur: str = "ollama"  # ollama | openai
     modele_rapide: str = "qwen2.5:3b"  # chat, routage, tri des emails
