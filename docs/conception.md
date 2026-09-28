@@ -286,7 +286,9 @@ extraits(id, dossier_id?, document_id | communication_id, position, page, conten
 | 2a | Système existant simulé : base legacy + CRM factice (API) | — | ✅ |
 | 2b | Système existant simulé : fichiers des documents (PDF, DOCX, scans) | — | ✅ |
 | 3 | Modèle de données JurisMind, migrations, utilisateurs, droits, RLS, audit + `LLMProvider` Ollama/OpenAI | F12 | en cours : tables, migrations et RLS ✅ ; tests, audit, LLM à venir |
-| 4 | Connecteurs + ingestion (OCR, découpage, embeddings) | F1, F4 | |
+| 4a | Connecteur `legacy` : traduction, fusion prudente des doublons, synchronisation idempotente | F1 | ✅ |
+| 4b | Connecteur CRM (clé d'API, pagination, erreurs 429/503) | F1 | |
+| 4c | Ingestion : OCR, découpage, embeddings | F4 | |
 | 5 | Recherche hybride + RAG cité + évaluation | F2, F3, F11 | |
 | 6 | Extraction structurée + agent analyse de documents | F5, F8 | |
 | 7 | Agents assistance dossier + intelligence client + routeur | F6, F7 | |

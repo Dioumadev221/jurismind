@@ -8,6 +8,7 @@ from jurismind.db.models.documents import (
 from jurismind.db.models.extrait import DIMENSION_VECTEURS, Extrait
 from jurismind.db.models.metier import (
     AccesDossier,
+    AliasClient,
     Client,
     Contact,
     Dossier,
@@ -23,6 +24,7 @@ from jurismind.db.models.utilisateur import Role, Utilisateur
 __all__ = [
     "DIMENSION_VECTEURS",
     "AccesDossier",
+    "AliasClient",
     "Canal",
     "Client",
     "Communication",

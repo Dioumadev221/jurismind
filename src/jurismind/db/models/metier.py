@@ -138,3 +138,20 @@ class Partie(Base, Horodatage):
 
     def __repr__(self) -> str:
         return f"<Partie {self.qualite} : {self.nom}>"
+
+
+class AliasClient(Base):
+    """Fiches en double du logiciel du cabinet, rattachées au client retenu.
+
+    Le vieux logiciel contient plusieurs fiches pour une même societe (saisies à des
+    années d'intervalle). Le connecteur les fusionne et garde ici la correspondance,
+    pour que la synchronisation reste rejouable.
+    """
+
+    __tablename__ = "alias_clients"
+
+    external_id: Mapped[int] = mapped_column(primary_key=True)  # T_CLIENT.CLI_ID du doublon
+    client_id: Mapped[int] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"), index=True)
+
+    def __repr__(self) -> str:
+        return f"<AliasClient {self.external_id} -> {self.client_id}>"
