@@ -149,7 +149,7 @@ Un **routeur** reçoit une demande en langage naturel et l'envoie vers le bon ag
 | Embeddings | Ollama `bge-m3` (1024 dim.) ou OpenAI `text-embedding-3-small` réglé sur 1024 dim. — même colonne `vector(1024)` ; changer de fournisseur impose une ré-indexation |
 | Base | PostgreSQL 16 + pgvector (HNSW) + plein texte `french` |
 | ORM / migrations | SQLAlchemy 2 + Alembic |
-| OCR / PDF | Tesseract (`fra`) + pypdfium2 (licence Apache/BSD, compatible MIT — PyMuPDF est AGPL) |
+| OCR / PDF | Tesseract 5 (`fra`, via `TESSDATA_DIR`) + pytesseract + pypdfium2 (licence Apache/BSD, compatible MIT — PyMuPDF est AGPL) |
 | Tâches longues | File de tâches dans PostgreSQL (`SELECT … FOR UPDATE SKIP LOCKED`) + worker |
 | Démo | Streamlit (appelle l'API, jamais la base) |
 | Qualité | ruff, mypy, pytest, GitHub Actions |
@@ -290,7 +290,7 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 | 3 | Modèle de données JurisMind, migrations, utilisateurs, droits, RLS, audit + `LLMProvider` Ollama/OpenAI | F12 | en cours : tables, migrations et RLS ✅ ; tests, audit, LLM à venir |
 | 4a | Connecteur `legacy` : traduction, fusion prudente des doublons, synchronisation idempotente | F1 | ✅ |
 | 4b | Connecteur CRM : rapprochement par indices, reprise sur erreur 429/503 | F1 | ✅ |
-| 4c | Ingestion : OCR, découpage, embeddings | F4 | |
+| 4c | Ingestion : lecture PDF/Word, OCR des scans, découpage, vecteurs | F4 | ✅ |
 | 5 | Recherche hybride + RAG cité + évaluation | F2, F3, F11 | |
 | 6 | Extraction structurée + agent analyse de documents | F5, F8 | |
 | 7 | Agents assistance dossier + intelligence client + routeur | F6, F7 | |

@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     documents_dir: str = "data/cabinet/documents"
     # Chemin de tesseract.exe s'il n'est pas dans le PATH (Windows).
     tesseract_exe: str | None = None
+    # Dossier contenant les langues (fra.traineddata), si elles ne sont pas installées
+    # avec Tesseract : récupérable avec `python -m jurismind.ingestion.langues`.
+    tessdata_dir: str | None = "data/tessdata"
 
     # --- CRM du cabinet ---
     crm_base_url: str = "http://localhost:8100"

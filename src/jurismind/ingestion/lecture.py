@@ -8,6 +8,7 @@ et il faut passer par la reconnaissance de caractères (OCR).
 from __future__ import annotations
 
 import logging
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -54,9 +55,15 @@ class Lecture:
 
 
 def _configurer_tesseract() -> None:
-    chemin = get_settings().tesseract_exe
-    if chemin:
-        pytesseract.pytesseract.tesseract_cmd = chemin
+    """Indique à Tesseract où se trouvent son exécutable et ses langues."""
+    reglages = get_settings()
+    if reglages.tesseract_exe:
+        pytesseract.pytesseract.tesseract_cmd = reglages.tesseract_exe
+    dossier = Path(reglages.tessdata_dir) if reglages.tessdata_dir else None
+    if dossier and (dossier / f"{LANGUE_OCR}.traineddata").exists():
+        # Variable lue par Tesseract lui-même : elle supporte les chemins avec espaces,
+        # contrairement aux options passées en ligne de commande par pytesseract.
+        os.environ["TESSDATA_PREFIX"] = str(dossier.resolve())
 
 
 def ocr_disponible() -> bool:
