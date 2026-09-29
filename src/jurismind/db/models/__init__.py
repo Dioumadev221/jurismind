@@ -6,6 +6,7 @@ from jurismind.db.models.documents import (
     SensEchange,
     StatutTraitement,
 )
+from jurismind.db.models.extraction import Extraction, StatutExtraction
 from jurismind.db.models.extrait import DIMENSION_VECTEURS, Extrait
 from jurismind.db.models.metier import (
     AccesDossier,
@@ -34,12 +35,14 @@ __all__ = [
     "Dossier",
     "ElementCrm",
     "EntreeAudit",
+    "Extraction",
     "Extrait",
     "Partie",
     "QualitePartie",
     "Role",
     "SensEchange",
     "StatutDossier",
+    "StatutExtraction",
     "StatutTache",
     "StatutTraitement",
     "Tache",

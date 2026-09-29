@@ -279,6 +279,7 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 - **Évaluation** (`uv run python -m jurismind.evaluation`) : questions construites depuis le corrigé de la simulation, dont des questions sans réponse possible et des questions portant sur des scans.
 - Mesures actuelles (20 questions, `qwen2.5:3b`, CPU) : rappel 93,8 %, citation du bon document 75 %, justesse 68,8 %, **abstention correcte 100 %**, 1 réponse inventée, 13 à 31 s par question.
 - Quatre vérifications avant affichage (ADR 0003) : sources valides, aveu d'ignorance, référence croisée, citation littérale ou ancrage des chiffres.
+- **Extraction structurée** (`uv run python -m jurismind.evaluation.extraction`), 98 champs sur 30 actes : remplissage 93,9 %, justesse **100 %**, dont 85,7 % / 100 % sur les scans passés par l'OCR.
 
 ---
 
@@ -296,7 +297,7 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 | 5a | Recherche hybride (vecteurs + plein texte français, fusion RRF), droits appliqués par la base | F3 | OK |
 | 5b | Réponses citées : sortie JSON imposée, 4 vérifications, abstention | F2, F11 | OK |
 | 5c | Jeu d'évaluation issu du corrigé + indicateurs publiables | F11 | OK |
-| 6 | Extraction structurée + agent analyse de documents | F5, F8 | |
+| 6 | Extraction structurée : 8 schémas, conversion et contrôle des valeurs, validation par un avocat | F5, F8 | OK |
 | 7 | Agents assistance dossier + intelligence client + routeur | F6, F7 | |
 | 8 | Agent workflows + validation humaine | F9 | |
 | 9 | API REST complète + démo Streamlit | F10 | |
