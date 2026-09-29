@@ -15,6 +15,10 @@ from jurismind.core.config import get_settings
 # Nombre de tokens de contexte demandé aux modèles locaux : assez pour 4-5 extraits,
 # mais pas trop, car sur CPU la lecture du contexte est ce qui coûte le plus cher.
 CONTEXTE = 4096
+# Durée pendant laquelle Ollama garde un modèle en mémoire : un rechargement coûte
+# une vingtaine de secondes sur une machine sans carte graphique.
+MEMOIRE = "30m"
+MEMOIRE_SECONDES = 1800  # même durée, mais OllamaEmbeddings l'attend en secondes
 
 
 class Vitesse(StrEnum):
@@ -44,7 +48,7 @@ def modele_chat(
             temperature=0,  # pas de créativité : on veut des réponses reproductibles
             format="json" if json else None,
             num_ctx=CONTEXTE,
-            keep_alive="10m",  # garde le modèle en mémoire entre deux questions
+            keep_alive=MEMOIRE,  # évite de le recharger à chaque question
         )
 
     if reglages.llm_fournisseur == "openai":
@@ -70,7 +74,11 @@ def modele_embeddings() -> Embeddings:
     if reglages.llm_fournisseur == "ollama":
         from langchain_ollama import OllamaEmbeddings
 
-        return OllamaEmbeddings(model=reglages.modele_embeddings, base_url=reglages.ollama_base_url)
+        return OllamaEmbeddings(
+            model=reglages.modele_embeddings,
+            base_url=reglages.ollama_base_url,
+            keep_alive=MEMOIRE_SECONDES,
+        )
 
     if reglages.llm_fournisseur == "openai":
         from langchain_openai import OpenAIEmbeddings

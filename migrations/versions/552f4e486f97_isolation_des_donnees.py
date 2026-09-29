@@ -5,6 +5,7 @@ Revises: d67875560077
 Create Date: 2026-09-22 14:57:33.242984
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -15,8 +16,8 @@ from jurismind.core.config import get_settings
 
 
 # revision identifiers, used by Alembic.
-revision: str = '552f4e486f97'
-down_revision: Union[str, Sequence[str], None] = 'd67875560077'
+revision: str = "552f4e486f97"
+down_revision: Union[str, Sequence[str], None] = "d67875560077"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -46,8 +47,7 @@ def upgrade() -> None:
     op.execute(f"GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO {role}")
     op.execute(f"GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO {role}")
     op.execute(
-        f"ALTER DEFAULT PRIVILEGES IN SCHEMA public "
-        f"GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO {role}"
+        f"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO {role}"
     )
     op.execute(f"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO {role}")
 
@@ -77,9 +77,7 @@ def upgrade() -> None:
 
     op.execute("CREATE POLICY isolation ON dossiers USING (id IN (SELECT dossiers_autorises()))")
     for table in TABLES_DU_DOSSIER:
-        op.execute(
-            f"CREATE POLICY isolation ON {table} USING (dossier_id IN (SELECT dossiers_autorises()))"
-        )
+        op.execute(f"CREATE POLICY isolation ON {table} USING (dossier_id IN (SELECT dossiers_autorises()))")
     for table in TABLES_A_TRIER:
         op.execute(f"""
             CREATE POLICY isolation ON {table} USING (

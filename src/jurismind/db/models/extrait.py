@@ -45,8 +45,14 @@ class Extrait(Base):
     # Vide tant que le vecteur n'a pas été calculé.
     embedding: Mapped[list[float] | None] = mapped_column(Vector(DIMENSION_VECTEURS))
     # Calculé automatiquement par PostgreSQL à partir du contenu.
+    # Le titre est indexé avec le contenu : sur un scan, l'OCR détruit parfois le numéro de
+    # la pièce (« FACTURE N4 »), alors que le titre venu du logiciel du cabinet le conserve.
     recherche_texte: Mapped[str] = mapped_column(
-        TSVECTOR, Computed("to_tsvector('french', contenu)", persisted=True)
+        TSVECTOR,
+        Computed(
+            "to_tsvector('french', coalesce(metadonnees->>'titre', '') || ' ' || contenu)",
+            persisted=True,
+        ),
     )
     # Informations libres : titre de section, type de document…
     metadonnees: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)

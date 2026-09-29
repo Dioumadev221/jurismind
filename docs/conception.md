@@ -276,7 +276,9 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 - **Abstention** quand les sources sont insuffisantes.
 - Température 0 ; extraction en JSON validé par Pydantic, chaque valeur avec son extrait source.
 - Les faits de la base (dates, statuts, montants) sont lus par les outils, pas devinés par le LLM.
-- **Évaluation** : ~50 questions avec réponses attendues ; métriques : bonne source retrouvée, fidélité, abstention correcte, justesse de l'extraction ; tests d'isolation et d'injection. Résultats publiés dans le README.
+- **Évaluation** (`uv run python -m jurismind.evaluation`) : questions construites depuis le corrigé de la simulation, dont des questions sans réponse possible et des questions portant sur des scans.
+- Mesures actuelles (20 questions, `qwen2.5:3b`, CPU) : rappel 93,8 %, citation du bon document 75 %, justesse 68,8 %, **abstention correcte 100 %**, 1 réponse inventée, 13 à 31 s par question.
+- Quatre vérifications avant affichage (ADR 0003) : sources valides, aveu d'ignorance, référence croisée, citation littérale ou ancrage des chiffres.
 
 ---
 
@@ -291,7 +293,9 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 | 4a | Connecteur `legacy` : traduction, fusion prudente des doublons, synchronisation idempotente | F1 | ✅ |
 | 4b | Connecteur CRM : rapprochement par indices, reprise sur erreur 429/503 | F1 | ✅ |
 | 4c | Ingestion : lecture PDF/Word, OCR des scans, découpage, vecteurs | F4 | ✅ |
-| 5 | Recherche hybride + RAG cité + évaluation | F2, F3, F11 | |
+| 5a | Recherche hybride (vecteurs + plein texte français, fusion RRF), droits appliqués par la base | F3 | OK |
+| 5b | Réponses citées : sortie JSON imposée, 4 vérifications, abstention | F2, F11 | OK |
+| 5c | Jeu d'évaluation issu du corrigé + indicateurs publiables | F11 | OK |
 | 6 | Extraction structurée + agent analyse de documents | F5, F8 | |
 | 7 | Agents assistance dossier + intelligence client + routeur | F6, F7 | |
 | 8 | Agent workflows + validation humaine | F9 | |
