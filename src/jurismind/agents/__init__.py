@@ -1,5 +1,11 @@
-"""Agents IA de JurisMind."""
+"""Agents IA de JurisMind.
 
-from jurismind.agents.dossier import ReponseAgent, assister
+Deux agents pour l'instant, qui partagent la même forme de réponse (`ReponseAgent`) :
+`client` fait le point sur un client (F6), `dossier` assiste sur un dossier (F7).
+Les deux s'appellent de la même façon : `assister(session, utilisateur_id, cible, demande)`.
+"""
 
-__all__ = ["ReponseAgent", "assister"]
+from jurismind.agents import client, dossier
+from jurismind.agents.commun import ReponseAgent
+
+__all__ = ["ReponseAgent", "client", "dossier"]

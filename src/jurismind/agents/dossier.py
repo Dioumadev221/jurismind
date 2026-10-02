@@ -8,9 +8,9 @@ modèle local de 3 milliards de paramètres, laisser l'IA choisir librement ses 
 des enchaînements erratiques et lents ; et surtout, une date ou un montant lus en base ne
 peuvent pas être inventés.
 
-    comprendre ──► questionner ─┐
-               ├─► resumer ─────┼─► journaliser ──► fin
-               └─► chronologie ─┘
+    comprendre ──► collecter ──┬─► question ────┐
+                               ├─► resume ──────┼─► journaliser ──► fin
+                               └─► chronologie ─┘
 """
 
 from __future__ import annotations
@@ -18,18 +18,24 @@ from __future__ import annotations
 import json
 import logging
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict
 from enum import StrEnum
 from typing import Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 from sqlalchemy.orm import Session
 
+from jurismind.agents.commun import (
+    ReponseAgent,
+    chiffres_douteux,
+    inscrire_au_journal,
+    lire_json,
+    texte_attendu,
+)
 from jurismind.agents.outils import Evenement, donnees_extraites, evenements_du_dossier, fiche_dossier
-from jurismind.db.models import EntreeAudit
 from jurismind.llm import Vitesse, modele_chat
 from jurismind.rag import repondre
-from jurismind.rag.verification import avoue_ignorance, chiffres_ancres
+from jurismind.rag.verification import avoue_ignorance
 from jurismind.retrieval import Filtres, rechercher
 
 logger = logging.getLogger(__name__)
@@ -94,31 +100,6 @@ class Etat(TypedDict, total=False):
     secondes: float
 
 
-@dataclass
-class ReponseAgent:
-    """Résultat rendu à l'appelant (API, démo Streamlit)."""
-
-    intention: str
-    texte: str
-    citations: list[dict[str, Any]] = field(default_factory=list)
-    evenements: list[dict[str, Any]] = field(default_factory=list)
-    abstention: bool = False
-    secondes: float = 0.0
-
-
-def _lire_json(brut: str) -> dict[str, Any]:
-    try:
-        return dict(json.loads(brut))
-    except (ValueError, TypeError):
-        debut, fin = brut.find("{"), brut.rfind("}")
-        if debut == -1 or fin <= debut:
-            return {}
-        try:
-            return dict(json.loads(brut[debut : fin + 1]))
-        except (ValueError, TypeError):
-            return {}
-
-
 def deviner_intention(demande: str) -> Intention | None:
     """Décision sans modèle quand la demande est explicite (ou vide)."""
     texte = demande.strip().lower()
@@ -143,7 +124,7 @@ def construire_graphe(session: Session) -> Any:
                 .invoke(CONSIGNE_ROUTAGE.format(demande=demande))
                 .content
             )
-            valeur = str(_lire_json(brut).get("intention", "")).strip().lower()
+            valeur = str(lire_json(brut).get("intention", "")).strip().lower()
             intention = Intention(valeur) if valeur in set(Intention) else Intention.QUESTION
         logger.info("Intention retenue : %s", intention)
         return {"intention": str(intention)}
@@ -194,12 +175,10 @@ def construire_graphe(session: Session) -> Any:
             sources=sources[:3000],
         )
         brut = str(modele_chat(Vitesse.RAPIDE, json=True).invoke(invite).content)
-        texte = str(_lire_json(brut).get("resume", "")).strip()
+        texte = texte_attendu(lire_json(brut), "resume")
 
         # Mêmes garde-fous que pour une réponse : un chiffre non fourni n'est pas affiché.
-        materiaux = invite
-        douteux = bool(texte) and not chiffres_ancres(texte, materiaux)
-        if not texte or avoue_ignorance(texte) or douteux:
+        if not texte or avoue_ignorance(texte) or chiffres_douteux(texte, invite):
             logger.info("Résumé écarté par les vérifications : %r", texte[:120])
             return {
                 "evenements": evenements,
@@ -217,19 +196,17 @@ def construire_graphe(session: Session) -> Any:
         }
 
     def journaliser(etat: Etat) -> dict[str, Any]:
-        session.add(
-            EntreeAudit(
-                utilisateur_id=etat["utilisateur_id"],
-                action=f"agent_dossier_{etat.get('intention', 'question')}",
-                dossier_id=etat.get("dossier_id"),
-                details={
-                    "demande": etat.get("demande", "")[:300],
-                    "abstention": etat.get("abstention", False),
-                    "citations": len(etat.get("citations", [])),
-                },
-            )
+        inscrire_au_journal(
+            session,
+            etat["utilisateur_id"],
+            f"agent_dossier_{etat.get('intention', 'question')}",
+            {
+                "demande": etat.get("demande", "")[:300],
+                "abstention": etat.get("abstention", False),
+                "citations": len(etat.get("citations", [])),
+            },
+            dossier_id=etat.get("dossier_id"),
         )
-        session.flush()
         return {}
 
     def aiguiller(etat: Etat) -> str:
@@ -275,7 +252,7 @@ def assister(session: Session, utilisateur_id: int, dossier_id: int, demande: st
         intention=str(etat_final.get("intention", "")),
         texte=str(etat_final.get("reponse", "")),
         citations=list(etat_final.get("citations", [])),
-        evenements=[asdict(evenement) for evenement in etat_final.get("evenements", [])],
+        donnees={"evenements": [asdict(evenement) for evenement in etat_final.get("evenements", [])]},
         abstention=bool(etat_final.get("abstention", False)),
         secondes=time.perf_counter() - depart,
     )

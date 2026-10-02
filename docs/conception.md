@@ -195,7 +195,8 @@ Question + utilisateur + périmètre (client / dossier)
 ### 6.4 Agents (LangGraph)
 
 - **Outils de lecture** (`agents/outils.py`) : `fiche_dossier`, `evenements_du_dossier`,
-  `donnees_extraites`, `elements_crm_du_client`, plus la recherche de l'étape 5.
+  `donnees_extraites`, `fiche_client`, `dossiers_du_client`, `derniers_echanges`,
+  `elements_crm_du_client`, `points_attention`, plus la recherche de l'étape 5.
 - **Outils d'écriture** (validation humaine via `interrupt()`, étape 8) : `create_crm_task`,
   `save_draft`, `attach_to_matter`.
 - Chaque outil reçoit la **session ouverte au nom de l'utilisateur** : c'est PostgreSQL qui
@@ -218,6 +219,27 @@ Question + utilisateur + périmètre (client / dossier)
 - `chronologie` : construite **par le code** à partir des dates en base, sans modèle (< 1 s).
 - `resume` : rédigé par le modèle à partir de la fiche, des valeurs extraites et des passages ;
   tout chiffre absent des matériaux fournis fait abandonner la synthèse.
+
+**Agent intelligence client (F6)** — `agents/client.py` :
+
+    comprendre ──► collecter ──┬─► question ─┐
+                               ├─► synthese ─┼─► journaliser ──► fin
+                               └─► fiche ────┘
+
+- `collecter` : identité du client, ses dossiers **visibles par l'utilisateur**, ses derniers
+  échanges tous dossiers confondus, et les points d'attention.
+- `fiche` : les faits sans rédaction, donc sans modèle (< 1 s).
+- `synthese` : rédigée par le modèle à partir de ces faits, avec le même contrôle des chiffres.
+- `question` : réponse citée bornée aux dossiers de ce client (`Filtres(client_id=…)`).
+- Les **points d'attention sont calculés par des règles**, jamais demandés au modèle
+  (voir ADR 0006) : délai qui échoit, courrier du client resté sans réponse, dossier en
+  sommeil, valeurs extraites douteuses non relues, mandat CRM en négociation. Chacun se
+  vérifie en remontant à la date ou au statut qui l'a déclenché.
+
+**L'isolation se propage d'elle-même.** La règle RLS des clients est
+`id IN (SELECT client_id FROM dossiers)`, et la table `dossiers` est elle-même filtrée : un
+client n'existe pour un utilisateur que s'il voit au moins un de ses dossiers, et la fiche ne
+compte alors que ceux-là. D'où le nom du champ : `dossiers_visibles`, et non « dossiers ».
 
 ---
 
@@ -318,7 +340,7 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 | 5c | Jeu d'évaluation issu du corrigé + indicateurs publiables | F11 | ✅ |
 | 6 | Extraction structurée : 8 schémas, conversion et contrôle des valeurs, validation par un avocat | F5, F8 | ✅ |
 | 7a | Agent assistance dossier : aiguillage, chronologie construite par le code, synthèse vérifiée | F7 | ✅ |
-| 7b | Agent intelligence client : vue 360°, historique, éléments du CRM | F6 | |
+| 7b | Agent intelligence client : fiche, points d'attention calculés, synthèse vérifiée | F6 | ✅ |
 | 8 | Agent workflows + validation humaine | F9 | |
 | 9 | API REST complète + démo Streamlit | F10 | |
 | 10 | README, vidéo de démo, CI, ADR, résultats d'évaluation | — | |

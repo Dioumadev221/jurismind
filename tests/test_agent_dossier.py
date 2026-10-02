@@ -149,7 +149,7 @@ def test_la_chronologie_est_construite_par_le_code(
     assert lignes[0].startswith("09/08/2026")  # la facture, pièce la plus ancienne
     assert lignes[-1].startswith("13/08/2026")  # la mise en demeure, la plus récente
     assert "Impayés Cap-Vert — reçu de ndeye.diallo@sine.example" in reponse.texte
-    assert len(reponse.evenements) == 3
+    assert len(reponse.donnees["evenements"]) == 3
 
 
 def test_un_document_sans_date_nentre_pas_dans_la_chronologie(cabinet: Cabinet) -> None:
@@ -250,7 +250,7 @@ def test_un_dossier_dautrui_ne_laisse_rien_filtrer(
     assert reponse.abstention
     assert reponse.texte == "Dossier introuvable."
     assert reponse.citations == []
-    assert reponse.evenements == []
+    assert reponse.donnees["evenements"] == []
 
 
 def test_lassistante_accede_au_dossier_quon_lui_a_confie(
@@ -260,7 +260,7 @@ def test_lassistante_accede_au_dossier_quon_lui_a_confie(
     with session_utilisateur(cabinet.sy) as session:
         reponse = assister(session, cabinet.sy, dossier_garni, "chronologie")
     assert not reponse.abstention
-    assert len(reponse.evenements) == 3
+    assert len(reponse.donnees["evenements"]) == 3
 
 
 def test_la_fiche_est_invisible_sans_acces(cabinet: Cabinet, dossier_garni: int) -> None:

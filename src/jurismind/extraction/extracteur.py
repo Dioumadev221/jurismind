@@ -24,7 +24,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from jurismind.core.config import get_settings
-from jurismind.db.models import Document, Extraction, StatutExtraction, StatutTraitement
+from jurismind.db.models import Document, Dossier, Extraction, StatutExtraction, StatutTraitement
 from jurismind.extraction.schemas import ActeJuridique, schema_pour
 from jurismind.llm import Vitesse, modele_chat
 
@@ -228,8 +228,14 @@ def valider(
     return extraction
 
 
-def documents_a_extraire(session: Session, limite: int | None = None) -> list[Document]:
-    """Documents lus, dont la catégorie a un schéma, et sans proposition à jour."""
+def documents_a_extraire(
+    session: Session, limite: int | None = None, dossier: str | None = None
+) -> list[Document]:
+    """Documents lus, dont la catégorie a un schéma, et sans proposition à jour.
+
+    `dossier` restreint à une référence : c'est ce qu'on veut en exploitation quand un
+    dossier vient de bouger, plutôt que de relancer une campagne complète.
+    """
     deja_faits = select(Extraction.document_id)
     requete = (
         select(Document)
@@ -240,6 +246,8 @@ def documents_a_extraire(session: Session, limite: int | None = None) -> list[Do
         )
         .order_by(Document.id)
     )
+    if dossier:
+        requete = requete.join(Dossier, Document.dossier_id == Dossier.id).where(Dossier.reference == dossier)
     documents = [
         document
         for document in session.scalars(requete)
