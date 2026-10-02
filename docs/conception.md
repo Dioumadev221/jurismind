@@ -194,11 +194,30 @@ Question + utilisateur + périmètre (client / dossier)
 
 ### 6.4 Agents (LangGraph)
 
-- **Outils de lecture** : `search`, `get_client`, `get_matter`, `list_communications`, `get_document`, `extract_structured`, `get_crm_client`.
-- **Outils d'écriture** (validation humaine via `interrupt()`) : `create_crm_task`, `save_draft`, `attach_to_matter`.
-- Chaque outil reçoit l'utilisateur courant et applique ses droits : l'agent ne peut pas les contourner.
-- Graphes **majoritairement déterministes** (fiables avec des petits modèles) ; routeur en sortie JSON contrainte.
-- Checkpoints dans PostgreSQL ; garde-fous : nombre d'étapes, délai maximal.
+- **Outils de lecture** (`agents/outils.py`) : `fiche_dossier`, `evenements_du_dossier`,
+  `donnees_extraites`, `elements_crm_du_client`, plus la recherche de l'étape 5.
+- **Outils d'écriture** (validation humaine via `interrupt()`, étape 8) : `create_crm_task`,
+  `save_draft`, `attach_to_matter`.
+- Chaque outil reçoit la **session ouverte au nom de l'utilisateur** : c'est PostgreSQL qui
+  applique les droits, l'agent ne peut pas les contourner, même avec une requête maladroite.
+- Graphes **déterministes** : le code décide des étapes et lit la base ; le modèle ne fait que
+  deux choses, comprendre la demande et rédiger (voir ADR 0005).
+- Garde-fous : nombre d'étapes fixé par le graphe, mêmes vérifications de chiffres que pour une
+  réponse citée, et chaque passage inscrit au journal d'audit.
+
+**Agent assistance dossier (F7)** — `agents/dossier.py` :
+
+    comprendre ──► collecter ──┬─► question ────┐
+                               ├─► resume ──────┼─► journaliser ──► fin
+                               └─► chronologie ─┘
+
+- `comprendre` : mot-clé d'abord (« résume », « chronologie »…), modèle en JSON contraint sinon.
+- `collecter` : la fiche du dossier ; si elle est invisible, l'agent s'arrête **avant** toute
+  recherche et répond « Dossier introuvable » — rien ne filtre d'un dossier d'autrui.
+- `question` : réutilise la réponse citée de l'étape 5b, bornée au dossier.
+- `chronologie` : construite **par le code** à partir des dates en base, sans modèle (< 1 s).
+- `resume` : rédigé par le modèle à partir de la fiche, des valeurs extraites et des passages ;
+  tout chiffre absent des matériaux fournis fait abandonner la synthèse.
 
 ---
 
@@ -290,15 +309,16 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 | 1 | PostgreSQL + pgvector (Docker), configuration | — | ✅ |
 | 2a | Système existant simulé : base legacy + CRM factice (API) | — | ✅ |
 | 2b | Système existant simulé : fichiers des documents (PDF, DOCX, scans) | — | ✅ |
-| 3 | Modèle de données JurisMind, migrations, utilisateurs, droits, RLS, audit + `LLMProvider` Ollama/OpenAI | F12 | en cours : tables, migrations et RLS ✅ ; tests, audit, LLM à venir |
+| 3 | Modèle de données JurisMind, migrations, utilisateurs, droits, RLS, audit + `LLMProvider` Ollama/OpenAI | F12 | ✅ |
 | 4a | Connecteur `legacy` : traduction, fusion prudente des doublons, synchronisation idempotente | F1 | ✅ |
 | 4b | Connecteur CRM : rapprochement par indices, reprise sur erreur 429/503 | F1 | ✅ |
 | 4c | Ingestion : lecture PDF/Word, OCR des scans, découpage, vecteurs | F4 | ✅ |
-| 5a | Recherche hybride (vecteurs + plein texte français, fusion RRF), droits appliqués par la base | F3 | OK |
-| 5b | Réponses citées : sortie JSON imposée, 4 vérifications, abstention | F2, F11 | OK |
-| 5c | Jeu d'évaluation issu du corrigé + indicateurs publiables | F11 | OK |
-| 6 | Extraction structurée : 8 schémas, conversion et contrôle des valeurs, validation par un avocat | F5, F8 | OK |
-| 7 | Agents assistance dossier + intelligence client + routeur | F6, F7 | |
+| 5a | Recherche hybride (vecteurs + plein texte français, fusion RRF), droits appliqués par la base | F3 | ✅ |
+| 5b | Réponses citées : sortie JSON imposée, 4 vérifications, abstention | F2, F11 | ✅ |
+| 5c | Jeu d'évaluation issu du corrigé + indicateurs publiables | F11 | ✅ |
+| 6 | Extraction structurée : 8 schémas, conversion et contrôle des valeurs, validation par un avocat | F5, F8 | ✅ |
+| 7a | Agent assistance dossier : aiguillage, chronologie construite par le code, synthèse vérifiée | F7 | ✅ |
+| 7b | Agent intelligence client : vue 360°, historique, éléments du CRM | F6 | |
 | 8 | Agent workflows + validation humaine | F9 | |
 | 9 | API REST complète + démo Streamlit | F10 | |
 | 10 | README, vidéo de démo, CI, ADR, résultats d'évaluation | — | |
