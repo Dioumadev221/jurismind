@@ -5,7 +5,7 @@ bavardage, une clé accentuée — mais jamais le **fond** : un chiffre qui n'es
 données fournies reste un chiffre douteux.
 """
 
-from jurismind.agents.commun import chiffres_douteux, lire_json, texte_attendu
+from jurismind.agents.commun import chiffres_douteux, lire_json, liste_attendue, texte_attendu
 
 # ------------------------------------------------------------------ lecture du JSON
 
@@ -65,3 +65,27 @@ def test_un_separateur_different_ne_fait_pas_echouer_lancrage() -> None:
 def test_un_texte_sans_chiffre_nest_pas_douteux() -> None:
     """Il n'avance rien de vérifiable par ce moyen : l'écarter serait une erreur."""
     assert not chiffres_douteux("Une société dakaroise suivie en recouvrement.", "enjeu : 13 750 000")
+
+
+# ------------------------------------------------------------------ listes
+
+
+def test_la_liste_attendue_est_prise_a_sa_cle() -> None:
+    assert liste_attendue({"points": [1, 2]}, "points") == [1, 2]
+
+
+def test_une_cle_de_liste_accentuee_est_acceptee() -> None:
+    assert liste_attendue({"Points clés": ["a"]}, "points cles") == ["a"]
+
+
+def test_une_seule_liste_est_acceptee_a_defaut() -> None:
+    assert liste_attendue({"elements": ["a"]}, "points") == ["a"]
+
+
+def test_plusieurs_listes_sans_cle_reconnue_ne_sont_pas_devinees() -> None:
+    assert liste_attendue({"a": [1], "b": [2]}, "points") == []
+
+
+def test_une_valeur_qui_nest_pas_une_liste_est_ignoree() -> None:
+    assert liste_attendue({"points": "pas une liste"}, "points") == []
+    assert liste_attendue({}, "points") == []

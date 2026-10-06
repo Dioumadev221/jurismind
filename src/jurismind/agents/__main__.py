@@ -6,6 +6,10 @@ Usage :
     uv run python -m jurismind.agents dossier D2026-0024 "Le débiteur a-t-il formé opposition ?"
     uv run python -m jurismind.agents client "Sine Services SA"
     uv run python -m jurismind.agents client "Sine Services SA" "points d'attention"
+    uv run python -m jurismind.agents document D2026-0024   # liste les pièces du dossier
+    uv run python -m jurismind.agents document 422
+    uv run python -m jurismind.agents document D2026-0024   # liste les pièces du dossier
+    uv run python -m jurismind.agents document 422 "Quel délai est accordé ?"
 """
 
 import argparse
@@ -14,11 +18,12 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from jurismind.agents import analyse as agent_document
 from jurismind.agents import client as agent_client
 from jurismind.agents import dossier as agent_dossier
 from jurismind.agents.commun import ReponseAgent
-from jurismind.agents.outils import trouver_client
-from jurismind.db.models import AccesDossier, Client, Dossier, Utilisateur
+from jurismind.agents.outils import documents_du_dossier, trouver_client
+from jurismind.db.models import AccesDossier, Client, Document, Dossier, Utilisateur
 from jurismind.db.session import get_engine, session_utilisateur
 
 
@@ -54,6 +59,24 @@ def _cible_client(session: Session, nom: str, email: str | None) -> tuple[int, i
     return client_id, utilisateur.id, f"Client {nom_client}"
 
 
+def _cible_document(session: Session, identifiant: str, email: str | None) -> tuple[int, int, str]:
+    """Résout un identifiant de document, ou liste les pièces d'un dossier pour en choisir une."""
+    if not identifiant.isdigit():
+        dossier = session.scalars(select(Dossier).where(Dossier.reference == identifiant)).one_or_none()
+        if dossier is None:
+            raise SystemExit("Donner un identifiant de document (ex. 422) ou une référence de dossier")
+        print(f"Pièces du dossier {dossier.reference} :")
+        for piece in documents_du_dossier(session, dossier.id):
+            date_piece = f"{piece['date_document']:%d/%m/%Y}" if piece["date_document"] else "sans date"
+            print(f"  {piece['id']:>4}  {date_piece}  {piece['categorie_source'] or '':<18} {piece['titre']}")
+        raise SystemExit(0)
+    document = session.get(Document, int(identifiant))
+    if document is None:
+        raise SystemExit(f"Document {identifiant} introuvable")
+    utilisateur = _utilisateur(session, email, [document.dossier_id])
+    return document.id, utilisateur.id, f"Document {document.id} — {document.titre}"
+
+
 def _afficher(reponse: ReponseAgent) -> None:
     print(
         f"[{reponse.intention}] en {reponse.secondes:.0f}s" + (" — abstention" if reponse.abstention else "")
@@ -64,9 +87,11 @@ def _afficher(reponse: ReponseAgent) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("agent", choices=("dossier", "client"), help="agent à interroger")
-    parser.add_argument("cible", help="référence du dossier (D2026-0024) ou nom du client")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("agent", choices=("dossier", "client", "document"), help="agent à interroger")
+    parser.add_argument("cible", help="référence du dossier, nom du client, ou identifiant du document")
     parser.add_argument("demande", nargs="?", default="", help="question, ou vide pour une synthèse")
     parser.add_argument("--email", help="avocat qui pose la question (par défaut : un responsable)")
     args = parser.parse_args()
@@ -75,17 +100,23 @@ def main() -> None:
 
     # Première session avec la clé propriétaire : seulement pour identifier la cible et l'avocat.
     with Session(get_engine()) as session:
-        if args.agent == "dossier":
-            cible_id, utilisateur_id, titre = _cible_dossier(session, args.cible, args.email)
-        else:
-            cible_id, utilisateur_id, titre = _cible_client(session, args.cible, args.email)
+        trouver = {
+            "dossier": _cible_dossier,
+            "client": _cible_client,
+            "document": _cible_document,
+        }[args.agent]
+        cible_id, utilisateur_id, titre = trouver(session, args.cible, args.email)
         nom = session.scalars(select(Utilisateur.nom_complet).where(Utilisateur.id == utilisateur_id)).one()
 
     print(f"{titre}\nAu nom de : {nom}\n")
 
     # Tout le travail de l'agent se fait avec les droits de cet utilisateur.
     with session_utilisateur(utilisateur_id) as session:
-        module = agent_dossier if args.agent == "dossier" else agent_client
+        module = {
+            "dossier": agent_dossier,
+            "client": agent_client,
+            "document": agent_document,
+        }[args.agent]
         _afficher(module.assister(session, utilisateur_id, cible_id, args.demande))
 
 

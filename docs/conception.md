@@ -196,7 +196,8 @@ Question + utilisateur + périmètre (client / dossier)
 
 - **Outils de lecture** (`agents/outils.py`) : `fiche_dossier`, `evenements_du_dossier`,
   `donnees_extraites`, `fiche_client`, `dossiers_du_client`, `derniers_echanges`,
-  `elements_crm_du_client`, `points_attention`, plus la recherche de l'étape 5.
+  `elements_crm_du_client`, `points_attention`, `fiche_document`, `documents_du_dossier`,
+  `extraction_du_document`, plus la recherche de l'étape 5.
 - **Outils d'écriture** (validation humaine via `interrupt()`, étape 8) : `create_crm_task`,
   `save_draft`, `attach_to_matter`.
 - Chaque outil reçoit la **session ouverte au nom de l'utilisateur** : c'est PostgreSQL qui
@@ -235,6 +236,23 @@ Question + utilisateur + périmètre (client / dossier)
   (voir ADR 0006) : délai qui échoit, courrier du client resté sans réponse, dossier en
   sommeil, valeurs extraites douteuses non relues, mandat CRM en négociation. Chacun se
   vérifie en remontant à la date ou au statut qui l'a déclenché.
+
+**Agent analyse de documents (F8)** — `agents/analyse.py` :
+
+    charger ──┬─► question ─────────────────────────────┐
+              └─► classer ──► resumer ──► points_cles ──┴─► journaliser ──► fin
+
+- `classer` : le type de l'acte parmi les 28 que le cabinet manipule, inscrit dans
+  `categorie_detectee` — ce qui permet ensuite à l'extraction de choisir son schéma.
+  Un type hors de cette liste est écarté : le modèle ne crée pas de vocabulaire. Un
+  désaccord avec la saisie du cabinet est signalé, jamais corrigé en silence.
+- `resumer` : trois phrases, écartées si elles avancent un chiffre absent du document.
+- `points_cles` : ce qui engage (délai, montant, pénalité, juridiction, reconduction…),
+  **chacun accompagné de la phrase du document qui le porte**. Un point dont la citation
+  ne se retrouve pas dans l'acte est supprimé (`citation_verifiee`, ADR 0003) : c'est ce
+  qui distingue un relevé d'une paraphrase.
+- `question` : réponse citée bornée au dossier de la pièce.
+- Mesure rejouable : `python -m jurismind.evaluation.classement`.
 
 **L'isolation se propage d'elle-même.** La règle RLS des clients est
 `id IN (SELECT client_id FROM dossiers)`, et la table `dossiers` est elle-même filtrée : un
@@ -321,6 +339,8 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 - Mesures actuelles (20 questions, `qwen2.5:3b`, CPU) : rappel 93,8 %, citation du bon document 75 %, justesse 68,8 %, **abstention correcte 100 %**, 1 réponse inventée, 13 à 31 s par question.
 - Quatre vérifications avant affichage (ADR 0003) : sources valides, aveu d'ignorance, référence croisée, citation littérale ou ancrage des chiffres.
 - **Extraction structurée** (`uv run python -m jurismind.evaluation.extraction`), 98 champs sur 30 actes : remplissage 93,9 %, justesse **100 %**, dont 85,7 % / 100 % sur les scans passés par l'OCR.
+- **Classement des documents** (`uv run python -m jurismind.evaluation.classement`), 55 documents : accord avec la saisie du cabinet 75,5 %, dont 85,0 % sur les scans, **0 réponse hors de la liste des 28 types**. Sur les 13 désaccords, 4 portent sur une distinction absente du document (qui l'a produit) : 7 erreurs franches (ADR 0007).
+- **Clauses relevées** : chacune est accompagnée de la phrase du document qui la porte, et un point dont la citation ne se retrouve pas dans l'acte est supprimé.
 
 ---
 
@@ -338,9 +358,10 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 | 5a | Recherche hybride (vecteurs + plein texte français, fusion RRF), droits appliqués par la base | F3 | ✅ |
 | 5b | Réponses citées : sortie JSON imposée, 4 vérifications, abstention | F2, F11 | ✅ |
 | 5c | Jeu d'évaluation issu du corrigé + indicateurs publiables | F11 | ✅ |
-| 6 | Extraction structurée : 8 schémas, conversion et contrôle des valeurs, validation par un avocat | F5, F8 | ✅ |
+| 6 | Extraction structurée : 8 schémas, conversion et contrôle des valeurs, validation par un avocat | F5 | ✅ |
 | 7a | Agent assistance dossier : aiguillage, chronologie construite par le code, synthèse vérifiée | F7 | ✅ |
 | 7b | Agent intelligence client : fiche, points d'attention calculés, synthèse vérifiée | F6 | ✅ |
+| 7c | Agent analyse de documents : type reconnu, résumé vérifié, clauses citées | F8 | ✅ |
 | 8 | Agent workflows + validation humaine | F9 | |
 | 9 | API REST complète + démo Streamlit | F10 | |
 | 10 | README, vidéo de démo, CI, ADR, résultats d'évaluation | — | |

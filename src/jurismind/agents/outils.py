@@ -537,3 +537,70 @@ def points_attention(
 
     points.sort(key=lambda point: (point.gravite != "haute", point.libelle, point.dossier or ""))
     return points
+
+
+# --------------------------------------------------------------- côté document (F8)
+
+
+def fiche_document(session: Session, document_id: int) -> dict[str, Any] | None:
+    """Carte d'identité d'un document, avec son texte. `None` si l'utilisateur n'y a pas accès."""
+    document = session.get(Document, document_id)
+    if document is None:
+        return None  # son dossier n'est pas ouvert à cet utilisateur : l'isolation a joué
+
+    dossier = session.get(Dossier, document.dossier_id)
+    return {
+        "id": document.id,
+        "titre": document.titre,
+        "dossier": dossier.reference if dossier else None,
+        "dossier_id": document.dossier_id,
+        "categorie_source": document.categorie_source,
+        "categorie_detectee": document.categorie_detectee,
+        "sens": str(document.sens),
+        "date_document": document.date_document,
+        "auteur": document.auteur,
+        "format": document.format,
+        "lu_par_ocr": document.ocr_utilise,
+        "statut_traitement": str(document.statut_traitement),
+        "caracteres": len(document.texte or ""),
+        "texte": document.texte or "",
+    }
+
+
+def extraction_du_document(session: Session, document_id: int) -> dict[str, Any] | None:
+    """Valeurs déjà extraites de ce document, s'il en existe une proposition."""
+    extraction = session.scalars(
+        select(Extraction)
+        .where(Extraction.document_id == document_id)
+        .order_by(Extraction.id.desc())
+        .limit(1)
+    ).first()
+    if extraction is None:
+        return None
+    return {
+        "schema": extraction.schema,
+        "donnees": {
+            cle: valeur for cle, valeur in extraction.donnees.items() if valeur not in (None, "", [])
+        },
+        "champs_douteux": extraction.champs_douteux,
+        "relue": extraction.relue,
+        "statut": str(extraction.statut),
+    }
+
+
+def documents_du_dossier(session: Session, dossier_id: int) -> list[dict[str, Any]]:
+    """Les pièces d'un dossier, pour choisir celle qu'on veut analyser."""
+    documents = session.scalars(
+        select(Document).where(Document.dossier_id == dossier_id).order_by(Document.date_document)
+    ).all()
+    return [
+        {
+            "id": document.id,
+            "titre": document.titre,
+            "categorie_source": document.categorie_source,
+            "categorie_detectee": document.categorie_detectee,
+            "date_document": document.date_document,
+            "lu_par_ocr": document.ocr_utilise,
+        }
+        for document in documents
+    ]

@@ -20,7 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--limite", type=int, default=10, help="nombre de documents à traiter")
     parser.add_argument("--rapide", action="store_true", help="utiliser le petit modèle")
     parser.add_argument("--dossier", help="ne traiter que les actes de ce dossier, ex. D2026-0028")

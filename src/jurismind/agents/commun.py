@@ -66,6 +66,20 @@ def texte_attendu(donnees: dict[str, Any], cle: str) -> str:
     return textes[0] if len(textes) == 1 else ""
 
 
+def liste_attendue(donnees: dict[str, Any], cle: str) -> list[Any]:
+    """Lit une liste dans la réponse du modèle, en tolérant la clé de travers.
+
+    Même tolérance que `texte_attendu`, et même limite : si plusieurs listes sont
+    présentes sans qu'aucune clé ne corresponde, on ne devine pas.
+    """
+    attendue = normaliser(cle)
+    for nom, valeur in donnees.items():
+        if normaliser(str(nom)) == attendue and isinstance(valeur, list):
+            return list(valeur)
+    listes = [valeur for valeur in donnees.values() if isinstance(valeur, list)]
+    return list(listes[0]) if len(listes) == 1 else []
+
+
 def chiffres_douteux(texte: str, materiaux: str) -> bool:
     """Vrai si le texte avance un chiffre qui ne figure pas dans ce qu'on a fourni au modèle.
 
