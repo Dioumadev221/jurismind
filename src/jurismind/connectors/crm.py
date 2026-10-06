@@ -36,6 +36,10 @@ CODES_A_REESSAYER = {429, 500, 502, 503, 504}
 FORMES_JURIDIQUES = {"sarl", "suarl", "sa", "sas", "gie", "sci"}
 
 
+# Le seul code où le CRM garantit n'avoir rien fait : rejouer une écriture y est sûr.
+CODE_TROP_DE_DEMANDES = 429
+
+
 class CrmIndisponible(RuntimeError):
     """Le CRM n'a pas répondu, même après plusieurs tentatives."""
 
@@ -95,6 +99,37 @@ class ApiCrm:
                 if essai < self.tentatives - 1:
                     self._attendre(essai, reponse)
         raise CrmIndisponible(f"{chemin} : {self.tentatives} tentatives sans succès") from derniere_erreur
+
+    def post(self, ressource: str, charge: dict[str, Any]) -> dict[str, Any]:
+        """Crée une ressource dans le CRM. **Ne réessaie que sur 429.**
+
+        Une lecture rejouée ne coûte rien ; une écriture rejouée peut créer deux fois la
+        même tâche dans le CRM du cabinet. Sur 429, le CRM dit explicitement qu'il n'a
+        pas traité la demande : rejouer est sûr. Sur 500 ou sur une coupure réseau, on ne
+        sait pas si l'écriture a eu lieu — on remonte l'erreur, et la proposition reste
+        « échouée », rejouable par un humain qui aura vérifié le CRM.
+        """
+        derniere_erreur: Exception | None = None
+        for essai in range(self.tentatives):
+            reponse = None
+            try:
+                reponse = self.http.post(f"/{ressource}", json=charge)
+                if reponse.status_code == CODE_TROP_DE_DEMANDES:
+                    raise httpx.HTTPStatusError(
+                        f"429 sur {ressource}", request=reponse.request, response=reponse
+                    )
+                reponse.raise_for_status()
+                cree: dict[str, Any] = reponse.json()
+                logger.info("CRM : %s créé(e) %s", ressource, cree.get("id"))
+                return cree
+            except httpx.HTTPStatusError as erreur:
+                if erreur.response.status_code != CODE_TROP_DE_DEMANDES:
+                    raise  # 422, 401, 500… : rejouer serait au mieux inutile, au pire double
+                derniere_erreur = erreur
+                logger.warning("CRM %s : saturé, tentative %s/%s", ressource, essai + 1, self.tentatives)
+                if essai < self.tentatives - 1:
+                    self._attendre(essai, reponse)
+        raise CrmIndisponible(f"{ressource} : {self.tentatives} tentatives sans succès") from derniere_erreur
 
     def lister(self, ressource: str, taille_page: int = 100) -> Iterator[dict[str, Any]]:
         """Parcourt toutes les pages d'une ressource du CRM."""

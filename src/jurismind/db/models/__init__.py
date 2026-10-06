@@ -20,6 +20,12 @@ from jurismind.db.models.metier import (
     TypeClient,
     TypeDossier,
 )
+from jurismind.db.models.proposition import (
+    Confiance,
+    Proposition,
+    StatutProposition,
+    TypeProposition,
+)
 from jurismind.db.models.systeme import EntreeAudit, StatutTache, Tache
 from jurismind.db.models.utilisateur import Role, Utilisateur
 
@@ -30,6 +36,7 @@ __all__ = [
     "Canal",
     "Client",
     "Communication",
+    "Confiance",
     "Contact",
     "Document",
     "Dossier",
@@ -38,16 +45,19 @@ __all__ = [
     "Extraction",
     "Extrait",
     "Partie",
+    "Proposition",
     "QualitePartie",
     "Role",
     "SensEchange",
     "StatutDossier",
     "StatutExtraction",
+    "StatutProposition",
     "StatutTache",
     "StatutTraitement",
     "Tache",
     "TypeClient",
     "TypeDossier",
     "TypeElementCrm",
+    "TypeProposition",
     "Utilisateur",
 ]

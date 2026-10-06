@@ -198,8 +198,10 @@ Question + utilisateur + périmètre (client / dossier)
   `donnees_extraites`, `fiche_client`, `dossiers_du_client`, `derniers_echanges`,
   `elements_crm_du_client`, `points_attention`, `fiche_document`, `documents_du_dossier`,
   `extraction_du_document`, plus la recherche de l'étape 5.
-- **Outils d'écriture** (validation humaine via `interrupt()`, étape 8) : `create_crm_task`,
-  `save_draft`, `attach_to_matter`.
+- **Écritures** : aucune n'est produite par un agent. Elles passent par une **proposition**
+  enregistrée en base, qu'un humain valide ou rejette (table `propositions`, ADR 0008).
+  Trois effets : rattacher un échange à un dossier, approuver un brouillon pour envoi,
+  créer une tâche dans le CRM.
 - Chaque outil reçoit la **session ouverte au nom de l'utilisateur** : c'est PostgreSQL qui
   applique les droits, l'agent ne peut pas les contourner, même avec une requête maladroite.
 - Graphes **déterministes** : le code décide des étapes et lit la base ; le modèle ne fait que
@@ -253,6 +255,26 @@ Question + utilisateur + périmètre (client / dossier)
   qui distingue un relevé d'une paraphrase.
 - `question` : réponse citée bornée au dossier de la pièce.
 - Mesure rejouable : `python -m jurismind.evaluation.classement`.
+
+**Agent de tri du courrier (F9)** — `agents/tri.py` :
+
+    lire ──► resumer ──► rediger ──► proposer ──► journaliser ──► fin
+
+- `lire` : **le rattachement et la priorité sont calculés par des règles**
+  (`agents/indices.py`), pas demandés au modèle — un email mal rattaché va dans le
+  dossier d'un autre client, c'est une fuite et non une imprécision. Cinq indices,
+  du plus fiable au moins fiable, et **rien** quand deux indices de même force
+  désignent des dossiers différents (même discipline que l'ADR 0002).
+- `resumer` et `rediger` : les deux seules étapes confiées au modèle. Le brouillon est
+  un accusé de réception sans engagement ; les formules d'appel et de politesse sont
+  écrites par le code.
+- `proposer` : dépose des propositions. **L'agent ne modifie rien.**
+- Le tri est rejouable : une proposition déjà en attente n'est pas redéposée.
+
+**Rien ne sort du cabinet sans un oui humain.** `agents/propositions.py` tient le cycle
+`proposée → validée → appliquée` (ou `rejetée`, ou `échouée` et rejouable). On distingue
+*validée* de *appliquée* parce que créer une tâche dans le CRM passe par le réseau :
+une décision humaine ne doit pas être perdue parce que le CRM était éteint. Voir ADR 0008.
 
 **L'isolation se propage d'elle-même.** La règle RLS des clients est
 `id IN (SELECT client_id FROM dossiers)`, et la table `dossiers` est elle-même filtrée : un
@@ -317,6 +339,16 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 
 ---
 
+### 7.3 Ce que l'IA propose (`propositions`)
+
+Une ligne par geste que l'IA suggère, avec **la raison** qui l'a conduite là, la force de
+l'indice, qui a tranché et quand. Trois types (`rattachement`, `brouillon`, `tache_crm`),
+cinq états (`proposee`, `validee`, `appliquee`, `rejetee`, `echouee`). La règle RLS suit
+celle des échanges à trier : une proposition qui vise un dossier n'est visible que de ceux
+qui voient ce dossier ; une proposition sans dossier est visible des avocats et assistants.
+
+---
+
 ## 9. Isolation et sécurité (F12)
 
 1. Droits vérifiés à trois niveaux : **API**, **outils des agents**, **base (RLS)** sur `utilisateur_id` ↔ `acces_dossiers`.
@@ -341,6 +373,7 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 - **Extraction structurée** (`uv run python -m jurismind.evaluation.extraction`), 98 champs sur 30 actes : remplissage 93,9 %, justesse **100 %**, dont 85,7 % / 100 % sur les scans passés par l'OCR.
 - **Classement des documents** (`uv run python -m jurismind.evaluation.classement`), 55 documents : accord avec la saisie du cabinet 75,5 %, dont 85,0 % sur les scans, **0 réponse hors de la liste des 28 types**. Sur les 13 désaccords, 4 portent sur une distinction absente du document (qui l'a produit) : 7 erreurs franches (ADR 0007).
 - **Clauses relevées** : chacune est accompagnée de la phrase du document qui la porte, et un point dont la citation ne se retrouve pas dans l'acte est supprimé.
+- **Écritures** : aucune action irréversible n'est produite par un agent. Rattachement, brouillon et tâche CRM passent par une proposition validée par un humain, qui reste inscrite en base avec son auteur (ADR 0008). Une écriture CRM n'est rejouée que sur 429, le seul code où le CRM garantit n'avoir rien fait.
 
 ---
 
@@ -362,7 +395,7 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 | 7a | Agent assistance dossier : aiguillage, chronologie construite par le code, synthèse vérifiée | F7 | ✅ |
 | 7b | Agent intelligence client : fiche, points d'attention calculés, synthèse vérifiée | F6 | ✅ |
 | 7c | Agent analyse de documents : type reconnu, résumé vérifié, clauses citées | F8 | ✅ |
-| 8 | Agent workflows + validation humaine | F9 | |
+| 8 | Agent de tri du courrier : rattachement par indices, brouillons, tâches CRM, validation humaine | F9 | ✅ |
 | 9 | API REST complète + démo Streamlit | F10 | |
 | 10 | README, vidéo de démo, CI, ADR, résultats d'évaluation | — | |
 
