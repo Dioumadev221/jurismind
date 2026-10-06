@@ -34,6 +34,14 @@ class Settings(BaseSettings):
     crm_base_url: str = "http://localhost:8100"
     crm_api_key: SecretStr = SecretStr("crm-dev-key")
 
+    # --- API REST ---
+    # Clé de signature des jetons. La valeur par défaut ne sert qu'au développement :
+    # en production elle vient de l'environnement, et un redémarrage avec une autre clé
+    # invalide tous les jetons en circulation (ce qui est le comportement voulu).
+    api_secret: SecretStr = SecretStr("jurismind-dev-secret-a-remplacer")
+    # Durée de vie d'un jeton : une journée de travail.
+    api_duree_jeton_minutes: int = 480
+
     # --- Modèles ---
     llm_fournisseur: str = "ollama"  # ollama | openai
     modele_rapide: str = "qwen2.5:3b"  # chat, routage, tri des emails

@@ -159,20 +159,19 @@ Un **routeur** reçoit une demande en langage naturel et l'envoie vers le bon ag
 
 ```
 src/jurismind/
-├── api/            # routes FastAPI, authentification
-├── core/           # configuration, sécurité, logs
-├── db/             # modèles, sessions, RLS, migrations
-├── connectors/     # base legacy, CRM, fichiers, emails        (F1)
-├── ingestion/      # OCR, nettoyage, découpage, embeddings      (F4)
-├── retrieval/      # recherche hybride + filtres de droits      (F3)
-├── rag/            # génération citée, vérification, abstention (F2, F11)
-├── extraction/     # schémas Pydantic + extraction              (F5)
-├── agents/         # routeur + 4 agents LangGraph               (F6-F9)
-├── llm/            # LLMProvider : Ollama, OpenAI
-├── evaluation/     # jeu de tests + métriques                   (F11)
-└── workers/        # worker de la file de tâches
+├── api/            # FastAPI : jeton, routes, schémas OpenAPI    (F10, F12)
+├── core/           # configuration, outils de texte
+├── db/             # modèles, sessions, RLS
+├── connectors/     # base legacy, CRM                            (F1)
+├── ingestion/      # lecture, OCR, découpage, vecteurs            (F4)
+├── retrieval/      # recherche hybride + droits appliqués en base (F3)
+├── rag/            # réponses citées, vérifications, abstention   (F2, F11)
+├── extraction/     # schémas Pydantic + extraction guidée         (F5)
+├── agents/         # 4 agents LangGraph + propositions            (F6-F9)
+├── llm/            # Ollama ou OpenAI, selon la configuration
+└── evaluation/     # jeux de mesure et indicateurs                (F11)
+migrations/         # Alembic, dont les règles RLS écrites à la main
 simulation/         # base legacy, CRM factice, générateur de documents
-demo/               # application Streamlit
 tests/
 docs/
 ```
@@ -283,6 +282,47 @@ compte alors que ceux-là. D'où le nom du champ : `dossiers_visibles`, et non �
 
 ---
 
+### 6.5 API REST (F10)
+
+`uv run uvicorn jurismind.api.main:app --port 8000` — documentation sur `/docs`.
+
+    POST /connexion                              jeton signé (8 h)
+    GET  /moi
+    POST /recherche                              F3  recherche hybride
+    POST /questions                              F2, F11  réponse citée ou abstention
+    GET  /dossiers, /dossiers/{ref}[/chronologie|/documents]
+    POST /dossiers/{ref}/assistant               F7
+    GET  /clients/recherche, /clients/{id}[/dossiers|/echanges|/attention]
+    POST /clients/{id}/assistant                 F6
+    GET  /documents/{id}[/texte|/extraction]     F4, F5
+    POST /documents/{id}/analyse                 F8
+    GET  /courrier/a-trier
+    POST /courrier/tri                           F9
+    GET  /propositions
+    POST /propositions/{id}/validation|/rejet|/application
+    GET  /sante
+
+Deux principes tiennent toute la surface :
+
+- **aucune route ne se connecte avec la clé propriétaire.** Chaque requête authentifiée
+  ouvre une session au nom de l'utilisateur du jeton, donc soumise au RLS. Un endpoint
+  mal écrit ne peut pas faire fuiter le dossier d'un autre client : la base refuse.
+- **aucune route ne produit d'effet sans un oui humain.** Les agents déposent des
+  propositions ; `POST /propositions/{id}/validation` est le seul endroit du projet où
+  quelque chose se produit, et il porte le nom de qui l'a autorisé.
+
+Un dossier fermé répond **404 et non 403** : un 403 révélerait son existence. Les mots de
+passe sont stockés sous forme d'empreinte `scrypt` salée ; les comptes repris du vieux
+logiciel portent une empreinte qu'aucun mot de passe ne peut produire, donc ils existent
+sans pouvoir se connecter (`python -m jurismind.api.comptes` leur en attribue un).
+
+Les routes qui appellent un modèle (`/questions`, `/*/assistant`, `/*/analyse`,
+`/courrier/tri`) demandent 20 à 100 s sur une machine sans GPU, et sont synchrones : cela
+convient à une démonstration, pas à une production, où elles passeraient par la file
+`taches` déjà présente dans le modèle de données.
+
+---
+
 ## 7. Données
 
 ### 7.1 Modèle JurisMind
@@ -329,6 +369,16 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 
 ---
 
+### 7.3 Ce que l'IA propose (`propositions`)
+
+Une ligne par geste que l'IA suggère, avec **la raison** qui l'a conduite là, la force de
+l'indice, qui a tranché et quand. Trois types (`rattachement`, `brouillon`, `tache_crm`),
+cinq états (`proposee`, `validee`, `appliquee`, `rejetee`, `echouee`). La règle RLS suit
+celle des échanges à trier : une proposition qui vise un dossier n'est visible que de ceux
+qui voient ce dossier ; une proposition sans dossier est visible des avocats et assistants.
+
+---
+
 ## 8. Contraintes de la machine de dev (CPU, 16 Go)
 
 - Modèle 3-4B pour le routeur, le tri et le chat ; 7B pour l'extraction et les résumés, **en tâche de fond**.
@@ -338,14 +388,6 @@ Depuis, ajoutées : `alias_clients` (fiches clients en double), `elements_crm` (
 - OpenAI reste disponible pour comparer la qualité et pour la démo.
 
 ---
-
-### 7.3 Ce que l'IA propose (`propositions`)
-
-Une ligne par geste que l'IA suggère, avec **la raison** qui l'a conduite là, la force de
-l'indice, qui a tranché et quand. Trois types (`rattachement`, `brouillon`, `tache_crm`),
-cinq états (`proposee`, `validee`, `appliquee`, `rejetee`, `echouee`). La règle RLS suit
-celle des échanges à trier : une proposition qui vise un dossier n'est visible que de ceux
-qui voient ce dossier ; une proposition sans dossier est visible des avocats et assistants.
 
 ---
 
@@ -360,6 +402,14 @@ qui voient ce dossier ; une proposition sans dossier est visible des avocats et 
 4. Contenu des documents et emails traité comme **données**, jamais comme instructions (injection de prompt) ; écritures uniquement après validation humaine.
 5. Accès **en lecture seule** à la base legacy ; secrets dans `.env` ; journal d'audit en ajout seul.
 6. Avec Ollama, aucune donnée ne quitte la machine ; avec OpenAI, c'est un choix explicite de configuration.
+
+- **API** : jeton signé (HS256) portant l'identifiant et le rôle ; chaque requête ouvre
+  une session au nom de cet utilisateur. Un dossier, un client, une pièce ou une
+  proposition hors de son périmètre répond **404**, jamais 403.
+- Mots de passe : empreinte `scrypt` salée (jamais le mot de passe), comparaison à temps
+  constant, et même message d'erreur que l'adresse existe ou non.
+
+---
 
 ## 10. Fiabilité et anti-hallucination (F11)
 
@@ -396,7 +446,8 @@ qui voient ce dossier ; une proposition sans dossier est visible des avocats et 
 | 7b | Agent intelligence client : fiche, points d'attention calculés, synthèse vérifiée | F6 | ✅ |
 | 7c | Agent analyse de documents : type reconnu, résumé vérifié, clauses citées | F8 | ✅ |
 | 8 | Agent de tri du courrier : rattachement par indices, brouillons, tâches CRM, validation humaine | F9 | ✅ |
-| 9 | API REST complète + démo Streamlit | F10 | |
+| 9a | API REST FastAPI : jeton signé, droits appliqués par la base, OpenAPI documentée | F10, F12 | ✅ |
+| 9b | Démo Streamlit | F10 | |
 | 10 | README, vidéo de démo, CI, ADR, résultats d'évaluation | — | |
 
 Chaque étape : tests verts, commit(s) propres, mise à jour de ce document.
