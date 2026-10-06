@@ -27,6 +27,7 @@ ECRANS = (
     "Une question",
     "Une pièce",
     "Le courrier",
+    "Conflits d'intérêts",
 )
 GRAVITES = {"haute": "🔴", "moyenne": "🟠"}
 PRIORITES = {"haute": "🔴", "moyenne": "🟠", "basse": "⚪"}
@@ -96,7 +97,7 @@ def ecran_dossiers() -> None:
     )
     colonnes[3].metric("Responsable", choisi["responsable"] or "—")
 
-    onglets = st.tabs(["Chronologie", "Pièces", "Assistant"])
+    onglets = st.tabs(["Chronologie", "Pièces", "Conflits", "Assistant"])
     with onglets[0]:
         st.caption("Construite par le code à partir des dates en base : aucun modèle n'intervient.")
         evenements = api().get(f"/dossiers/{reference}/chronologie")
@@ -112,6 +113,11 @@ def ecran_dossiers() -> None:
             marque = " · ⚠ saisi " + saisi if reconnu and reconnu != saisi else ""
             st.write(f"`{piece['id']}` **{piece['titre']}** — {reconnu or saisi}{marque}")
     with onglets[2]:
+        afficher_conflits(
+            api().get(f"/conformite/dossiers/{reference}"),
+            "Aucune partie adverse de ce dossier ne porte le nom d'un client du cabinet.",
+        )
+    with onglets[3]:
         demande = st.text_input("Demande", value="résume ce dossier", key=f"agent_dossier_{reference}")
         st.caption(LENT + " Une chronologie, elle, revient instantanément.")
         if st.button("Demander", key=f"bouton_dossier_{reference}"):
@@ -345,6 +351,61 @@ def ecran_courrier() -> None:
                     st.rerun()
 
 
+# --------------------------------------------------------------- conflits d'intérêts
+
+
+def afficher_conflits(conflits: list[dict[str, Any]], message_vide: str) -> None:
+    """Un conflit se lit, il ne se tranche pas : on montre ce qui a déclenché l'alerte."""
+    if not conflits:
+        st.success(message_vide)
+        st.caption("Une liste vide dit ce qui a été cherché, pas que tout va bien.")
+        return
+    for conflit in conflits:
+        certain = conflit["niveau"] == "certain"
+        with st.container(border=True):
+            marque = "🔴" if certain else "🟠"
+            st.write(f"{marque} **{conflit['partie']}** ≈ **{conflit['client']}**")
+            st.caption(f"{conflit['relation']} · {conflit['explication']}")
+            if conflit["dossiers_visibles"]:
+                st.write(
+                    "Dossiers concernés que vous pouvez consulter : "
+                    + ", ".join(f"`{reference}`" for reference in conflit["dossiers_visibles"])
+                )
+            if conflit["autres_dossiers"]:
+                st.caption(
+                    f"{conflit['autres_dossiers']} autre(s) dossier(s) du cabinet sont "
+                    "concernés : ils ne vous sont pas nommés."
+                )
+
+
+def ecran_conflits() -> None:
+    st.header("Conflits d'intérêts")
+    st.caption(
+        "Un avocat ne peut pas agir contre son propre client. Ce contrôle regarde **tout "
+        "le cabinet**, y compris les dossiers qui vous sont fermés — sans cela il "
+        "manquerait justement les conflits qu'il cherche. Il ne vous nomme que les "
+        "dossiers auxquels vous avez accès, et chaque vérification est inscrite au journal."
+    )
+
+    onglets = st.tabs(["Avant d'accepter une affaire", "Tout le cabinet"])
+    with onglets[0]:
+        nom = st.text_input("Dénomination de la partie adverse", value="Sine Services SARL")
+        if st.button("Vérifier", type="primary") and nom.strip():
+            afficher_conflits(
+                api().post("/conformite/verification", {"nom": nom}),
+                f"Rien trouvé au nom de « {nom} » dans les données du cabinet.",
+            )
+    with onglets[1]:
+        st.caption("Toutes les parties adverses du cabinet, confrontées à sa liste de clients.")
+        if st.button("Lancer le balayage"):
+            resultats = api().get("/conformite/balayage")
+            if not resultats:
+                st.success("Aucune collision dans le cabinet.")
+            for resultat in resultats:
+                st.write(f"Dossier `{resultat['dossier']}` :")
+                afficher_conflits([resultat["conflit"]], "")
+
+
 # --------------------------------------------------------------------------- assemblage
 
 
@@ -374,6 +435,7 @@ def main() -> None:
         "Une question": ecran_question,
         "Une pièce": ecran_piece,
         "Le courrier": ecran_courrier,
+        "Conflits d'intérêts": ecran_conflits,
     }
     try:
         ecrans[str(ecran)]()

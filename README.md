@@ -96,7 +96,7 @@ Toutes ces mesures se rejouent en une commande, sur un corpus de 433 documents e
 | … dont scans passés par l'OCR | **100 %** (remplissage 85,7 %) | idem |
 | Classement des actes — accord avec la saisie du cabinet | **75,5 %** | `python -m jurismind.evaluation.classement` |
 | … réponses hors de la liste des 28 types connus | **0 sur 55** | idem |
-| Tests | **297** | `pytest` |
+| Tests | **323** | `pytest` |
 
 **Ce que ces chiffres ne disent pas.** La justesse des réponses rédigées est de 68,8 % sur
 les 20 questions du jeu : le petit modèle se trompe encore dans la formulation. Ce qui est à
@@ -123,6 +123,8 @@ dans les ADR.
 | F10 | API REST documentée + démo | `api/` (OpenAPI) et `demo/` (Streamlit) |
 | F11 | Fiabilité, minimum d'hallucinations | vérifications et jeux de mesure, voir ci-dessus |
 | F12 | Isolation des données | Row-Level Security PostgreSQL, journal d'audit |
+
+En plus de l'offre : **vérification des conflits d'intérêts** (`conformite/`) — un avocat ne peut pas agir contre son propre client, et le conflit se trouve rarement dans ses propres dossiers.
 
 ---
 
@@ -164,6 +166,7 @@ uv run python -m jurismind.agents dossier D2026-0024 "chronologie"
 uv run python -m jurismind.agents client "Sine Services SA"
 uv run python -m jurismind.agents document D2026-0024        # liste les pièces
 uv run python -m jurismind.agents.courrier trier
+uv run python -m jurismind.conformite balayer
 ```
 
 ---
@@ -204,6 +207,7 @@ Chaque décision non évidente a son ADR, avec ce qui a été mesuré et ce qui 
 | [0006](docs/adr/0006-points-attention-regles.md) | Points d'attention calculés par des règles | un modèle à qui l'on demande de s'inquiéter s'inquiète toujours |
 | [0007](docs/adr/0007-classement-et-releve-des-clauses.md) | Type fermé, clauses citées | 40 documents saisis « DIVERS », et des clauses paraphrasées |
 | [0008](docs/adr/0008-validation-humaine-en-base.md) | Validation humaine en base, pas `interrupt()` | la validation arrive le lendemain, par quelqu'un d'autre |
+| [0009](docs/adr/0009-conflits-interets.md) | Conflits d'intérêts : signaler trop plutôt que trop peu | le cabinet agit contre une société portant le nom d'un client actuel |
 
 ## Ce qui n'est pas fait
 

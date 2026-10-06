@@ -168,6 +168,7 @@ src/jurismind/
 ├── rag/            # réponses citées, vérifications, abstention   (F2, F11)
 ├── extraction/     # schémas Pydantic + extraction guidée         (F5)
 ├── agents/         # 4 agents LangGraph + propositions            (F6-F9)
+├── conformite/     # conflits d'intérêts                         (bonus)
 ├── demo/           # démonstration Streamlit, par l'API seule     (F10)
 ├── llm/            # Ollama ou OpenAI, selon la configuration
 └── evaluation/     # jeux de mesure et indicateurs                (F11)
@@ -489,7 +490,10 @@ dépôt.
 
 ## 12. Bonus (hors offre — seulement une fois le cœur terminé)
 
-- Vérification des conflits d'intérêts
+- **Vérification des conflits d'intérêts** ✅ — `conformite/conflits.py`, routes
+  `/conformite/*`, écran dédié dans la démonstration. Seul endroit du projet qui regarde
+  au-delà des dossiers du demandeur, parce qu'un conflit se trouve rarement chez soi ;
+  divulgation graduée et journal d'audit (ADR 0009).
 - Calcul des délais de procédure
 - Base de connaissances OHADA (Actes uniformes)
 - Rapports hebdomadaires

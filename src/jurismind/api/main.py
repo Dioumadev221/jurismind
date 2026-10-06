@@ -20,7 +20,15 @@ from fastapi import FastAPI
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from jurismind.api.routes import clients, connexion, courrier, documents, dossiers, recherche
+from jurismind.api.routes import (
+    clients,
+    conformite,
+    connexion,
+    courrier,
+    documents,
+    dossiers,
+    recherche,
+)
 from jurismind.api.schemas import Sante
 from jurismind.core.config import get_settings
 from jurismind.db.session import get_engine
@@ -55,6 +63,13 @@ ETIQUETTES: list[dict[str, Any]] = [
         "name": "Courrier et décisions",
         "description": "Tri du courrier entrant, et file des propositions à valider ou rejeter.",
     },
+    {
+        "name": "Conformité",
+        "description": (
+            "Conflits d'intérêts. Seules routes du projet qui regardent au-delà des dossiers "
+            "du demandeur, parce qu'un conflit se trouve souvent chez un confrère du cabinet."
+        ),
+    },
     {"name": "Technique", "description": "État du service."},
 ]
 
@@ -75,6 +90,7 @@ for routeur in (
     clients.routeur,
     documents.routeur,
     courrier.routeur,
+    conformite.routeur,
 ):
     app.include_router(routeur)
 

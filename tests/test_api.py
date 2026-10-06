@@ -27,7 +27,9 @@ from jurismind.db.models import (
     Document,
     Dossier,
     Extraction,
+    Partie,
     Proposition,
+    QualitePartie,
     Role,
     SensEchange,
     StatutExtraction,
@@ -402,6 +404,71 @@ def test_le_courrier_a_trier_est_visible_du_cabinet(api: httpx.Client, comptes: 
     assert pour_admin.json() == []
 
 
+# --------------------------------------------------------------------- conflits (bonus)
+
+
+def _partie_adverse(reference: str, nom: str) -> None:
+    with Session(get_engine()) as session, session.begin():
+        dossier = session.scalars(select(Dossier).where(Dossier.reference == reference)).one()
+        session.add(Partie(dossier_id=dossier.id, qualite=QualitePartie.ADVERSE, nom=nom))
+
+
+def test_la_verification_dune_identite_classe_ce_quelle_trouve(api: httpx.Client, comptes: Cabinet) -> None:
+    corps = api.post(
+        "/conformite/verification",
+        headers=connecter(api, "m.dieng@test"),
+        json={"nom": "Dakar Télécom SA"},
+    ).json()
+    assert len(corps) == 1
+    assert corps[0]["niveau"] == "a_verifier"
+    assert corps[0]["client"] == "Dakar Télécom SARL"
+
+
+def test_le_controle_regarde_au_dela_des_dossiers_du_demandeur(api: httpx.Client, comptes: Cabinet) -> None:
+    """Me Dieng n'a pas accès à D2026-0027, mais il doit être averti du conflit."""
+    corps = api.post(
+        "/conformite/verification",
+        headers=connecter(api, "m.dieng@test"),
+        json={"nom": "Dakar Télécom SARL"},
+    ).json()
+    assert corps
+    assert corps[0]["dossiers_visibles"] == []  # mais il n'apprend pas lesquels
+    assert corps[0]["autres_dossiers"] == 1
+
+
+def test_celui_qui_a_acces_voit_la_reference(api: httpx.Client, comptes: Cabinet) -> None:
+    corps = api.post(
+        "/conformite/verification",
+        headers=connecter(api, "a.fall@test"),
+        json={"nom": "Dakar Télécom SARL"},
+    ).json()
+    assert corps[0]["dossiers_visibles"] == ["D2026-0027"]
+
+
+def test_les_conflits_dun_dossier_sont_verifiables(api: httpx.Client, comptes: Cabinet) -> None:
+    _partie_adverse("D2026-0024", "Dakar Télécom SA")
+    corps = api.get("/conformite/dossiers/D2026-0024", headers=connecter(api, "m.dieng@test")).json()
+    assert [c["client"] for c in corps] == ["Dakar Télécom SARL"]
+
+
+def test_un_dossier_inconnu_repond_introuvable(api: httpx.Client, comptes: Cabinet) -> None:
+    reponse = api.get("/conformite/dossiers/D1999-0001", headers=connecter(api, "m.dieng@test"))
+    assert reponse.status_code == 404
+
+
+def test_le_balayage_nomme_le_dossier_en_cause(api: httpx.Client, comptes: Cabinet) -> None:
+    _partie_adverse("D2026-0025", "Dakar Télécom SA")
+    corps = api.get("/conformite/balayage", headers=connecter(api, "m.dieng@test")).json()
+    assert [(r["dossier"], r["conflit"]["client"]) for r in corps] == [("D2026-0025", "Dakar Télécom SARL")]
+
+
+def test_un_administrateur_ne_controle_pas_les_conflits(api: httpx.Client, comptes: Cabinet) -> None:
+    """C'est un acte professionnel d'avocat, pas une tâche d'administration."""
+    entete = connecter(api, "admin@test")
+    assert api.post("/conformite/verification", headers=entete, json={"nom": "X"}).status_code == 403
+    assert api.get("/conformite/balayage", headers=entete).status_code == 403
+
+
 # --------------------------------------------------------------------- documentation
 
 
@@ -418,6 +485,7 @@ def test_la_documentation_openapi_decrit_toutes_les_fonctionnalites(api: httpx.C
         "/documents/{document_id}/analyse",
         "/courrier/tri",
         "/propositions/{proposition_id}/validation",
+        "/conformite/verification",
     ):
         assert attendu in chemins, attendu
     # Chaque route porte un résumé lisible, pas seulement un nom de fonction.

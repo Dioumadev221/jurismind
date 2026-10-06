@@ -12,6 +12,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from jurismind.conformite.conflits import Niveau
 from jurismind.db.models import Confiance, Role, StatutProposition, TypeProposition
 
 # --------------------------------------------------------------------------- connexion
@@ -185,6 +186,35 @@ class DemandeRejet(BaseModel):
 
 class DemandeTri(BaseModel):
     limite: int = Field(default=20, ge=1, le=100, description="Nombre d'emails à examiner")
+
+
+# --------------------------------------------------------------- conflits d'intérêts (bonus)
+
+
+class DemandeConflit(BaseModel):
+    nom: str = Field(description="Dénomination à vérifier", examples=["Sine Services SARL"])
+    email: str | None = None
+    telephone: str | None = None
+
+
+class ConflitPublic(BaseModel):
+    """Une collision entre une partie adverse et un client du cabinet."""
+
+    niveau: Niveau = Field(description="Certitude de l'identité : certain ou a_verifier")
+    motif: str = Field(description="nom_identique, nom_sans_forme_juridique ou coordonnee_commune")
+    partie: str
+    client: str = Field(description="Le client du cabinet en cause")
+    relation: str = Field(description="client actuel ou ancien client : la gravité du conflit")
+    explication: str
+    dossiers_visibles: list[str] = Field(
+        default_factory=list, description="Nommés seulement si vous y avez accès"
+    )
+    autres_dossiers: int = Field(default=0, description="Les autres sont comptés, pas nommés")
+
+
+class ResultatBalayage(BaseModel):
+    dossier: str
+    conflit: ConflitPublic
 
 
 # --------------------------------------------------------------------------- divers
