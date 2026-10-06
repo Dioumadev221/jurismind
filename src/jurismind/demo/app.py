@@ -381,4 +381,7 @@ def main() -> None:
         montrer_erreur(erreur)
 
 
-main()
+# Streamlit exécute ce fichier sous le nom `__main__` : la garde évite que la démo
+# se lance au simple import du module (par un test, ou par un outil d'inspection).
+if __name__ == "__main__":
+    main()

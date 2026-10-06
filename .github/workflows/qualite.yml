@@ -1,0 +1,76 @@
+name: Qualité
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifier:
+    name: Style, types et tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    # La suite s'exécute contre un vrai PostgreSQL avec pgvector : l'isolation du projet
+    # repose sur le Row-Level Security, qu'aucune base en mémoire ne saurait reproduire.
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: jurismind
+          POSTGRES_PASSWORD: jurismind
+          POSTGRES_DB: jurismind
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U jurismind"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: jurismind
+      POSTGRES_PASSWORD: jurismind
+      POSTGRES_DB: jurismind
+      POSTGRES_APP_USER: jurismind_app
+      POSTGRES_APP_PASSWORD: jurismind_app
+      LEGACY_DB: legacy
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Installer les dépendances
+        run: uv sync --locked
+
+      - name: Style (ruff)
+        run: |
+          uv run ruff check src tests simulation
+          uv run ruff format --check src tests simulation
+
+      - name: Types (mypy)
+        run: uv run mypy src tests
+
+      - name: Base du vieux logiciel
+        run: |
+          PGPASSWORD=jurismind psql -h localhost -U jurismind -d jurismind \
+            -c "CREATE DATABASE legacy"
+
+      # Le corpus n'est pas versionné : il est reproductible à la graine près, ce qui rend
+      # les tests qui lisent de vrais PDF aussi déterministes que les autres.
+      - name: Générer le cabinet simulé
+        run: uv run python -m simulation --taille small --seed 42
+
+      - name: Tests
+        run: uv run pytest -q

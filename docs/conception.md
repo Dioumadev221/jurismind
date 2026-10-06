@@ -474,12 +474,16 @@ qui voient ce dossier ; une proposition sans dossier est visible des avocats et 
 | 8 | Agent de tri du courrier : rattachement par indices, brouillons, tâches CRM, validation humaine | F9 | ✅ |
 | 9a | API REST FastAPI : jeton signé, droits appliqués par la base, OpenAPI documentée | F10, F12 | ✅ |
 | 9b | Démo Streamlit : cinq écrans, qui ne parlent qu'à l'API | F10 | ✅ |
-| 10 | README, vidéo de démo, CI, ADR, résultats d'évaluation | — | |
+| 10 | README, CI GitHub Actions, licence, ADR et résultats publiés | — | ✅ (reste la vidéo) |
 
 Chaque étape : tests verts, commit(s) propres, mise à jour de ce document.
 
 ### Qualité du dépôt
-README (pitch, démo, architecture, démarrage en une commande, résultats d'évaluation), ADR dans `docs/adr/`, ruff + mypy + pytest, CI GitHub Actions, commits *Conventional Commits*, `.env.example`, licence MIT, aucune donnée réelle ni secret.
+README (problème, décisions, résultats mesurés, démarrage, limites assumées), 8 ADR dans
+`docs/adr/`, ruff + mypy + 297 tests, CI GitHub Actions sur un vrai PostgreSQL avec pgvector
+— l'isolation reposant sur le RLS, aucune base en mémoire ne saurait la vérifier —, commits
+*Conventional Commits*, `.env.example`, licence MIT, aucune donnée réelle ni secret dans le
+dépôt.
 
 ---
 
