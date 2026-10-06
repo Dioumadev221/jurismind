@@ -321,6 +321,31 @@ Les routes qui appellent un modèle (`/questions`, `/*/assistant`, `/*/analyse`,
 convient à une démonstration, pas à une production, où elles passeraient par la file
 `taches` déjà présente dans le modèle de données.
 
+### 6.6 Démonstration (Streamlit)
+
+```
+uv run uvicorn jurismind.api.main:app --port 8000     # un terminal
+uv run streamlit run src/jurismind/demo/app.py        # un autre
+```
+
+Cinq écrans : *Mes dossiers*, *Un client*, *Une question*, *Une pièce*, *Le courrier*.
+
+La démo **ne touche jamais la base** : elle passe par l'API avec le jeton de
+l'utilisateur connecté. C'est ce qui rend l'isolation démontrable — une démo qui lirait
+PostgreSQL avec la clé propriétaire afficherait tout et ne prouverait rien. On se connecte
+avec deux avocats différents, et les listes ne se recouvrent pas.
+
+Trois choses qu'elle doit rendre visibles, parce qu'elles sont le cœur du projet :
+
+- une réponse **cite ses sources**, ou s'abstient — et l'abstention est présentée comme
+  un résultat, pas comme une panne ;
+- un point d'attention et une proposition **disent sur quoi ils se fondent** ;
+- rien ne se produit sans un clic humain sur « Valider », et la décision reste inscrite.
+
+Les mots de passe de démonstration sont créés par
+`uv run python -m jurismind.api.comptes --demo`, qui les écrit dans `data/` — hors du
+dépôt — sans jamais les afficher.
+
 ---
 
 ## 7. Données
@@ -447,7 +472,7 @@ qui voient ce dossier ; une proposition sans dossier est visible des avocats et 
 | 7c | Agent analyse de documents : type reconnu, résumé vérifié, clauses citées | F8 | ✅ |
 | 8 | Agent de tri du courrier : rattachement par indices, brouillons, tâches CRM, validation humaine | F9 | ✅ |
 | 9a | API REST FastAPI : jeton signé, droits appliqués par la base, OpenAPI documentée | F10, F12 | ✅ |
-| 9b | Démo Streamlit | F10 | |
+| 9b | Démo Streamlit : cinq écrans, qui ne parlent qu'à l'API | F10 | ✅ |
 | 10 | README, vidéo de démo, CI, ADR, résultats d'évaluation | — | |
 
 Chaque étape : tests verts, commit(s) propres, mise à jour de ce document.
