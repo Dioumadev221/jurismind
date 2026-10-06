@@ -168,6 +168,7 @@ src/jurismind/
 ├── rag/            # réponses citées, vérifications, abstention   (F2, F11)
 ├── extraction/     # schémas Pydantic + extraction guidée         (F5)
 ├── agents/         # 4 agents LangGraph + propositions            (F6-F9)
+├── demo/           # démonstration Streamlit, par l'API seule     (F10)
 ├── llm/            # Ollama ou OpenAI, selon la configuration
 └── evaluation/     # jeux de mesure et indicateurs                (F11)
 migrations/         # Alembic, dont les règles RLS écrites à la main
