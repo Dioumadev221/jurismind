@@ -62,10 +62,17 @@ jobs:
       - name: Types (mypy)
         run: uv run mypy src tests
 
+      # Créée avec le code du projet plutôt qu'avec `psql` : une dépendance de moins
+      # envers ce que l'image du runner contient.
       - name: Base du vieux logiciel
         run: |
-          PGPASSWORD=jurismind psql -h localhost -U jurismind -d jurismind \
-            -c "CREATE DATABASE legacy"
+          uv run python -c "
+          from sqlalchemy import create_engine, text
+          from jurismind.core.config import get_settings
+          adresse = get_settings().database_url.rsplit('/', 1)[0] + '/postgres'
+          with create_engine(adresse, isolation_level='AUTOCOMMIT').connect() as connexion:
+              connexion.execute(text('CREATE DATABASE legacy'))
+          "
 
       # Le corpus n'est pas versionné : il est reproductible à la graine près, ce qui rend
       # les tests qui lisent de vrais PDF aussi déterministes que les autres.
