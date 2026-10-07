@@ -54,6 +54,11 @@ jobs:
       - name: Installer les dépendances
         run: uv sync --locked
 
+      # L'OCR français est une fonctionnalité du projet, pas un détail d'environnement :
+      # sans Tesseract ici, la moitié du corpus ne serait jamais lue par la CI.
+      - name: Installer Tesseract et son pack français
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-fra
+
       - name: Style (ruff)
         run: |
           uv run ruff check src tests simulation

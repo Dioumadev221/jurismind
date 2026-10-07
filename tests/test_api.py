@@ -5,8 +5,10 @@ une session **au nom de l'utilisateur du jeton**, donc soumise au RLS : les test
 qu'une route ne rend rien d'un dossier fermé, et qu'elle répond 404 — pas 403 — pour ne pas
 révéler son existence.
 
-Les routes qui appellent un modèle ne sont pas exercées ici : on emprunte les chemins
-déterministes (« chronologie », « fiche »), mesurés ailleurs.
+Aucun test de ce fichier n'appelle de modèle, et la fixture `sans_ollama` le **garantit**
+au lieu de l'espérer : le vecteur de recherche est remplacé par une constante, et toute
+tentative d'appeler le modèle de rédaction échoue bruyamment. Sans cela, ces tests passent
+sur un poste où Ollama tourne et échouent en intégration continue, ce qui s'est produit.
 """
 
 from datetime import UTC, date, datetime
@@ -47,6 +49,43 @@ MOTS_DE_PASSE = {
     "c.sy@test": "sy-mot-de-test",
     "admin@test": "admin-mot-de-test",
 }
+
+
+# Modules qui tiennent une référence au modèle de rédaction : les agents l'importent
+# dans leur propre espace de noms, donc chacun doit être neutralisé séparément.
+MODULES_DE_REDACTION = (
+    "jurismind.rag.reponse",
+    "jurismind.agents.dossier",
+    "jurismind.agents.client",
+    "jurismind.agents.analyse",
+    "jurismind.agents.tri",
+)
+DIMENSION = 1024
+
+
+@pytest.fixture(autouse=True)
+def sans_ollama(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Coupe l'API de tout service de modèle, pour tous les tests de ce fichier.
+
+    La recherche calcule un vecteur de requête : sans ce remplacement, `/recherche`
+    appelle Ollama, et le test ne passe que sur un poste où il tourne. La qualité de la
+    recherche est mesurée ailleurs, par le jeu d'évaluation ; ce qu'on teste ici, ce sont
+    les droits et les codes de retour.
+    """
+    monkeypatch.setattr(
+        "jurismind.retrieval.recherche.modele_embeddings",
+        lambda: type(
+            "Embeddings",
+            (),
+            {"embed_query": staticmethod(lambda _: [1.0] + [0.0] * (DIMENSION - 1))},
+        )(),
+    )
+
+    def interdit(*args: object, **options: object) -> object:
+        raise AssertionError("un test d'API ne doit pas appeler le modèle de rédaction")
+
+    for module in MODULES_DE_REDACTION:
+        monkeypatch.setattr(f"{module}.modele_chat", interdit)
 
 
 @pytest.fixture
