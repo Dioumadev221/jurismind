@@ -323,31 +323,35 @@ Les routes qui appellent un modèle (`/questions`, `/*/assistant`, `/*/analyse`,
 convient à une démonstration, pas à une production, où elles passeraient par la file
 `taches` déjà présente dans le modèle de données.
 
-### 6.6 Démonstration (Streamlit)
+### 6.6 Interface web (F10)
 
 ```
-uv run uvicorn jurismind.api.main:app --port 8000     # un terminal
-uv run streamlit run src/jurismind/demo/app.py        # un autre
+uv run uvicorn jurismind.api.main:app --port 8000   # http://localhost:8000
 ```
 
-Cinq écrans : *Mes dossiers*, *Un client*, *Une question*, *Une pièce*, *Le courrier*.
+Six écrans, un par usage : *Dossiers*, *Clients*, *Questions*, *Pièces*, *Courrier*,
+*Conflits d'intérêts*. Bâtie sur une maquette dessinée dans Claude Design, dont la
+feuille de style — 12 Ko, 48 jetons, sans cadriciel — est reprise telle quelle
+(`design/` garde la maquette d'origine et le guide du système).
 
-La démo **ne touche jamais la base** : elle passe par l'API avec le jeton de
-l'utilisateur connecté. C'est ce qui rend l'isolation démontrable — une démo qui lirait
-PostgreSQL avec la clé propriétaire afficherait tout et ne prouverait rien. On se connecte
-avec deux avocats différents, et les listes ne se recouvrent pas.
+HTML, CSS et JavaScript simples, **sans cadriciel ni étape de compilation** : le projet
+reste un projet Python, et l'interface tient dans quatre fichiers lisibles d'un bout à
+l'autre. Elle est servie par l'API elle-même sous `/app` — une seule origine, donc pas
+de CORS à ouvrir et le jeton ne traverse jamais un autre domaine.
 
-Trois choses qu'elle doit rendre visibles, parce qu'elles sont le cœur du projet :
+Elle **ne parle qu'à l'API**, avec le jeton de l'utilisateur connecté, jamais à la base.
+C'est ce qui rend l'isolation démontrable : deux avocats ouvrent la même page et voient
+des listes différentes — 43 dossiers et 26, aucun en commun — parce que c'est PostgreSQL
+qui tranche.
 
-- une réponse **cite ses sources**, ou s'abstient — et l'abstention est présentée comme
-  un résultat, pas comme une panne ;
-- un point d'attention et une proposition **disent sur quoi ils se fondent** ;
-- rien ne se produit sans un clic humain sur « Valider », et la décision reste inscrite.
+Trois choses qu'elle rend visibles, parce qu'elles sont le cœur du projet :
 
-Les mots de passe de démonstration sont créés par
-`uv run python -m jurismind.api.comptes --demo`, qui les écrit dans `data/` — hors du
-dépôt — sans jamais les afficher.
+- l'écran *Questions* affiche le **résultat de chacun des quatre contrôles** à droite de
+  la réponse ; l'abstention y est présentée comme un résultat, pas comme une panne ;
+- chaque point d'attention et chaque proposition affichent **leur fondement** ;
+- rien ne se produit sans un clic sur « Valider », et la décision reste inscrite.
 
+La démonstration Streamlit (`demo/`) reste en place le temps que l'interface se stabilise.
 ---
 
 ## 7. Données

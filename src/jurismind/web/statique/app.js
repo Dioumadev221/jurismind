@@ -23,6 +23,8 @@ const etat = {
   clientRecherche: "Sine Services SA",
   clientCourant: null,
   question: "",
+  dossierPiece: null,
+  piece: null,
 };
 
 // --------------------------------------------------------------------------- outils
@@ -112,25 +114,10 @@ const ECRANS = {
   dossiers: { titre: "Dossiers", rendre: () => ecranDossiers() },
   clients: { titre: "Clients", rendre: () => ecranClients() },
   questions: { titre: "Questions", rendre: () => ecranQuestions() },
-  pieces: { titre: "Pièces", rendre: aVenir("Pièces") },
-  courrier: { titre: "Courrier", rendre: aVenir("Courrier") },
-  conflits: { titre: "Conflits d'intérêts", rendre: aVenir("Conflits d'intérêts") },
+  pieces: { titre: "Pièces", rendre: () => ecranPieces() },
+  courrier: { titre: "Courrier", rendre: () => ecranCourrier() },
+  conflits: { titre: "Conflits d'intérêts", rendre: () => ecranConflits() },
 };
-
-/** Placeholder honnête : l'écran existe dans le menu, pas encore dans le code. */
-function aVenir(nom) {
-  return () => {
-    $("#ecran").innerHTML = `
-      <div>
-        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:4px">En construction</div>
-        <h1 style="font-size:34px;margin:0">${texte(nom)}</h1>
-        <p style="margin:10px 0 0;font-size:14px;color:var(--color-neutral-700);max-width:60ch">
-          Cet écran n'est pas encore câblé sur l'API. La fonctionnalité existe et se pilote
-          en ligne de commande ; seule l'interface reste à construire.
-        </p>
-      </div>`;
-  };
-}
 
 /** Le bandeau de titre, identique sur tous les écrans. */
 function enTete(surtitre, titre, phrase) {
@@ -154,6 +141,13 @@ function dateCourte(valeur) {
   if (!valeur) return "—";
   const [annee, mois, jour] = String(valeur).slice(0, 10).split("-");
   return annee ? `${jour}/${mois}` : String(valeur);
+}
+
+/** 2026-09-17 → « 17/09/2026 ». */
+function dateLongue(valeur) {
+  if (!valeur) return "sans date";
+  const [annee, mois, jour] = String(valeur).slice(0, 10).split("-");
+  return annee ? `${jour}/${mois}/${annee}` : String(valeur);
 }
 
 function encadreErreur(erreur) {

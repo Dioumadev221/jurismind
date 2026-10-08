@@ -508,6 +508,62 @@ def test_un_administrateur_ne_controle_pas_les_conflits(api: httpx.Client, compt
     assert api.get("/conformite/balayage", headers=entete).status_code == 403
 
 
+def test_un_avocat_valide_une_extraction(api: httpx.Client, comptes: Cabinet) -> None:
+    """Une extraction est une proposition ; cette route est l'endroit où un humain tranche."""
+    with Session(get_engine()) as session, session.begin():
+        document = session.scalars(select(Document)).one()
+        session.add(
+            Extraction(
+                document_id=document.id,
+                schema="Jugement",
+                donnees={"montant_alloue_fcfa": 0},
+                champs_douteux=["montant_alloue_fcfa"],
+                statut=StatutExtraction.PROPOSEE,
+            )
+        )
+        identifiant = document.id
+
+    corps = api.post(
+        f"/documents/{identifiant}/extraction/validation",
+        headers=connecter(api, "a.fall@test"),
+        json={"corrections": {"montant_alloue_fcfa": 13750000}},
+    ).json()
+    assert corps["relue"] is True
+    assert corps["donnees"]["montant_alloue_fcfa"] == 13750000
+    # Un champ corrigé cesse d'être douteux : c'est l'avocat qui a tranché.
+    assert corps["champs_douteux"] == []
+
+    with Session(get_engine()) as session:
+        extraction = session.scalars(select(Extraction)).one()
+    assert extraction.statut is StatutExtraction.VALIDEE
+    assert extraction.valide_par_id == comptes.fall
+    assert extraction.valide_le is not None
+
+
+def test_valider_sans_extraction_le_dit(api: httpx.Client, comptes: Cabinet) -> None:
+    with Session(get_engine()) as session:
+        document = session.scalars(select(Document)).one()
+        identifiant = document.id
+    reponse = api.post(
+        f"/documents/{identifiant}/extraction/validation",
+        headers=connecter(api, "a.fall@test"),
+        json={},
+    )
+    assert reponse.status_code == 404
+
+
+def test_on_ne_valide_pas_lextraction_dune_piece_dautrui(api: httpx.Client, comptes: Cabinet) -> None:
+    with Session(get_engine()) as session:
+        document = session.scalars(select(Document)).one()
+        identifiant = document.id
+    reponse = api.post(
+        f"/documents/{identifiant}/extraction/validation",
+        headers=connecter(api, "m.dieng@test"),
+        json={},
+    )
+    assert reponse.status_code == 404
+
+
 # --------------------------------------------------------------------- interface web
 
 

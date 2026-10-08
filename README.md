@@ -351,6 +351,7 @@ is in the ADRs, including the cases that still fail.
 | `POST` | `/clients/{id}/assistant` | Client-intelligence agent |
 | `GET` | `/documents/{id}`, `/{id}/texte`, `/{id}/extraction` | Exhibit, extracted text, structured values |
 | `POST` | `/documents/{id}/analyse` | Document-analysis agent |
+| `POST` | `/documents/{id}/extraction/validation` | A lawyer approves — or corrects — the extracted values |
 | `POST` | `/courrier/tri` | Triage inbound mail into proposals |
 | `GET` | `/propositions` | Pending decisions, most confident first |
 | `POST` | `/propositions/{id}/validation`, `/rejet`, `/application` | Approve, reject, or replay |
@@ -392,9 +393,10 @@ uv run python -m jurismind.ingestion
 # 5 · Demo accounts — passwords written to data/, outside the repository
 uv run python -m jurismind.api.comptes --demo
 
-# 6 · API and demo
-uv run uvicorn jurismind.api.main:app --port 8000   # http://localhost:8000/docs
-uv run streamlit run src/jurismind/demo/app.py      # http://localhost:8501
+# 6 · API and web interface
+uv run uvicorn jurismind.api.main:app --port 8000
+# http://localhost:8000      the interface
+# http://localhost:8000/docs the OpenAPI documentation
 ```
 
 No real data ships with this repository. The corpus is generated, but it imitates a real
@@ -426,7 +428,8 @@ src/jurismind/
 ├── extraction/     Pydantic schemas, guided-JSON extraction
 ├── agents/         four LangGraph agents and the proposal lifecycle
 ├── conformite/     conflict-of-interest checks
-├── demo/           Streamlit demo — talks to the API only, never to the database
+├── web/            web interface — HTML, CSS and plain JS, served by the API
+├── demo/           earlier Streamlit demo, kept while the interface settles
 └── evaluation/     measurement harnesses
 migrations/         Alembic, including hand-written RLS policies
 simulation/         legacy database, fake CRM, document generator

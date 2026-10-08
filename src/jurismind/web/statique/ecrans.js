@@ -349,3 +349,246 @@ function blocControles(reponse) {
       </p>
     </div>`;
 }
+
+// --------------------------------------------------------------------------- pièces
+
+async function ecranPieces() {
+  const dossiers = etat.dossiers.length ? etat.dossiers : await api("/dossiers");
+  etat.dossiers = dossiers;
+  if (!dossiers.length) {
+    $("#ecran").innerHTML = enTete("Pièces", "Une pièce", "Aucun dossier n'est ouvert à votre compte.");
+    return;
+  }
+  const reference = etat.dossierPiece || dossiers[0].reference;
+  etat.dossierPiece = reference;
+  const pieces = await api(`/dossiers/${encodeURIComponent(reference)}/documents`);
+
+  $("#ecran").innerHTML = `
+    ${enTete("Traitement documentaire", "Une pièce", "Le type reconnu appartient à une liste fermée de 28 catégories ; chaque point relevé est accompagné de la phrase du document qui le porte.")}
+    <div class="blueprint" style="padding:18px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <label style="flex:1;min-width:240px">
+        <span style="display:block;font-size:12px;color:var(--color-neutral-700);margin-bottom:5px">Dossier</span>
+        <select id="choix-dossier-piece" class="input" style="width:100%;box-sizing:border-box">
+          ${dossiers.map((d) => `<option value="${texte(d.reference)}"${d.reference === reference ? " selected" : ""}>${texte(d.reference)} — ${texte(d.intitule.slice(0, 48))}</option>`).join("")}
+        </select>
+      </label>
+      <label style="flex:2;min-width:260px">
+        <span style="display:block;font-size:12px;color:var(--color-neutral-700);margin-bottom:5px">Pièce</span>
+        <select id="choix-piece" class="input" style="width:100%;box-sizing:border-box">
+          ${pieces.map((p) => `<option value="${p.id}">${p.id} · ${texte(p.titre)}</option>`).join("") || "<option value=''>aucune pièce lue</option>"}
+        </select>
+      </label>
+    </div>
+    <div id="fiche-piece"></div>`;
+
+  $("#choix-dossier-piece").addEventListener("change", (e) => {
+    etat.dossierPiece = e.target.value;
+    etat.piece = null;
+    ecranPieces().catch(montrerErreur);
+  });
+  $("#choix-piece").addEventListener("change", (e) => {
+    etat.piece = Number(e.target.value);
+    chargerPiece().catch((echec) => ($("#fiche-piece").innerHTML = encadreErreur(echec)));
+  });
+
+  if (pieces.length) {
+    etat.piece = pieces.some((p) => p.id === etat.piece) ? etat.piece : pieces[0].id;
+    $("#choix-piece").value = String(etat.piece);
+    await chargerPiece();
+  }
+}
+
+async function chargerPiece() {
+  const zone = $("#fiche-piece");
+  zone.innerHTML = attente("Chargement de la pièce…");
+  const identifiant = etat.piece;
+
+  const [fiche, lecture] = await Promise.all([
+    api(`/documents/${identifiant}`),
+    api(`/documents/${identifiant}/texte`),
+  ]);
+  let extraction = null;
+  try {
+    extraction = await api(`/documents/${identifiant}/extraction`);
+  } catch {
+    /* une pièce sans extraction reste consultable */
+  }
+  $("#fil-ariane").textContent = `Pièces · ${fiche.titre}`;
+
+  zone.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:13px">
+            <span style="font-family:var(--font-heading);font-weight:600;font-size:15px;color:var(--color-accent-700)">${texte(fiche.dossier)}</span>
+            <span style="color:var(--color-neutral-600)">/</span><span style="color:var(--color-neutral-700)">Pièce ${fiche.id}</span>
+          </div>
+          <h2 style="font-family:var(--font-heading);font-size:28px;margin:0">${texte(fiche.titre)}</h2>
+          <p style="margin:6px 0 0;font-size:13px;color:var(--color-neutral-700)">
+            ${texte(dateLongue(fiche.date_document))} · ${texte((fiche.format || "").toUpperCase())} · ${lecture.caracteres.toLocaleString("fr-FR")} caractères
+          </p>
+        </div>
+        <button id="bouton-analyse" class="btn btn-primary blueprint" style="white-space:nowrap;flex:none">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>Analyser la pièce
+        </button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));border:1px solid var(--color-divider)">
+        ${etiquette("Saisi par le cabinet", fiche.categorie_source || "—")}
+        ${etiquette("Reconnu par JurisMind", fiche.categorie_detectee || "non analysé", fiche.categorie_detectee && fiche.categorie_detectee !== fiche.categorie_source)}
+        ${etiquette("Lecture", fiche.lu_par_ocr ? "OCR · français" : "texte direct")}
+        ${etiquette("Extraction", extraction ? (extraction.relue ? "relue et validée" : "proposée · non relue") : "aucune", false, true)}
+      </div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+          <div style="display:flex;gap:4px;border-bottom:1px solid var(--color-divider)">
+            <button data-onglet="extraction" style="border:0;background:transparent;font:inherit;font-size:14px;padding:9px 12px;cursor:pointer;margin-bottom:-1px;border-bottom:2px solid var(--color-accent)">Valeurs extraites</button>
+            <button data-onglet="analyse" style="border:0;background:transparent;font:inherit;font-size:14px;padding:9px 12px;cursor:pointer;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--color-neutral-700)">Analyse</button>
+          </div>
+          <div id="onglet-extraction">${blocExtraction(extraction)}</div>
+          <div id="onglet-analyse" hidden>
+            <p style="margin:0;font-size:13px;color:var(--color-neutral-700)">
+              L'agent reconnaît le type de l'acte, le résume, et relève ce qui engage. Compter 30 à 90 secondes.
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-neutral-700)">
+            <span>Texte lu${lecture.lu_par_ocr ? " · par OCR" : ""}</span>
+            <span>${lecture.caracteres.toLocaleString("fr-FR")} caractères</span>
+          </div>
+          <div class="blueprint" style="padding:22px 26px;font-family:Georgia,serif;font-size:13px;line-height:1.7;color:var(--color-neutral-900);max-height:460px;overflow:auto;white-space:pre-wrap">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>${texte(lecture.texte || "Cette pièce n'a pas encore été lue.")}
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  $$("[data-onglet]").forEach((bouton) =>
+    bouton.addEventListener("click", () => {
+      const cible = bouton.dataset.onglet;
+      $$("[data-onglet]").forEach((autre) => {
+        const actif = autre.dataset.onglet === cible;
+        autre.style.borderBottomColor = actif ? "var(--color-accent)" : "transparent";
+        autre.style.color = actif ? "var(--color-text)" : "var(--color-neutral-700)";
+      });
+      $("#onglet-extraction").hidden = cible !== "extraction";
+      $("#onglet-analyse").hidden = cible !== "analyse";
+    }),
+  );
+  $("#bouton-analyse").addEventListener("click", () => analyserPiece(identifiant));
+  const validation = $("#bouton-valider-extraction");
+  if (validation) validation.addEventListener("click", () => validerExtraction(identifiant));
+}
+
+function etiquette(libelle, valeur, alerte = false, accent = false) {
+  return `<div style="padding:12px 16px;border-right:1px solid var(--color-divider)">
+      <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)">${texte(libelle)}</div>
+      <div style="margin-top:3px;font-weight:500;${accent ? "color:var(--color-accent-700);" : ""}">${texte(valeur)}${alerte ? ' <span class="tag tag-outline" style="margin-left:6px">à vérifier</span>' : ""}</div>
+    </div>`;
+}
+
+function blocExtraction(extraction) {
+  if (!extraction) {
+    return `<p style="margin:0;font-size:14px;color:var(--color-neutral-700)">
+        Aucune valeur n'a encore été extraite de cette pièce.
+        Lancer <code>python -m jurismind.extraction</code> pour en proposer.
+      </p>`;
+  }
+  const champs = Object.entries(extraction.donnees);
+  const douteux = new Set(extraction.champs_douteux);
+  return `
+    <div style="font-size:12px;color:var(--color-neutral-700)">
+      Schéma <strong style="color:var(--color-text)">${texte(extraction.schema)}</strong> ·
+      ${champs.length} champ(s) · ${douteux.size} à relire
+    </div>
+    <div style="border:1px solid var(--color-divider);margin-top:10px">
+      ${champs
+        .map(([champ, valeur]) => {
+          const aRelire = douteux.has(champ);
+          return `<div style="display:grid;grid-template-columns:170px minmax(0,1fr) auto;gap:12px;padding:10px 14px;border-bottom:1px solid var(--color-divider);align-items:center;${aRelire ? "background:var(--color-accent-100);" : ""}">
+              <span style="font-size:12px;color:var(--color-neutral-700);font-family:ui-monospace,monospace">${texte(champ)}</span>
+              <span style="font-size:14px;font-weight:500">${texte(valeur)}</span>
+              <span class="${aRelire ? "tag tag-outline" : "tag tag-neutral"}">${aRelire ? "à relire" : "retrouvé"}</span>
+            </div>`;
+        })
+        .join("")}
+    </div>
+    ${
+      douteux.size
+        ? `<div class="blueprint" style="padding:12px 14px;font-size:13px;margin-top:10px">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <strong>${texte([...douteux].join(", "))}</strong> ne se retrouve pas tel quel dans le document. À relire avant tout usage.
+          </div>`
+        : ""
+    }
+    ${
+      extraction.relue
+        ? `<p style="margin:10px 0 0;font-size:13px"><span class="tag tag-accent">Validée</span> Cette version fait foi : une nouvelle campagne d'extraction ne l'écrasera pas.</p>`
+        : `<div style="display:flex;gap:8px;margin-top:12px">
+            <button id="bouton-valider-extraction" class="btn btn-primary blueprint" style="flex:none">
+              <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>Valider l'extraction
+            </button>
+          </div>`
+    }`;
+}
+
+async function validerExtraction(identifiant) {
+  try {
+    await api(`/documents/${identifiant}/extraction/validation`, {
+      method: "POST",
+      body: JSON.stringify({ corrections: {} }),
+    });
+    await chargerPiece();
+  } catch (echec) {
+    $("#onglet-extraction").innerHTML = encadreErreur(echec);
+  }
+}
+
+async function analyserPiece(identifiant) {
+  const zone = $("#onglet-analyse");
+  $$("[data-onglet]").forEach((b) => {
+    const actif = b.dataset.onglet === "analyse";
+    b.style.borderBottomColor = actif ? "var(--color-accent)" : "transparent";
+    b.style.color = actif ? "var(--color-text)" : "var(--color-neutral-700)";
+  });
+  $("#onglet-extraction").hidden = true;
+  zone.hidden = false;
+  zone.innerHTML = attente("L'agent lit la pièce… 30 à 90 secondes sur processeur.");
+  try {
+    const reponse = await api(`/documents/${identifiant}/analyse`, {
+      method: "POST",
+      body: JSON.stringify({ demande: "" }),
+    });
+    const points = reponse.donnees.points_cles || [];
+    zone.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-neutral-700);flex-wrap:wrap">
+          <span class="tag tag-accent">${texte(reponse.donnees.categorie_detectee || "non déterminé")}</span>
+          ${reponse.donnees.desaccord_categorie ? `<span class="tag tag-outline">désaccord avec la saisie du cabinet</span>` : ""}
+          <span>${reponse.secondes.toFixed(0)} s</span>
+        </div>
+        ${reponse.donnees.resume ? `<p style="margin:0;font-size:14px;line-height:1.6">${texte(reponse.donnees.resume)}</p>` : `<p style="margin:0;font-size:13px;color:var(--color-neutral-700)">Le résumé a été écarté par les vérifications : il avançait un chiffre absent du document.</p>`}
+        <div>
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:6px">Ce qui engage</div>
+          ${
+            points.length
+              ? points
+                  .map(
+                    (p) => `<div style="border-left:2px solid var(--color-accent);padding:8px 12px;font-size:13px;background:var(--color-accent-100);margin-bottom:8px">
+                      <div style="font-weight:500;margin-bottom:3px">${texte(p.titre)}</div>
+                      « ${texte(p.citation)} »
+                    </div>`,
+                  )
+                  .join("")
+              : `<p style="margin:0;font-size:13px;color:var(--color-neutral-700)">Rien de relevé — et c'est une information : aucune phrase du document n'a pu être citée.</p>`
+          }
+        </div>
+      </div>`;
+  } catch (echec) {
+    zone.innerHTML = encadreErreur(echec);
+  }
+}

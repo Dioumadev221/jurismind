@@ -175,6 +175,19 @@ class DocumentPublic(BaseModel):
     caracteres: int = 0
 
 
+class DemandeValidationExtraction(BaseModel):
+    """Ce qu'un avocat renvoie en relisant une extraction."""
+
+    corrections: dict[str, Any] = Field(
+        default_factory=dict,
+        description=(
+            "Valeurs corrigées, par nom de champ. Un champ corrigé n'est plus douteux ; "
+            "les autres sont conservés tels que l'IA les a proposés."
+        ),
+        examples=[{"montant_alloue_fcfa": 13750000}],
+    )
+
+
 # --------------------------------------------------------------------------- courrier (F9)
 
 
