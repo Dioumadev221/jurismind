@@ -20,6 +20,9 @@ const etat = {
   dossiers: [],
   ecran: "dossiers",
   filtre: "Tous",
+  clientRecherche: "Sine Services SA",
+  clientCourant: null,
+  question: "",
 };
 
 // --------------------------------------------------------------------------- outils
@@ -106,9 +109,9 @@ function initiales(nomComplet) {
 // --------------------------------------------------------------------------- écrans
 
 const ECRANS = {
-  dossiers: { titre: "Dossiers", rendre: ecranDossiers },
-  clients: { titre: "Clients", rendre: aVenir("Clients") },
-  questions: { titre: "Questions", rendre: aVenir("Questions") },
+  dossiers: { titre: "Dossiers", rendre: () => ecranDossiers() },
+  clients: { titre: "Clients", rendre: () => ecranClients() },
+  questions: { titre: "Questions", rendre: () => ecranQuestions() },
   pieces: { titre: "Pièces", rendre: aVenir("Pièces") },
   courrier: { titre: "Courrier", rendre: aVenir("Courrier") },
   conflits: { titre: "Conflits d'intérêts", rendre: aVenir("Conflits d'intérêts") },
@@ -129,17 +132,39 @@ function aVenir(nom) {
   };
 }
 
-function patienter(message) {
-  $("#ecran").innerHTML =
-    `<p style="font-size:14px;color:var(--color-neutral-700)">${texte(message)}</p>`;
+/** Le bandeau de titre, identique sur tous les écrans. */
+function enTete(surtitre, titre, phrase) {
+  return `<div>
+      <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:4px">${texte(surtitre)}</div>
+      <h1 style="font-size:34px;margin:0">${texte(titre)}</h1>
+      ${phrase ? `<p style="margin:6px 0 0;font-size:13px;color:var(--color-neutral-700);max-width:760px">${texte(phrase)}</p>` : ""}
+    </div>`;
 }
 
-function montrerErreur(erreur) {
-  $("#ecran").innerHTML = `
-    <div class="card" style="padding:18px;border-color:var(--color-accent-300);background:var(--color-accent-100)">
+function attente(message) {
+  return `<p style="font-size:14px;color:var(--color-neutral-700)">${texte(message)}</p>`;
+}
+
+function patienter(message) {
+  $("#ecran").innerHTML = attente(message);
+}
+
+/** 2026-09-19 → « 19/09 » : la colonne reste étroite et la lecture rapide. */
+function dateCourte(valeur) {
+  if (!valeur) return "—";
+  const [annee, mois, jour] = String(valeur).slice(0, 10).split("-");
+  return annee ? `${jour}/${mois}` : String(valeur);
+}
+
+function encadreErreur(erreur) {
+  return `<div class="card" style="padding:18px;border-color:var(--color-accent-300);background:var(--color-accent-100)">
       <div style="font-family:var(--font-heading);font-weight:600;font-size:17px;margin-bottom:4px">Impossible d'afficher cet écran</div>
       <div style="font-size:13px;color:var(--color-accent-900)">${texte(erreur.detail || erreur.message)}</div>
     </div>`;
+}
+
+function montrerErreur(erreur) {
+  $("#ecran").innerHTML = encadreErreur(erreur);
 }
 
 const MATIERES = {

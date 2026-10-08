@@ -84,12 +84,27 @@ class Citation(BaseModel):
     similarite: float | None = None
 
 
+class Controle(BaseModel):
+    """Un des quatre contrôles appliqués avant d'afficher une réponse (ADR 0003)."""
+
+    nom: str = Field(description="sources, ignorance, references ou ancrage")
+    libelle: str = Field(description="Ce que le contrôle vérifie, en clair")
+    reussi: bool
+
+
 class ReponseCitee(BaseModel):
     texte: str
     citations: list[Citation] = Field(description="Sources réellement utilisées, vérifiées par le code")
     abstention: bool = Field(description="Vrai quand les pièces ne permettent pas de répondre")
     secondes: float
     sources_examinees: int
+    controles: list[Controle] = Field(
+        default_factory=list,
+        description=(
+            "Résultat de chaque contrôle. Vide quand aucun n'a pu s'exercer : pas d'extrait "
+            "à lire, ou réponse du modèle illisible. Un seul échec entraîne l'abstention."
+        ),
+    )
 
 
 # --------------------------------------------------------------------------- agents (F6 à F9)

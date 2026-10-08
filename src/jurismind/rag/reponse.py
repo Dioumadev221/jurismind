@@ -66,6 +66,16 @@ class Citation:
     similarite: float | None = None
 
 
+# Les quatre contrôles appliqués avant d'afficher une réponse, et ce qu'ils disent à
+# l'avocat. Un seul en échec suffit pour que JurisMind s'abstienne (ADR 0003).
+CONTROLES = {
+    "sources": "Les sources citées existent parmi celles fournies",
+    "ignorance": "La réponse n'avoue pas l'ignorance",
+    "references": "Les références nommées dans la question figurent dans les sources",
+    "ancrage": "Citation retrouvée mot pour mot, ou chaque chiffre ancré",
+}
+
+
 @dataclass
 class Reponse:
     texte: str
@@ -73,6 +83,9 @@ class Reponse:
     abstention: bool = False
     secondes: float = 0.0
     sources_examinees: int = 0
+    # Résultat de chaque contrôle, par son nom. Vide quand aucun n'a pu s'exercer :
+    # pas d'extrait à lire, ou réponse du modèle illisible.
+    controles: dict[str, bool] = field(default_factory=dict)
     # Extraits fournis au modèle : utiles pour l'audit et pour mesurer la recherche.
     extraits_examines: list[int] = field(default_factory=list)
 
@@ -160,30 +173,30 @@ def repondre(
     citations = _citations_valides(donnees.get("sources"), resultats)
     sources_citees = "\n".join(resultats[citation.numero - 1].extrait.contenu for citation in citations)
 
-    refusee = (
-        not texte
-        or not citations
+    controles = {
+        "sources": bool(texte) and bool(citations),
         # Un aveu d'ignorance reste une abstention, même accompagné d'une citation.
-        or avoue_ignorance(texte)
+        "ignorance": not avoue_ignorance(texte),
         # La référence demandée doit figurer dans la source citée, sinon le modèle a lu
         # un autre document (constaté : le montant d'une facture voisine).
-        or not references_respectees(question, sources_citees)
+        "references": references_respectees(question, sources_citees),
         # La réponse doit être ancrée dans la source : soit par la phrase recopiée, soit
         # parce que tous les chiffres avancés s'y retrouvent. Dernier rempart contre une
         # réponse venue de la culture générale du modèle.
-        or not (
-            citation_verifiee(str(donnees.get("citation", "")), sources_citees)
-            or chiffres_ancres(texte, sources_citees)
-        )
-    )
+        "ancrage": citation_verifiee(str(donnees.get("citation", "")), sources_citees)
+        or chiffres_ancres(texte, sources_citees),
+    }
+    refusee = not all(controles.values())
     if refusee:
         if texte:
-            logger.info("Réponse écartée par les vérifications : %r", texte[:120])
+            echoues = [nom for nom, reussi in controles.items() if not reussi]
+            logger.info("Réponse écartée (%s) : %r", ", ".join(echoues), texte[:120])
         return Reponse(
             texte=PHRASE_ABSTENTION,
             abstention=True,
             secondes=time.perf_counter() - depart,
             sources_examinees=len(resultats),
+            controles=controles,
             extraits_examines=[r.extrait.id for r in resultats],
         )
 
@@ -192,5 +205,6 @@ def repondre(
         citations=citations,
         secondes=time.perf_counter() - depart,
         sources_examinees=len(resultats),
+        controles=controles,
         extraits_examines=[r.extrait.id for r in resultats],
     )

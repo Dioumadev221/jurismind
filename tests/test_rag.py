@@ -305,3 +305,66 @@ def test_une_citation_legerement_reformulee_reste_acceptee(
         reponse = repondre(session, "Quel délai ?")
 
     assert not reponse.abstention
+
+
+# --------------------------------------------------------------------- détail des contrôles
+
+
+def test_une_reponse_acceptee_a_ses_quatre_controles_au_vert(
+    monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, extrait_dieng: int
+) -> None:
+    brancher(
+        monkeypatch,
+        ModeleSimule(
+            {
+                "reponse": "Quinze jours.",
+                "sources": [1],
+                "citation": "un délai de quinze jours pour former opposition",
+            }
+        ),
+    )
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Quel délai pour former opposition ?")
+    assert not reponse.abstention
+    assert reponse.controles == {
+        "sources": True,
+        "ignorance": True,
+        "references": True,
+        "ancrage": True,
+    }
+
+
+def test_une_reponse_sans_citation_echoue_au_controle_des_sources(
+    monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, extrait_dieng: int
+) -> None:
+    """L'interface doit pouvoir dire lequel des quatre contrôles a bloqué la réponse."""
+    brancher(monkeypatch, ModeleSimule({"reponse": "Trente jours.", "sources": [], "citation": ""}))
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Quel délai ?")
+    assert reponse.abstention
+    assert reponse.controles["sources"] is False
+
+
+def test_un_chiffre_invente_echoue_au_controle_dancrage(
+    monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, extrait_dieng: int
+) -> None:
+    brancher(
+        monkeypatch,
+        ModeleSimule(
+            {"reponse": "Trente jours.", "sources": [1], "citation": "une phrase inventée de toutes pièces"}
+        ),
+    )
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Quel délai ?")
+    assert reponse.abstention
+    assert reponse.controles["sources"] is True  # la source citée existe bien
+    assert reponse.controles["ancrage"] is False  # mais rien n'y ancre « trente »
+
+
+def test_sans_extrait_aucun_controle_ne_sexerce(monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet) -> None:
+    """Vide, et non « tout faux » : il n'y avait rien à vérifier."""
+    brancher(monkeypatch, ModeleInterdit())
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Une question sans pièce")
+    assert reponse.abstention
+    assert reponse.controles == {}

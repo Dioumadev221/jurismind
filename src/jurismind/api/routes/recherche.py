@@ -10,6 +10,7 @@ from fastapi import APIRouter
 
 from jurismind.api.schemas import (
     Citation,
+    Controle,
     DemandeQuestion,
     DemandeRecherche,
     Filtre,
@@ -18,6 +19,7 @@ from jurismind.api.schemas import (
 )
 from jurismind.api.securite import SessionRequise
 from jurismind.rag import repondre
+from jurismind.rag.reponse import CONTROLES
 from jurismind.retrieval import Filtres, rechercher
 
 routeur = APIRouter(tags=["Recherche"])
@@ -79,4 +81,8 @@ def question(demande: DemandeQuestion, session: SessionRequise) -> ReponseCitee:
         abstention=reponse.abstention,
         secondes=reponse.secondes,
         sources_examinees=reponse.sources_examinees,
+        controles=[
+            Controle(nom=nom, libelle=CONTROLES[nom], reussi=reussi)
+            for nom, reussi in reponse.controles.items()
+        ],
     )
