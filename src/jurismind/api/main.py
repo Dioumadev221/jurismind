@@ -17,6 +17,8 @@ import logging
 from typing import Any
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -32,6 +34,7 @@ from jurismind.api.routes import (
 from jurismind.api.schemas import Sante
 from jurismind.core.config import get_settings
 from jurismind.db.session import get_engine
+from jurismind.web import STATIQUE
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +96,17 @@ for routeur in (
     conformite.routeur,
 ):
     app.include_router(routeur)
+
+
+# L'interface est servie par l'API elle-même : une seule origine, donc pas de CORS à
+# ouvrir, et le jeton ne traverse jamais un autre domaine.
+app.mount("/app", StaticFiles(directory=STATIQUE, html=True), name="interface")
+
+
+@app.get("/", include_in_schema=False)
+def accueil() -> RedirectResponse:
+    """La racine mène à l'interface ; la documentation reste sur /docs."""
+    return RedirectResponse(url="/app/")
 
 
 @app.get("/sante", response_model=Sante, tags=["Technique"], summary="État du service")

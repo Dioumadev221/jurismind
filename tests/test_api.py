@@ -508,6 +508,33 @@ def test_un_administrateur_ne_controle_pas_les_conflits(api: httpx.Client, compt
     assert api.get("/conformite/balayage", headers=entete).status_code == 403
 
 
+# --------------------------------------------------------------------- interface web
+
+
+def test_la_racine_mene_a_linterface(api: httpx.Client) -> None:
+    reponse = api.get("/", follow_redirects=False)
+    assert reponse.status_code in (301, 302, 307, 308)
+    assert reponse.headers["location"] == "/app/"
+
+
+def test_linterface_est_servie_par_lapi(api: httpx.Client) -> None:
+    """Une seule origine : le jeton ne traverse jamais un autre domaine, donc pas de CORS."""
+    page = api.get("/app/")
+    assert page.status_code == 200
+    assert "JurisMind" in page.text
+    assert api.get("/app/styles.css").status_code == 200
+    assert api.get("/app/app.js").status_code == 200
+
+
+def test_linterface_ne_laisse_filtrer_aucun_secret(api: httpx.Client) -> None:
+    """Les fichiers servis sont publics : ni mot de passe, ni clé, ni chaîne de connexion."""
+    interdits = ("postgresql://", "api_secret", "jurismind_app", "crm-dev-key")
+    for fichier in ("/app/index.html", "/app/app.js", "/app/styles.css"):
+        contenu = api.get(fichier).text.lower()
+        for secret in interdits:
+            assert secret not in contenu, f"{secret} exposé dans {fichier}"
+
+
 # --------------------------------------------------------------------- documentation
 
 
