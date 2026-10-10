@@ -328,13 +328,28 @@ convient à une démonstration, pas à une production, où elles passeraient par
 uv run uvicorn jurismind.api.main:app --port 8000   # http://localhost:8000
 ```
 
-Six écrans, un par usage : *Dossiers*, *Clients*, *Questions*, *Pièces*, *Courrier*,
-*Conflits d'intérêts*. Bâtie sur une maquette dessinée dans Claude Design, dont la
-feuille de style — 12 Ko, 48 jetons, sans cadriciel — est reprise telle quelle
-(`design/` garde la maquette d'origine et le guide du système).
+Sept écrans de menu — *Dossiers*, *Échéances*, *Clients*, *Questions*, *Pièces*,
+*Courrier*, *Conflits d'intérêts* — plus un huitième qui n'a pas d'entrée de menu
+parce qu'on y entre en ouvrant une ligne : **l'écran du dossier**. Bâtie sur une
+maquette dessinée dans Claude Design, dont la feuille de style — 12 Ko, 48 jetons,
+sans cadriciel — est reprise telle quelle (`design/` garde la maquette d'origine et
+le guide du système).
+
+**L'écran du dossier est le centre de gravité.** Un avocat ne travaille pas sur « un
+document » ni sur « un client » : il travaille sur une affaire. L'écran réunit donc ce
+qui, pris séparément, ne veut rien dire — l'identité du dossier et son numéro de rôle,
+les parties avec leurs adresses, **l'équipe qui y a accès** (la table que lisent les
+règles RLS, montrée en clair), les délais qui courent, puis cinq onglets : chronologie,
+pièces, échanges, conflits, et l'agent d'assistance. Tout y converge, et on en ressort
+vers une pièce ou vers le client sans perdre le fil.
+
+**L'échéancier** répond à l'autre question, celle qu'aucune fiche de dossier ne pose :
+qu'est-ce qui tombe cette semaine, tous dossiers confondus ? Les dates sont reconstituées
+depuis les actes extraits, relus ou non — mieux vaut une alerte à vérifier qu'un délai
+manqué — et le RLS fait que chacun ne voit tomber que ses propres dossiers.
 
 HTML, CSS et JavaScript simples, **sans cadriciel ni étape de compilation** : le projet
-reste un projet Python, et l'interface tient dans quatre fichiers lisibles d'un bout à
+reste un projet Python, et l'interface tient dans cinq fichiers lisibles d'un bout à
 l'autre. Elle est servie par l'API elle-même sous `/app` — une seule origine, donc pas
 de CORS à ouvrir et le jeton ne traverse jamais un autre domaine.
 
@@ -475,7 +490,8 @@ qui voient ce dossier ; une proposition sans dossier est visible des avocats et 
 | 7c | Agent analyse de documents : type reconnu, résumé vérifié, clauses citées | F8 | ✅ |
 | 8 | Agent de tri du courrier : rattachement par indices, brouillons, tâches CRM, validation humaine | F9 | ✅ |
 | 9a | API REST FastAPI : jeton signé, droits appliqués par la base, OpenAPI documentée | F10, F12 | ✅ |
-| 9b | Interface web : six écrans issus d'une maquette, qui ne parlent qu'à l'API | F10 | ✅ |
+| 9b | Interface web : huit écrans issus d'une maquette, qui ne parlent qu'à l'API | F10 | ✅ |
+| 9c | Écran du dossier (parties, équipe, délais, 5 onglets) et échéancier inter-dossiers | F7, F11 | ✅ |
 | 10 | README, CI GitHub Actions, licence, ADR et résultats publiés | — | ✅ (reste la vidéo) |
 
 Chaque étape : tests verts, commit(s) propres, mise à jour de ce document.

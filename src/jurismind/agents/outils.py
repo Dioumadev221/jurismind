@@ -64,10 +64,23 @@ def fiche_dossier(session: Session, dossier_id: int) -> dict[str, Any] | None:
     echanges = session.scalar(
         select(func.count()).select_from(Communication).where(Communication.dossier_id == dossier_id)
     )
+    # Qui, dans le cabinet, a accès à ce dossier. C'est l'isolation rendue lisible : la table
+    # `acces_dossiers` est la source de toutes les règles RLS, et la voici en clair.
+    equipe = session.execute(
+        select(Utilisateur.nom_complet, Utilisateur.role, AccesDossier.est_responsable)
+        .join(AccesDossier, AccesDossier.utilisateur_id == Utilisateur.id)
+        .where(AccesDossier.dossier_id == dossier_id)
+        .order_by(AccesDossier.est_responsable.desc(), Utilisateur.nom_complet)
+    ).all()
     return {
+        "id": dossier.id,
         "reference": dossier.reference,
         "intitule": dossier.intitule,
         "client": client.nom if client else None,
+        "client_id": dossier.client_id,
+        "equipe": [
+            {"nom": nom, "role": str(role), "responsable": responsable} for nom, role, responsable in equipe
+        ],
         "type": str(dossier.type),
         "matiere": dossier.matiere,
         "statut": str(dossier.statut),
@@ -77,7 +90,11 @@ def fiche_dossier(session: Session, dossier_id: int) -> dict[str, Any] | None:
         "numero_rg": dossier.numero_rg,
         "enjeu_fcfa": dossier.enjeu_fcfa,
         "confidentiel": dossier.confidentiel,
-        "parties": [{"qualite": str(p.qualite), "nom": p.nom} for p in parties],
+        # L'adresse compte : c'est elle qui dit où signifier un acte, et elle appartient à la
+        # partie, pas au dossier. Un nom sans adresse ne permet rien.
+        "parties": [
+            {"qualite": str(p.qualite), "nom": p.nom, "adresse": p.adresse, "email": p.email} for p in parties
+        ],
         "nombre_documents": documents or 0,
         "nombre_echanges": echanges or 0,
     }
@@ -303,6 +320,45 @@ def derniers_echanges(session: Session, client_id: int, limite: int = 8) -> list
     ]
 
 
+def echanges_du_dossier(session: Session, dossier_id: int, limite: int = 20) -> list[dict[str, Any]]:
+    """Les échanges rattachés à ce dossier, du plus récent au plus ancien.
+
+    `derniers_echanges` suit un client à travers toutes ses affaires ; ici on reste dans une
+    seule. C'est la vue dont l'écran du dossier a besoin : un courrier ne veut rien dire hors
+    de l'affaire qui le porte, et l'avocat qui ouvre un dossier veut l'historique de ce
+    dossier-là, pas celui du client.
+    """
+    echanges = session.scalars(
+        select(Communication)
+        .where(Communication.dossier_id == dossier_id)
+        .order_by(Communication.date_echange.desc())
+        .limit(limite)
+    ).all()
+    return [
+        {
+            "date": echange.date_echange.date(),
+            "sens": "reçu" if echange.sens is SensEchange.ENTRANT else "envoyé",
+            "canal": str(echange.canal),
+            "objet": echange.objet,
+            "interlocuteur": echange.expediteur
+            if echange.sens is SensEchange.ENTRANT
+            else next(iter(echange.destinataires or []), None),
+            # Un extrait, pas le corps entier : l'écran en liste vingt d'un coup, et le corps
+            # complet reste en base pour qui veut le lire.
+            "extrait": _extrait(echange.corps),
+        }
+        for echange in echanges
+    ]
+
+
+def _extrait(corps: str, longueur: int = 180) -> str:
+    """Le début d'un message, remis sur une seule ligne et coupé entre deux mots."""
+    plat = " ".join(corps.split())
+    if len(plat) <= longueur:
+        return plat
+    return plat[:longueur].rsplit(" ", 1)[0] + "…"
+
+
 # ------------------------------------------------- points d'attention (calculés, non rédigés)
 
 SILENCE_DOSSIER_JOURS = 60  # un dossier en cours qui ne bouge plus est un dossier qu'on oublie
@@ -357,9 +413,18 @@ def _jours(nombre: int) -> str:
 
 
 def _points_delais(
-    session: Session, dossier_ids: list[int], references: dict[int, str], aujourdhui: date
+    session: Session,
+    dossier_ids: list[int],
+    references: dict[int, str],
+    aujourdhui: date,
+    fenetre: int = DELAI_PROCHE_JOURS,
 ) -> list[PointAttention]:
-    """Délais qui courent ou viennent d'échoir, reconstitués depuis les actes extraits."""
+    """Délais qui courent ou viennent d'échoir, reconstitués depuis les actes extraits.
+
+    `fenetre` est le nombre de jours à venir qu'on surveille. La fiche d'un client s'en
+    tient au défaut, pour rester silencieuse la plupart du temps ; l'échéancier l'élargit,
+    parce que sa raison d'être est justement de voir venir.
+    """
     points: list[PointAttention] = []
     lignes = session.execute(
         select(Extraction, Document.dossier_id, Document.date_document)
@@ -380,7 +445,7 @@ def _points_delais(
                 continue
             echeance = depart + timedelta(days=jours)
             ecart = (echeance - aujourdhui).days
-            if 0 <= ecart <= DELAI_PROCHE_JOURS:
+            if 0 <= ecart <= fenetre:
                 points.append(
                     PointAttention(
                         gravite="haute",
@@ -537,6 +602,51 @@ def points_attention(
 
     points.sort(key=lambda point: (point.gravite != "haute", point.libelle, point.dossier or ""))
     return points
+
+
+def points_du_dossier(
+    session: Session, dossier_id: int, aujourdhui: date | None = None
+) -> list[PointAttention]:
+    """Ce qui mérite l'attention sur **ce** dossier : délais, silence, valeurs à relire.
+
+    Les règles commerciales du CRM n'y figurent pas : un mandat en négociation concerne le
+    client, pas le dossier ouvert sous les yeux de l'avocat.
+    """
+    dossier = session.get(Dossier, dossier_id)
+    if dossier is None:
+        return []  # invisible pour cet utilisateur : l'isolation a joué
+    aujourdhui = aujourdhui or datetime.now(UTC).date()
+    lignes = [ligne for ligne in dossiers_du_client(session, dossier.client_id) if ligne["id"] == dossier_id]
+    references = {dossier_id: dossier.reference}
+
+    points = (
+        _points_delais(session, [dossier_id], references, aujourdhui)
+        + _points_sans_reponse(session, [dossier_id], references, aujourdhui)
+        + _points_relecture(session, [dossier_id])
+        + _points_silence(lignes, aujourdhui)
+    )
+    points.sort(key=lambda point: (point.gravite != "haute", point.libelle))
+    return points
+
+
+def echeances_a_venir(
+    session: Session, jours: int = 30, aujourdhui: date | None = None
+) -> list[PointAttention]:
+    """Les délais qui courent sur **tous** les dossiers visibles, le plus proche en premier.
+
+    C'est la vue qui manquait : en droit, un délai manqué fait perdre un recours, et un
+    avocat a besoin de voir ses échéances ensemble, pas dossier par dossier.
+    """
+    aujourdhui = aujourdhui or datetime.now(UTC).date()
+    lignes = session.execute(
+        select(Dossier.id, Dossier.reference).where(Dossier.statut == StatutDossier.EN_COURS)
+    ).all()
+    if not lignes:
+        return []
+    identifiants = [identifiant for identifiant, _ in lignes]
+    references = {identifiant: reference for identifiant, reference in lignes}
+    delais = _points_delais(session, identifiants, references, aujourdhui, fenetre=jours)
+    return sorted(delais, key=lambda point: (point.gravite != "haute", point.detail))
 
 
 # --------------------------------------------------------------- côté document (F8)

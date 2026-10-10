@@ -25,6 +25,12 @@ const etat = {
   question: "",
   dossierPiece: null,
   piece: null,
+  // L'écran du dossier : la référence ouverte, l'onglet actif, la dernière demande faite à
+  // l'agent. Gardés ici pour qu'un aller-retour vers une pièce ramène le dossier au même point.
+  dossierCourant: null,
+  ongletDossier: "chrono",
+  demandeDossier: "",
+  fenetreEcheances: 30,
 };
 
 // --------------------------------------------------------------------------- outils
@@ -110,8 +116,14 @@ function initiales(nomComplet) {
 
 // --------------------------------------------------------------------------- écrans
 
+/**
+ * Les écrans. `menu` désigne l'entrée de menu à garder allumée : l'écran d'un dossier n'a pas
+ * la sienne, on y entre en ouvrant une ligne, et c'est « Dossiers » qui doit rester surligné.
+ */
 const ECRANS = {
   dossiers: { titre: "Dossiers", rendre: () => ecranDossiers() },
+  dossier: { titre: "Dossier", menu: "dossiers", rendre: () => ecranDossier() },
+  echeances: { titre: "Échéances", rendre: () => ecranEcheances() },
   clients: { titre: "Clients", rendre: () => ecranClients() },
   questions: { titre: "Questions", rendre: () => ecranQuestions() },
   pieces: { titre: "Pièces", rendre: () => ecranPieces() },
@@ -241,6 +253,10 @@ async function ecranDossiers() {
       ecranDossiers().catch(montrerErreur);
     }),
   );
+  // Ouvrir le dossier : c'est le seul chemin vers l'écran qui porte tout le travail.
+  $$("[data-reference]").forEach((ligne) =>
+    ligne.addEventListener("click", () => ouvrirDossier(ligne.dataset.reference)),
+  );
 }
 
 function indicateur(libelle, valeur, dernier = false, neutre = true) {
@@ -267,8 +283,9 @@ function ligneDossier(dossier) {
 
 function aller(nom) {
   etat.ecran = nom;
+  const surligne = ECRANS[nom].menu || nom;
   $$("[data-ecran]").forEach((bouton) =>
-    bouton.classList.toggle("menu-actif", bouton.dataset.ecran === nom),
+    bouton.classList.toggle("menu-actif", bouton.dataset.ecran === surligne),
   );
   $("#fil-ariane").textContent = ECRANS[nom].titre;
   Promise.resolve(ECRANS[nom].rendre()).catch(montrerErreur);

@@ -210,6 +210,12 @@ days*, *extracted values flagged as doubtful* — are produced by **rules, never
 A model asked to worry always finds something to worry about; a rule points at the date that
 triggered it. A timeline returns in **under a second** because no model is involved at all.
 
+The same rules feed a firm-wide **deadline board** (`GET /dossiers/echeances?jours=30`):
+opposition periods, payment terms and formal-notice clocks are recomputed from the extracted
+acts across every open matter the caller may see. Dates count whether or not the extraction
+has been reviewed — an alert worth checking beats a deadline missed — and row-level security
+means two lawyers opening the board see different lists.
+
 ### 5 · Human-in-the-loop
 
 Agents never act. They persist **proposals**; a human validates or rejects, and validation
@@ -430,6 +436,8 @@ src/jurismind/
 ├── agents/         four LangGraph agents and the proposal lifecycle
 ├── conformite/     conflict-of-interest checks
 ├── web/            web interface — HTML, CSS and plain JS, served by the API
+│                   the matter screen is its centre: parties, team with access,
+│                   running deadlines, and five tabs over one case file
 └── evaluation/     measurement harnesses
 migrations/         Alembic, including hand-written RLS policies
 simulation/         legacy database, fake CRM, document generator

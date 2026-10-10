@@ -213,6 +213,8 @@ def test_un_dossier_dautrui_repond_introuvable(api: httpx.Client, comptes: Cabin
         "/dossiers/D2026-0027",
         "/dossiers/D2026-0027/chronologie",
         "/dossiers/D2026-0027/documents",
+        "/dossiers/D2026-0027/echanges",
+        "/dossiers/D2026-0027/attention",
     ):
         assert api.get(chemin, headers=entete).status_code == 404, chemin
     assert api.post("/dossiers/D2026-0027/assistant", headers=entete, json={}).status_code == 404
@@ -241,6 +243,112 @@ def test_la_chronologie_est_rendue_sans_appel_au_modele(api: httpx.Client, compt
     reponse = api.get("/dossiers/D2026-0024/chronologie", headers=connecter(api, "m.dieng@test"))
     assert reponse.status_code == 200
     assert reponse.json()[0]["libelle"] == "Mise en demeure"
+
+
+def test_la_fiche_dun_dossier_nomme_lequipe_qui_y_a_acces(api: httpx.Client, comptes: Cabinet) -> None:
+    """L'ecran du dossier affiche cette liste : c'est la regle RLS rendue lisible."""
+    corps = api.get("/dossiers/D2026-0024", headers=connecter(api, "m.dieng@test")).json()
+    equipe = {membre["nom"]: membre for membre in corps["equipe"]}
+    assert set(equipe) == {"Me Dieng", "Coumba Sy"}
+    assert equipe["Me Dieng"]["responsable"] is True
+    assert equipe["Coumba Sy"]["responsable"] is False
+    # L'ecran a besoin des identifiants pour rebondir vers le client.
+    assert corps["id"] > 0
+    assert corps["client_id"] > 0
+
+
+def test_les_echanges_rendus_sont_ceux_de_ce_dossier(api: httpx.Client, comptes: Cabinet) -> None:
+    """`derniers_echanges` suit un client ; cette route ne sort pas du dossier demande."""
+    with Session(get_engine()) as session, session.begin():
+        dossiers = {
+            dossier.reference: dossier
+            for dossier in session.scalars(
+                select(Dossier).where(Dossier.reference.in_(["D2026-0024", "D2026-0025"]))
+            )
+        }
+        for reference, objet in (("D2026-0024", "Loyers impayes"), ("D2026-0025", "Autre affaire")):
+            session.add(
+                Communication(
+                    dossier_id=dossiers[reference].id,
+                    canal=Canal.EMAIL,
+                    sens=SensEchange.ENTRANT,
+                    date_echange=datetime(2026, 9, 1, 9, 0, tzinfo=UTC),
+                    expediteur="client@test",
+                    destinataires=["m.dieng@test"],
+                    objet=objet,
+                    corps="Maitre, " + "le bail est resilie. " * 20,
+                )
+            )
+
+    corps = api.get("/dossiers/D2026-0024/echanges", headers=connecter(api, "m.dieng@test")).json()
+    assert [echange["objet"] for echange in corps] == ["Loyers impayes"]
+    assert corps[0]["sens"] == "reçu"
+    # Un extrait, pas le corps entier, et coupe entre deux mots.
+    assert len(corps[0]["extrait"]) <= 181
+    assert corps[0]["extrait"].endswith("…")
+
+
+def test_lecheancier_ne_montre_que_les_delais_de_ses_propres_dossiers(
+    api: httpx.Client, comptes: Cabinet
+) -> None:
+    """Le delai de Me Fall ne doit pas apparaitre chez Me Dieng : c'est le RLS qui tranche."""
+    # Le code des delais lit l horloge UTC : le test doit lire la meme.
+    signe = datetime.now(UTC).date()
+    with Session(get_engine()) as session, session.begin():
+        for reference in ("D2026-0024", "D2026-0027"):
+            dossier = session.scalars(select(Dossier).where(Dossier.reference == reference)).one()
+            acte = Document(
+                dossier_id=dossier.id,
+                titre=f"Mise en demeure {reference}",
+                sens=SensEchange.SORTANT,
+                chemin_fichier=f"{reference}/md.pdf",
+                format="pdf",
+                date_document=signe,
+            )
+            session.add(acte)
+            session.flush()
+            session.add(
+                Extraction(
+                    document_id=acte.id,
+                    schema="MiseEnDemeure",
+                    donnees={"delai_jours": 20},
+                    statut=StatutExtraction.PROPOSEE,
+                )
+            )
+
+    corps = api.get(
+        "/dossiers/echeances", params={"jours": 30}, headers=connecter(api, "m.dieng@test")
+    ).json()
+    assert [point["dossier"] for point in corps] == ["D2026-0024"]
+    assert corps[0]["gravite"] == "haute"
+    assert corps[0]["libelle"] == "Délai de la mise en demeure de 20 jours"
+
+    # Une fenetre plus courte que le delai ne retient rien : la fenetre est bien appliquee.
+    courte = api.get(
+        "/dossiers/echeances", params={"jours": 7}, headers=connecter(api, "m.dieng@test")
+    ).json()
+    assert courte == []
+
+    # Et le meme delai existe bien chez Me Fall : l'absence plus haut vient des droits.
+    chez_fall = api.get("/dossiers/echeances", headers=connecter(api, "a.fall@test")).json()
+    assert [point["dossier"] for point in chez_fall] == ["D2026-0027"]
+
+
+def test_echeances_nest_pas_pris_pour_une_reference_de_dossier(api: httpx.Client, comptes: Cabinet) -> None:
+    """FastAPI resout les routes dans l'ordre : `/echeances` doit passer avant `/{reference}`."""
+    reponse = api.get("/dossiers/echeances", headers=connecter(api, "m.dieng@test"))
+    assert reponse.status_code == 200
+    assert isinstance(reponse.json(), list)
+
+
+def test_les_points_dattention_dun_dossier_laissent_le_commercial_de_cote(
+    api: httpx.Client, comptes: Cabinet
+) -> None:
+    """Une opportunite en sommeil parle du client, pas de l'affaire : elle n'a rien a faire ici."""
+    corps = api.get("/dossiers/D2026-0024/attention", headers=connecter(api, "m.dieng@test")).json()
+    libelles = " ".join(point["libelle"] for point in corps).lower()
+    assert "opportunit" not in libelles
+    assert "relance" not in libelles
 
 
 # --------------------------------------------------------------------- recherche
@@ -580,12 +688,13 @@ def test_linterface_est_servie_par_lapi(api: httpx.Client) -> None:
     assert "JurisMind" in page.text
     assert api.get("/app/styles.css").status_code == 200
     assert api.get("/app/app.js").status_code == 200
+    assert api.get("/app/dossier.js").status_code == 200
 
 
 def test_linterface_ne_laisse_filtrer_aucun_secret(api: httpx.Client) -> None:
     """Les fichiers servis sont publics : ni mot de passe, ni clé, ni chaîne de connexion."""
     interdits = ("postgresql://", "api_secret", "jurismind_app", "crm-dev-key")
-    for fichier in ("/app/index.html", "/app/app.js", "/app/styles.css"):
+    for fichier in ("/app/index.html", "/app/app.js", "/app/dossier.js", "/app/styles.css"):
         contenu = api.get(fichier).text.lower()
         for secret in interdits:
             assert secret not in contenu, f"{secret} exposé dans {fichier}"
