@@ -89,7 +89,7 @@ flowchart TB
     subgraph edge["Interfaces"]
         direction LR
         API["FastAPI<br/>JWT · OpenAPI"]
-        UI["Streamlit demo"]
+        UI["Web interface<br/>HTML · CSS · plain JS"]
     end
 
     LEG --> CONN
@@ -103,7 +103,8 @@ flowchart TB
 ```
 
 **Stack** — Python 3.13 · PostgreSQL 16 + pgvector · SQLAlchemy 2 · Alembic · LangGraph ·
-FastAPI · Streamlit · Tesseract OCR · Ollama or OpenAI · Docker.
+FastAPI · Tesseract OCR · Ollama or OpenAI · Docker. The web interface is plain
+HTML, CSS and JavaScript — no framework, no build step.
 
 ---
 
@@ -429,7 +430,6 @@ src/jurismind/
 ├── agents/         four LangGraph agents and the proposal lifecycle
 ├── conformite/     conflict-of-interest checks
 ├── web/            web interface — HTML, CSS and plain JS, served by the API
-├── demo/           earlier Streamlit demo, kept while the interface settles
 └── evaluation/     measurement harnesses
 migrations/         Alembic, including hand-written RLS policies
 simulation/         legacy database, fake CRM, document generator

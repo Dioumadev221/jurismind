@@ -13,7 +13,7 @@
 | D2 | Base clients/dossiers | Base « existante » **simulée** et réaliste (base `legacy`) |
 | D3 | CRM | **Simulé** (API REST factice) |
 | D4 | LLM | **Ollama** (dev, gratuit, local) **et OpenAI** (cité dans l'offre) — on change de fournisseur par un seul paramètre de configuration |
-| D5 | Interface | **API REST** (livrable principal) ; petit écran **Streamlit** uniquement pour la démo |
+| D5 | Interface | **API REST** (livrable principal) ; une **interface web** servie par l'API, en HTML et JavaScript simples |
 | D6 | Cadre des données simulées | Cabinet sénégalais, droit OHADA, contentieux + droit des affaires |
 | D7 | Machine de dev | CPU seul, 16 Go RAM, Docker installé → petits modèles (voir §8) |
 
@@ -118,7 +118,7 @@ Un **routeur** reçoit une demande en langage naturel et l'envoie vers le bon ag
 ## 6. Architecture
 
 ```
-  Utilisateur ── Streamlit (démo) ──┐
+  Utilisateur ── Interface web ───────┐
   Autres systèmes ──────────────────┤ HTTP
                         ┌───────────▼─────────────┐
                         │  API REST (FastAPI)     │  auth, droits, audit
@@ -151,7 +151,7 @@ Un **routeur** reçoit une demande en langage naturel et l'envoie vers le bon ag
 | ORM / migrations | SQLAlchemy 2 + Alembic |
 | OCR / PDF | Tesseract 5 (`fra`, via `TESSDATA_DIR`) + pytesseract + pypdfium2 (licence Apache/BSD, compatible MIT — PyMuPDF est AGPL) |
 | Tâches longues | File de tâches dans PostgreSQL (`SELECT … FOR UPDATE SKIP LOCKED`) + worker |
-| Démo | Streamlit (appelle l'API, jamais la base) |
+| Interface | HTML, CSS et JavaScript simples, servis par l'API (jamais la base) |
 | Qualité | ruff, mypy, pytest, GitHub Actions |
 | Infra dev | Docker Compose (PostgreSQL) ; Ollama natif Windows |
 
@@ -169,7 +169,6 @@ src/jurismind/
 ├── extraction/     # schémas Pydantic + extraction guidée         (F5)
 ├── agents/         # 4 agents LangGraph + propositions            (F6-F9)
 ├── conformite/     # conflits d'intérêts                         (bonus)
-├── demo/           # démonstration Streamlit, par l'API seule     (F10)
 ├── llm/            # Ollama ou OpenAI, selon la configuration
 └── evaluation/     # jeux de mesure et indicateurs                (F11)
 migrations/         # Alembic, dont les règles RLS écrites à la main
@@ -350,8 +349,6 @@ Trois choses qu'elle rend visibles, parce qu'elles sont le cœur du projet :
   la réponse ; l'abstention y est présentée comme un résultat, pas comme une panne ;
 - chaque point d'attention et chaque proposition affichent **leur fondement** ;
 - rien ne se produit sans un clic sur « Valider », et la décision reste inscrite.
-
-La démonstration Streamlit (`demo/`) reste en place le temps que l'interface se stabilise.
 ---
 
 ## 7. Données
@@ -478,7 +475,7 @@ qui voient ce dossier ; une proposition sans dossier est visible des avocats et 
 | 7c | Agent analyse de documents : type reconnu, résumé vérifié, clauses citées | F8 | ✅ |
 | 8 | Agent de tri du courrier : rattachement par indices, brouillons, tâches CRM, validation humaine | F9 | ✅ |
 | 9a | API REST FastAPI : jeton signé, droits appliqués par la base, OpenAPI documentée | F10, F12 | ✅ |
-| 9b | Démo Streamlit : cinq écrans, qui ne parlent qu'à l'API | F10 | ✅ |
+| 9b | Interface web : six écrans issus d'une maquette, qui ne parlent qu'à l'API | F10 | ✅ |
 | 10 | README, CI GitHub Actions, licence, ADR et résultats publiés | — | ✅ (reste la vidéo) |
 
 Chaque étape : tests verts, commit(s) propres, mise à jour de ce document.

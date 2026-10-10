@@ -25,7 +25,6 @@ dependencies = [
     "pytesseract>=0.3.13",
     "python-docx>=1.2.0",
     "sqlalchemy>=2.0.54",
-    "streamlit>=1.65.0",
     "uvicorn>=0.53.0",
 ]
 
