@@ -26,6 +26,12 @@ AVEUX_D_IGNORANCE = re.compile(
     r"(je ne (trouve|peux|sais) pas"
     r"|n'?(a|ont|est|sont) pas (été )?(abordé|mentionné|traité|précisé|indiqué|répondu|fourni)"
     r"|ne (figure|figurent|permet|permettent|contien\w+) pas"
+    # « La question ne peut être répondue avec les informations fournies. » Observé en
+    # mesure : un refus parfaitement correct, présenté à l'avocat comme une réponse
+    # affirmative faute d'être reconnu. Le motif s'accroche au verbe *répondre*, jamais au
+    # modal seul : « le bail ne peut être résilié » est une réponse, pas une abstention.
+    r"|ne peu(t|vent) (pas )?être répondue?s?"
+    r"|ne peu(t|vent) pas (y )?répondre"
     r"|(aucune?|pas d[eu']?) (source|information|précision|mention|élément|donnée|taux|indication)"
     r"|il n'y a pas"
     r"|non (mentionné|précisé|indiqué))",

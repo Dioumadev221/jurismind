@@ -34,9 +34,13 @@ def main() -> None:
     print(f"| Rappel de la recherche | {resume['rappel_recherche']} % |")
     print(f"| Citation du bon document | {resume['citation_exacte']} % |")
     print(f"| Justesse des réponses | {resume['justesse']} % |")
+    print(
+        f"| … hors questions dont la réponse n'a pas survécu à la lecture | {resume['justesse_sur_texte_lisible']} % |"
+    )
     print(f"| Abstention correcte | {resume['abstention_correcte']} % |")
     print(f"| Réponses inventées | {resume['inventions']} |")
-    print(f"| Silences alors que la source était là | {resume['silences_coupables']} |")
+    print(f"| Réponses absentes des pièces lues (OCR défaillant) | {resume['reponses_illisibles']} |")
+    print(f"| Silences alors que le texte portait la réponse | {resume['silences_coupables']} |")
     print(f"| Temps moyen par question | {resume['secondes_moyennes']} s |")
 
     SORTIE.mkdir(parents=True, exist_ok=True)

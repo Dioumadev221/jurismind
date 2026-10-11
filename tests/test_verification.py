@@ -30,6 +30,13 @@ SOURCE = (
         "Cette information ne figure pas dans les sources.",
         "Il n'y a pas de taux de TVA dans les factures fournies.",
         "Aucune information sur le nombre de salariés.",
+        # Relevé en mesure le 11/10/2026 : ce refus passait pour une réponse affirmative,
+        # et faisait tomber l'abstention correcte de 100 % à 75 %.
+        (
+            "La question sur le nombre de salariés ne peut être répondue avec les "
+            "informations fournies dans les statuts de la société Saloum Services SARL."
+        ),
+        "Les sources ne permettent pas d'y répondre.",
     ],
 )
 def test_les_facons_de_dire_je_ne_sais_pas_sont_reconnues(reponse: str) -> None:
@@ -39,6 +46,10 @@ def test_les_facons_de_dire_je_ne_sais_pas_sont_reconnues(reponse: str) -> None:
 def test_une_vraie_reponse_nest_pas_prise_pour_un_aveu() -> None:
     assert not avoue_ignorance("Le débiteur dispose d'un délai de quinze jours.")
     assert not avoue_ignorance("Le montant réclamé est de 13 750 000 FCFA.")
+    # Le motif s'accroche au verbe « répondre », pas au modal : une impossibilité juridique
+    # est une réponse de fond, et la prendre pour un aveu ferait taire le travail de l'avocat.
+    assert not avoue_ignorance("Le bail ne peut être résilié avant le terme convenu.")
+    assert not avoue_ignorance("La créance ne peut être recouvrée sans titre exécutoire.")
 
 
 # --------------------------------------------------------------------- références

@@ -73,6 +73,13 @@ class Resultat:
     source_citee: bool | None  # ... et a-t-il été cité dans la réponse ?
     citations: int
     secondes: float
+    # Verdict de chacun des quatre contrôles. Sans lui, une abstention ne dit pas pourquoi
+    # elle a eu lieu, et il faut écrire un script à part pour le savoir — ce qui est arrivé.
+    controles: dict[str, bool] = field(default_factory=dict)
+    # La valeur attendue figure-t-elle **littéralement** dans les extraits lus ? Un scan dont
+    # l'OCR a mangé le tableau des montants ne porte pas sa réponse : s'abstenir est alors
+    # le bon comportement, et le compter comme une faute accuserait le modèle à tort.
+    texte_porteur: bool | None = None
 
 
 @dataclass
@@ -115,8 +122,30 @@ class Bilan:
 
     @property
     def silences_coupables(self) -> int:
-        """Questions auxquelles on pouvait répondre, mais où le système s'est tu."""
-        return sum(1 for r in self.avec_reponse if r.abstention and r.source_trouvee)
+        """Le texte lu portait la réponse, et le système s'est tu quand même.
+
+        On exige `texte_porteur`, pas seulement `source_trouvee` : retrouver le bon document
+        ne suffit pas s'il a traversé l'OCR amputé de son tableau de montants. Dans ce cas
+        l'abstention est le bon comportement, et l'appeler « coupable » serait un mensonge
+        sur la cause — on chercherait un défaut du modèle là où le défaut est dans la lecture.
+        """
+        return sum(1 for r in self.avec_reponse if r.abstention and r.texte_porteur)
+
+    @property
+    def reponses_illisibles(self) -> int:
+        """Questions dont la réponse n'a pas survécu à la lecture des pièces."""
+        return sum(1 for r in self.avec_reponse if r.texte_porteur is False)
+
+    @property
+    def justesse_sur_texte_lisible(self) -> float:
+        """Justesse une fois écartées les questions dont la réponse n'est nulle part.
+
+        À publier **à côté** de `justesse`, jamais à sa place : la première dit ce que vaut
+        le modèle, la seconde ce que vit l'utilisateur. Un chiffre qui écarte les cas gênants
+        sans le dire n'est pas une mesure, c'est une plaidoirie.
+        """
+        lisibles = self._sur(lambda r: r.attendu and r.texte_porteur)
+        return self.taux(sum(1 for r in lisibles if r.juste), len(lisibles))
 
     @property
     def inventions(self) -> int:
@@ -133,7 +162,9 @@ class Bilan:
             "rappel_recherche": round(self.rappel, 1),
             "citation_exacte": round(self.citation_exacte, 1),
             "justesse": round(self.justesse, 1),
+            "justesse_sur_texte_lisible": round(self.justesse_sur_texte_lisible, 1),
             "abstention_correcte": round(self.abstention_correcte, 1),
+            "reponses_illisibles": self.reponses_illisibles,
             "silences_coupables": self.silences_coupables,
             "inventions": self.inventions,
             "secondes_moyennes": round(self.secondes_moyennes, 1),
@@ -174,6 +205,22 @@ def _documents_retrouves(session: Session, extrait_ids: list[int]) -> set[int]:
     return {identifiant for identifiant in externes if identifiant is not None}
 
 
+def _texte_examine(session: Session, extrait_ids: list[int]) -> str:
+    """Tout ce que le modèle a eu sous les yeux, intitulés des pièces compris.
+
+    L'intitulé compte : c'est lui qui porte le numéro d'une facture dont l'OCR a abîmé
+    l'en-tête, et le modèle le reçoit au même titre que le corps de l'extrait.
+    """
+    from jurismind.db.models import Extrait
+
+    lignes = session.execute(
+        select(Document.titre, Extrait.contenu)
+        .join(Extrait, Extrait.document_id == Document.id)
+        .where(Extrait.id.in_(extrait_ids))
+    ).all()
+    return "\n".join(f"{titre}\n{contenu}" for titre, contenu in lignes)
+
+
 def evaluer_question(question: Question, extraits: int = 4) -> Resultat:
     """Pose la question au nom de l'avocat responsable et compare à la réponse connue."""
     with Session(get_engine()) as session:
@@ -186,6 +233,7 @@ def evaluer_question(question: Question, extraits: int = 4) -> Resultat:
         reponse = repondre(session, question.question, filtres=Filtres(), extraits=extraits)
         cites = _documents_cites(reponse, session)
         examines = _documents_retrouves(session, reponse.extraits_examines)
+        lu = _texte_examine(session, reponse.extraits_examines)
 
     juste = not question.sans_reponse and all(
         valeur_presente(valeur, reponse.texte) for valeur in question.attendu
@@ -193,6 +241,10 @@ def evaluer_question(question: Question, extraits: int = 4) -> Resultat:
     attendu = question.document_attendu
     source_trouvee = None if attendu is None else attendu in examines
     source_citee = None if attendu is None else attendu in cites
+    # Le modèle ne pouvait répondre que si la valeur était vraiment sous ses yeux.
+    texte_porteur = (
+        None if not question.attendu else all(valeur_presente(valeur, lu) for valeur in question.attendu)
+    )
 
     return Resultat(
         question=question.question,
@@ -205,6 +257,8 @@ def evaluer_question(question: Question, extraits: int = 4) -> Resultat:
         source_citee=source_citee,
         citations=len(reponse.citations),
         secondes=time.perf_counter() - debut,
+        controles=reponse.controles,
+        texte_porteur=texte_porteur,
     )
 
 

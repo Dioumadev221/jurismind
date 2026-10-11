@@ -89,6 +89,9 @@ def resultat(**champs: object) -> Resultat:
         "source_citee": True,
         "citations": 1,
         "secondes": 5.0,
+        # Le cas ordinaire : la valeur attendue figure bien dans les extraits lus. Les tests
+        # qui veulent l'inverse — un scan amputé de son tableau — le disent explicitement.
+        "texte_porteur": True,
     }
     return Resultat(**{**valeurs, **champs})  # type: ignore[arg-type]
 
@@ -117,10 +120,37 @@ def test_les_indicateurs_separent_les_questions_avec_et_sans_reponse() -> None:
     assert resume["rappel_recherche"] == 100.0
 
 
-def test_un_silence_alors_que_la_source_etait_la_est_compte() -> None:
+def test_un_silence_alors_que_le_texte_portait_la_reponse_est_compte() -> None:
     bilan = Bilan(resultats=[resultat(abstention=True, juste=False, source_trouvee=True, citations=0)])
     assert bilan.resume()["silences_coupables"] == 1
     assert bilan.resume()["inventions"] == 0, "se taire n'est pas inventer"
+
+
+def test_se_taire_quand_la_reponse_nest_nulle_part_nest_pas_une_faute() -> None:
+    """Cas réel : l'OCR d'une facture a laissé l'en-tête et perdu le tableau des montants.
+
+    Le bon document est retrouvé, mais la somme n'existe dans aucun extrait lisible.
+    S'abstenir est alors le comportement correct ; l'imputer au modèle ferait chercher un
+    défaut de rédaction là où le défaut est dans la lecture du scan.
+    """
+    bilan = Bilan(
+        resultats=[
+            resultat(
+                abstention=True,
+                juste=False,
+                source_trouvee=True,  # la pièce est bien là…
+                texte_porteur=False,  # … mais le montant n'y a pas survécu
+                citations=0,
+            )
+        ]
+    )
+    resume = bilan.resume()
+    assert resume["silences_coupables"] == 0
+    assert resume["reponses_illisibles"] == 1
+    # La justesse brute reste sévère : c'est ce que vit l'utilisateur.
+    assert resume["justesse"] == 0.0
+    # Celle qui écarte le cas le dit, et ne s'applique à aucune question ici.
+    assert resume["justesse_sur_texte_lisible"] == 0.0
 
 
 def test_une_abstention_manquee_compte_comme_telle() -> None:

@@ -325,18 +325,39 @@ clients. Model `qwen2.5:3b`, CPU only.
 
 | Measurement | Result | Command |
 |---|---:|---|
-| Retrieval recall — 20 questions | **93.8 %** | `python -m jurismind.evaluation` |
-| Correct abstention when the answer does not exist | **100 %** | *idem* |
-| Answer accuracy when it does answer | 68.8 % | *idem* |
+| Retrieval recall — 40 questions | **90.6 %** | `python -m jurismind.evaluation --questions 40 --graine 11` |
+| Answer accuracy when it does answer | **90.6 %** | *idem* |
+| … excluding questions whose answer did not survive OCR | **92.6 %** | *idem* |
+| Correct abstention when the answer does not exist | 75.0 % | *idem* |
 | Structured extraction accuracy — 98 fields, 30 acts | **100 %** | `python -m jurismind.evaluation.extraction` |
 | … on OCR'd scans | **100 %** (85.7 % field coverage) | *idem* |
 | Document classification — agreement with the firm's own filing | 75.5 % | `python -m jurismind.evaluation.classement` |
 | … answers outside the closed 28-type vocabulary | **0 / 55** | *idem* |
-| Tests | **323** | `pytest` |
+| Tests | **337** | `pytest` |
 
-**Read these numbers honestly.** Answer accuracy is 68.8 %, not 100 % — a small local model
-still gets wording wrong. What *is* at 100 % is abstention: it does not answer when it does
-not know, which is the property that makes the rest safe to deploy. On classification, 4 of
+**Read these numbers honestly.** Answer accuracy reached 90.6 % only after a diagnosis that
+contradicted the obvious move. The reflex was to add a reranker; retrieval recall was already
+above 90 %, so the right chunk was being found. Opening the failures showed something else:
+the anti-hallucination gate was *silencing correct answers*, because it looked for the
+requested reference in the chunk body only — and OCR had turned `FACTURE N° FA-2025-994` into
+`FACTURE N4`. The number survived only in the document title, which the model could see and
+the gate could not. [ADR 0010](docs/adr/0010-controles-juger-sur-ce-que-le-modele-a-vu.md)
+has the full account.
+
+**The number that is not good enough is abstention: 75 %.** On a 20-question set it measured
+100 %; the larger set exposed a real hole. Asked *"what is the capital of Senegal?"*, the
+system answers "Dakar" with all four gates green — the model quoted a genuine sentence from a
+real document, and that sentence simply does not support the claim. A citation that *exists*
+is not a citation that *proves*, and no syntactic check closes that gap: it needs an
+entailment pass, which doubles latency on CPU. The smaller sample's 100 % was partly luck of
+the draw, and reporting it instead of this would be advocacy, not measurement.
+
+Five of the 40 questions have answers that no longer exist in any readable text: OCR dropped
+the amount table from four scanned invoices (4 of 44 scans; 0 of 128 direct-text documents).
+Abstaining there is correct behaviour, so the two accuracy figures are published side by
+side — the raw one is what a user experiences, the other isolates what the model controls.
+
+On classification, 4 of
 the 13 disagreements concern a distinction that **does not exist in the document** — whether
 the firm or the opposing party filed it — leaving 7 genuine errors out of 53. The breakdown
 is in the ADRs, including the cases that still fail.

@@ -171,15 +171,26 @@ def repondre(
 
     texte = str(donnees.get("reponse", "")).strip()
     citations = _citations_valides(donnees.get("sources"), resultats)
-    sources_citees = "\n".join(resultats[citation.numero - 1].extrait.contenu for citation in citations)
+    citees = [resultats[citation.numero - 1] for citation in citations]
+    sources_citees = "\n".join(resultat.extrait.contenu for resultat in citees)
+    # Ce que le modèle a réellement eu sous les yeux : `construire_sources` fait précéder
+    # chaque extrait de son intitulé. Le contrôle des références doit juger sur la même
+    # matière, sinon il condamne un scan dont l'OCR a abîmé l'en-tête — constaté : le
+    # numéro « FA-2025-994 » ressorti en « FACTURE N4 », alors que le titre le porte intact.
+    sources_identifiees = "\n".join(
+        f"{resultat.reference}\n{resultat.extrait.contenu}" for resultat in citees
+    )
 
     controles = {
         "sources": bool(texte) and bool(citations),
         # Un aveu d'ignorance reste une abstention, même accompagné d'une citation.
         "ignorance": not avoue_ignorance(texte),
         # La référence demandée doit figurer dans la source citée, sinon le modèle a lu
-        # un autre document (constaté : le montant d'une facture voisine).
-        "references": references_respectees(question, sources_citees),
+        # un autre document (constaté : le montant d'une facture voisine). L'intitulé
+        # compte autant que le corps, car il identifie la pièce — et c'est bien « est-ce
+        # la bonne pièce ? » que ce contrôle pose. Une facture voisine ne portera pas plus
+        # le numéro demandé dans son titre que dans son texte : le garde-fou tient.
+        "references": references_respectees(question, sources_identifiees),
         # La réponse doit être ancrée dans la source : soit par la phrase recopiée, soit
         # parce que tous les chiffres avancés s'y retrouvent. Dernier rempart contre une
         # réponse venue de la culture générale du modèle.

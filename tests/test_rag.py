@@ -178,6 +178,85 @@ def test_un_aveu_dignorance_reste_une_abstention(
     assert reponse.abstention
 
 
+@pytest.fixture
+def facture_scannee(cabinet: Cabinet) -> int:
+    """Une facture dont l'OCR a abîmé l'en-tête : le numéro ne survit que dans le titre.
+
+    Cas réel du corpus : « FACTURE N° FA-2025-994 » est ressorti du scan en « FACTURE N4 ».
+    Le montant, lui, est intact. Un contrôle qui ne lirait que le corps conclurait que la
+    pièce demandée n'est pas là, et ferait taire une réponse juste.
+    """
+    from jurismind.db.models import Document, SensEchange
+
+    with Session(get_engine()) as session, session.begin():
+        dossier = session.scalars(select(Dossier).where(Dossier.reference == "D2026-0024")).one()
+        document = Document(
+            dossier_id=dossier.id,
+            titre="Facture FA-2025-994",
+            sens=SensEchange.ENTRANT,
+            chemin_fichier="D2026-0024/FA-2025-994.pdf",
+            format="pdf",
+            ocr_utilise=True,
+        )
+        session.add(document)
+        session.flush()
+        extrait = Extrait(
+            dossier_id=dossier.id,
+            document_id=document.id,
+            position=0,
+            contenu="FACTURE N4\nDate : 17/01/2025\nMontant total TTC : 5 100 000 FCFA",
+            embedding=[1.0] + [0.0] * (DIMENSION - 1),
+        )
+        session.add(extrait)
+        session.flush()
+        return extrait.id
+
+
+def test_un_numero_abime_par_locr_ne_fait_plus_taire_la_reponse(
+    monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, facture_scannee: int
+) -> None:
+    """Le titre identifie la pièce aussi sûrement que son en-tête scanné."""
+    brancher(
+        monkeypatch,
+        ModeleSimule(
+            {
+                "reponse": "La facture FA-2025-994 s'élève à 5 100 000 FCFA.",
+                "sources": [1],
+                "citation": "Montant total TTC : 5 100 000 FCFA",
+            }
+        ),
+    )
+
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Quel est le montant de la facture FA-2025-994 ?")
+
+    assert reponse.controles["references"] is True
+    assert not reponse.abstention
+    assert "5 100 000" in reponse.texte
+
+
+def test_une_facture_voisine_fait_toujours_echouer_le_controle(
+    monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, facture_scannee: int
+) -> None:
+    """Le garde-fou n'est pas desserré : le numéro demandé n'est ni dans le corps ni au titre."""
+    brancher(
+        monkeypatch,
+        ModeleSimule(
+            {
+                "reponse": "La facture FA-2025-111 s'élève à 5 100 000 FCFA.",
+                "sources": [1],
+                "citation": "Montant total TTC : 5 100 000 FCFA",
+            }
+        ),
+    )
+
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Quel est le montant de la facture FA-2025-111 ?")
+
+    assert reponse.controles["references"] is False
+    assert reponse.abstention
+
+
 def test_une_reponse_illisible_provoque_une_abstention(
     monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, extrait_dieng: int
 ) -> None:
