@@ -55,6 +55,7 @@ MOTS_DE_PASSE = {
 # dans leur propre espace de noms, donc chacun doit être neutralisé séparément.
 MODULES_DE_REDACTION = (
     "jurismind.rag.reponse",
+    "jurismind.rag.implication",
     "jurismind.agents.dossier",
     "jurismind.agents.client",
     "jurismind.agents.analyse",

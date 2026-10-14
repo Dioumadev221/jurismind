@@ -326,14 +326,15 @@ clients. Model `qwen2.5:3b`, CPU only.
 | Measurement | Result | Command |
 |---|---:|---|
 | Retrieval recall — 40 questions | **90.6 %** | `python -m jurismind.evaluation --questions 40 --graine 11` |
-| Answer accuracy when it does answer | **90.6 %** | *idem* |
+| Answer accuracy when it does answer | 87.5 % | *idem* |
 | … excluding questions whose answer did not survive OCR | **92.6 %** | *idem* |
-| Correct abstention when the answer does not exist | 75.0 % | *idem* |
+| Correct abstention when the answer does not exist | **100 %** | *idem* |
+| Answers invented | **1 / 40** | *idem* |
 | Structured extraction accuracy — 98 fields, 30 acts | **100 %** | `python -m jurismind.evaluation.extraction` |
 | … on OCR'd scans | **100 %** (85.7 % field coverage) | *idem* |
 | Document classification — agreement with the firm's own filing | 75.5 % | `python -m jurismind.evaluation.classement` |
 | … answers outside the closed 28-type vocabulary | **0 / 55** | *idem* |
-| Tests | **337** | `pytest` |
+| Tests | **349** | `pytest` |
 
 **Read these numbers honestly.** Answer accuracy reached 90.6 % only after a diagnosis that
 contradicted the obvious move. The reflex was to add a reranker; retrieval recall was already
@@ -344,13 +345,25 @@ requested reference in the chunk body only — and OCR had turned `FACTURE N° F
 the gate could not. [ADR 0010](docs/adr/0010-controles-juger-sur-ce-que-le-modele-a-vu.md)
 has the full account.
 
-**The number that is not good enough is abstention: 75 %.** On a 20-question set it measured
-100 %; the larger set exposed a real hole. Asked *"what is the capital of Senegal?"*, the
-system answers "Dakar" with all four gates green — the model quoted a genuine sentence from a
-real document, and that sentence simply does not support the claim. A citation that *exists*
-is not a citation that *proves*, and no syntactic check closes that gap: it needs an
-entailment pass, which doubles latency on CPU. The smaller sample's 100 % was partly luck of
-the draw, and reporting it instead of this would be advocacy, not measurement.
+**Abstention is at 100 %, and it cost accuracy to get there.** The larger question set had
+exposed a real hole: asked *"what is the capital of Senegal?"*, the system answered "Dakar"
+with all four gates green — the model had quoted a genuine sentence from a real document, and
+that sentence simply did not support the claim. A citation that *exists* is not a citation
+that *proves*, and no syntactic check closes that gap.
+
+So a fifth gate reads. It asks the model one closed question — *does this source explicitly
+say what this sentence claims?* — and it runs only when the answer's own figures do not
+already anchor it in the source. That is **9 answers out of 40**, and 10 % added latency
+rather than double. It ruled correctly 8 times out of 9: two "Dakar" refused, one invoice
+whose amount OCR had destroyed refused, five legitimate answers confirmed.
+
+**The ninth is the price.** One correct answer was silenced, and raw accuracy fell from
+90.6 % to 87.5 % — below the 90 % target. In exchange: one fewer invented answer, and the
+abstention hole closed. In law a fabricated amount inside a filed pleading costs more than
+"I don't find it", so the trade is taken in that direction and
+[ADR 0011](docs/adr/0011-passe-implication.md) records what it cost. Tuning the judge until
+that one case came back would be tuning on the test set; the honest way to raise accuracy is
+the OCR pipeline, which is where five of the losses actually come from.
 
 Five of the 40 questions have answers that no longer exist in any readable text: OCR dropped
 the amount table from four scanned invoices (4 of 44 scans; 0 of 128 direct-text documents).

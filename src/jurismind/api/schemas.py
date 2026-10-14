@@ -85,9 +85,14 @@ class Citation(BaseModel):
 
 
 class Controle(BaseModel):
-    """Un des quatre contrôles appliqués avant d'afficher une réponse (ADR 0003)."""
+    """Un des contrôles appliqués avant d'afficher une réponse (ADR 0003 et 0010).
 
-    nom: str = Field(description="sources, ignorance, references ou ancrage")
+    Quatre sont systématiques et gratuits. Le cinquième, `implication`, coûte un appel au
+    modèle : il n'apparaît que lorsque les chiffres de la réponse ne suffisaient pas à
+    l'ancrer dans sa source.
+    """
+
+    nom: str = Field(description="sources, ignorance, references, ancrage ou implication")
     libelle: str = Field(description="Ce que le contrôle vérifie, en clair")
     reussi: bool
 

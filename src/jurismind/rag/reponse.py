@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from sqlalchemy.orm import Session
 
 from jurismind.llm import Vitesse, modele_chat
+from jurismind.rag.implication import source_soutient
 from jurismind.rag.verification import (
     avoue_ignorance,
     chiffres_ancres,
@@ -73,6 +74,9 @@ CONTROLES = {
     "ignorance": "La réponse n'avoue pas l'ignorance",
     "references": "Les références nommées dans la question figurent dans les sources",
     "ancrage": "Citation retrouvée mot pour mot, ou chaque chiffre ancré",
+    # Le seul contrôle qui coûte un appel au modèle, donc le seul qui ne s'exerce pas
+    # systématiquement : voir `repondre()` pour la condition de déclenchement.
+    "implication": "La source citée établit bien ce qui est affirmé",
 }
 
 
@@ -197,6 +201,23 @@ def repondre(
         "ancrage": citation_verifiee(str(donnees.get("citation", "")), sources_citees)
         or chiffres_ancres(texte, sources_citees),
     }
+
+    # Cinquième contrôle, et le seul qui coûte un appel au modèle. Deux conditions pour le
+    # déclencher, l'une d'économie et l'autre de pertinence :
+    #
+    # - inutile de payer un verdict sur une réponse déjà écartée par les quatre premiers ;
+    # - inutile de le payer non plus quand les chiffres avancés se retrouvent tous dans la
+    #   source. Un montant, un délai, une date qui concordent lient la réponse à la pièce
+    #   bien plus solidement qu'un jugement de modèle. C'est l'essentiel du trafic d'un
+    #   cabinet, et il reste à un seul appel.
+    #
+    # Reste le cas où rien de chiffré n'ancre la réponse : une phrase recopiée peut être
+    # authentique sans rien prouver de ce qui est affirmé (ADR 0010, « la capitale du
+    # Sénégal »). Mesuré sur le jeu de 40 questions : 15 % des réponses affirmatives, et la
+    # totalité des cas fautifs connus.
+    if all(controles.values()) and not chiffres_ancres(texte, sources_citees):
+        controles["implication"] = source_soutient(texte, sources_identifiees, vitesse)
+
     refusee = not all(controles.values())
     if refusee:
         if texte:

@@ -65,7 +65,16 @@ def extrait_dieng(cabinet: Cabinet) -> int:
 
 
 def brancher(monkeypatch: pytest.MonkeyPatch, modele: Any) -> None:
+    """Coupe le test de **tous** les services de modèle, rédaction et contrôle compris.
+
+    Le juge d'implication est un second service : le laisser branché ferait appeler Ollama
+    par des tests qui ne parlent pas de lui, ce qui les rend lents et non reproductibles —
+    et c'est précisément la faute qui avait déjà rendu l'intégration continue rouge. Il
+    confirme par défaut ; les tests qui s'intéressent à lui le rebranchent avec
+    `brancher_juge`.
+    """
     monkeypatch.setattr("jurismind.rag.reponse.modele_chat", lambda *a, **k: modele)
+    brancher_juge(monkeypatch, '{"soutenue": true}')
     monkeypatch.setattr(
         "jurismind.retrieval.recherche.modele_embeddings",
         lambda: type("E", (), {"embed_query": staticmethod(lambda _: [1.0] + [0.0] * (DIMENSION - 1))})(),
@@ -257,6 +266,99 @@ def test_une_facture_voisine_fait_toujours_echouer_le_controle(
     assert reponse.abstention
 
 
+# ------------------------------------------------- déclenchement du contrôle d'implication
+
+
+def brancher_juge(monkeypatch: pytest.MonkeyPatch, verdict: str) -> list[str]:
+    """Remplace le juge d'implication et renvoie la liste de ses invites."""
+    invites: list[str] = []
+
+    class Juge:
+        def invoke(self, invite: str) -> Any:
+            invites.append(invite)
+            return type("Message", (), {"content": verdict})()
+
+    monkeypatch.setattr("jurismind.rag.implication.modele_chat", lambda *a, **k: Juge())
+    return invites
+
+
+def test_une_reponse_dont_les_chiffres_sont_ancres_ne_derange_pas_le_juge(
+    monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, facture_scannee: int
+) -> None:
+    """Montants, délais, dates : l'essentiel du trafic reste à un seul appel au modèle.
+
+    Le juge est branché pour **refuser**. S'il était consulté, la réponse serait écartée ;
+    elle passe, donc il ne l'a pas été.
+    """
+    brancher(
+        monkeypatch,
+        ModeleSimule(
+            {
+                # Sans répéter le numéro de la pièce : l'OCR l'a abîmé dans le corps, donc
+                # ses chiffres n'y figurent pas et la réponse cesserait d'être ancrée.
+                "reponse": "Le montant total s'élève à 5 100 000 FCFA.",
+                "sources": [1],
+                "citation": "Montant total TTC : 5 100 000 FCFA",
+            }
+        ),
+    )
+    invites = brancher_juge(monkeypatch, '{"soutenue": false}')
+
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Quel est le montant de la facture FA-2025-994 ?")
+
+    assert invites == [], "les chiffres concordaient : le juge n'avait rien à trancher"
+    assert "implication" not in reponse.controles
+    assert not reponse.abstention
+
+
+def test_une_reponse_sans_chiffre_ancre_est_soumise_au_juge(
+    monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, extrait_dieng: int
+) -> None:
+    """Une phrase recopiée peut être authentique sans rien prouver : c'est le cas « Dakar »."""
+    brancher(
+        monkeypatch,
+        ModeleSimule(
+            {
+                "reponse": "La capitale du Sénégal est Dakar.",
+                "sources": [1],
+                "citation": "Le débiteur dispose d'un délai de quinze jours pour former opposition.",
+            }
+        ),
+    )
+    invites = brancher_juge(monkeypatch, '{"soutenue": false}')
+
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Quelle est la capitale du Sénégal ?")
+
+    assert len(invites) == 1, "aucun chiffre n'ancrait la réponse : le juge devait trancher"
+    assert reponse.controles["implication"] is False
+    assert reponse.abstention
+
+
+def test_le_juge_peut_confirmer_une_reponse_sans_chiffre(
+    monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, extrait_dieng: int
+) -> None:
+    """Le contrôle ne doit pas faire taire ce qui est réellement soutenu par la pièce."""
+    brancher(
+        monkeypatch,
+        ModeleSimule(
+            {
+                "reponse": "Le débiteur peut former opposition.",
+                "sources": [1],
+                "citation": "Le débiteur dispose d'un délai de quinze jours pour former opposition.",
+            }
+        ),
+    )
+    brancher_juge(monkeypatch, '{"soutenue": true}')
+
+    with session_utilisateur(cabinet.dieng) as session:
+        reponse = repondre(session, "Le débiteur peut-il former opposition ?")
+
+    assert reponse.controles["implication"] is True
+    assert not reponse.abstention
+
+
 def test_une_reponse_illisible_provoque_une_abstention(
     monkeypatch: pytest.MonkeyPatch, cabinet: Cabinet, extrait_dieng: int
 ) -> None:
@@ -405,11 +507,14 @@ def test_une_reponse_acceptee_a_ses_quatre_controles_au_vert(
     with session_utilisateur(cabinet.dieng) as session:
         reponse = repondre(session, "Quel délai pour former opposition ?")
     assert not reponse.abstention
+    # « Quinze jours. » ne porte aucun chiffre : l'ancrage passe par la citation recopiée,
+    # donc le cinquième contrôle s'exerce et figure dans le verdict.
     assert reponse.controles == {
         "sources": True,
         "ignorance": True,
         "references": True,
         "ancrage": True,
+        "implication": True,
     }
 
 
