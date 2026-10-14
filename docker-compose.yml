@@ -1,5 +1,41 @@
-# Services d'infrastructure pour le développement local.
-# Ollama tourne nativement sous Windows (plus rapide sur CPU que dans Docker).
+# JurisMind en une commande :
+#
+#     docker compose up
+#
+# Six services. Trois sont le produit (base, API, interface), trois font exister ce qu'un
+# vrai cabinet possède déjà : son CRM, sa base de dossiers, ses modèles. JurisMind ne crée
+# aucune donnée métier — il lit celles qui existent — donc une démonstration honnête doit
+# faire exister ce « déjà là » avant de brancher l'IA dessus.
+#
+# Aucune clé d'API n'est nécessaire : les modèles tournent en local dans Ollama. Pour une
+# démonstration rapide sur une machine sans carte graphique, poser OPENAI_API_KEY dans
+# `.env` et LLM_FOURNISSEUR=openai ; le service `ollama` reste alors inutilisé.
+
+name: jurismind
+
+x-reglages: &reglages
+  POSTGRES_USER: ${POSTGRES_USER:-jurismind}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jurismind}
+  POSTGRES_DB: ${POSTGRES_DB:-jurismind}
+  POSTGRES_APP_USER: ${POSTGRES_APP_USER:-jurismind_app}
+  POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:-jurismind_app}
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  LEGACY_DB: ${LEGACY_DB:-legacy}
+  OLLAMA_BASE_URL: http://ollama:11434
+  CRM_BASE_URL: http://crm:8100
+  CRM_API_KEY: ${CRM_API_KEY:-crm-dev-key}
+  DOCUMENTS_DIR: /app/data/cabinet/documents
+  # Le secret par défaut ne sert qu'à la démonstration locale. En déploiement réel il vient
+  # de l'environnement et de rien d'autre : un jeton signé avec une valeur publique est un
+  # jeton que n'importe qui peut forger.
+  API_SECRET: ${API_SECRET:-jurismind-demo-secret-a-remplacer}
+  LLM_FOURNISSEUR: ${LLM_FOURNISSEUR:-ollama}
+  MODELE_RAPIDE: ${MODELE_RAPIDE:-qwen2.5:3b}
+  MODELE_QUALITE: ${MODELE_QUALITE:-qwen2.5:3b}
+  MODELE_EMBEDDINGS: ${MODELE_EMBEDDINGS:-bge-m3}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -21,5 +57,92 @@ services:
       retries: 10
     restart: unless-stopped
 
+  # Modèles locaux. Le premier démarrage télécharge environ 3 Go ; les suivants lisent le
+  # volume.
+  ollama:
+    image: ollama/ollama:latest
+    container_name: jurismind-ollama
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  # Conteneur éphémère dont le seul travail est de garantir que les modèles existent avant
+  # qu'on les appelle. Sans lui, l'amorce échouerait sur un modèle absent, et l'erreur
+  # arriverait au milieu de l'indexation plutôt qu'au démarrage.
+  modeles:
+    image: ollama/ollama:latest
+    container_name: jurismind-modeles
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["/bin/sh", "-c"]
+    # Les trois modèles que l'application appellera, pas deux. Le modèle « qualité » ne sert
+    # qu'à l'extraction et aux résumés : l'oublier ne se voit pas au démarrage, mais fait
+    # échouer l'indexation en cours de route. `ollama pull` sur un modèle déjà présent ne
+    # coûte rien, donc les répéter quand les trois réglages pointent le même est sans effet.
+    command: >
+      "ollama pull ${MODELE_RAPIDE:-qwen2.5:3b} &&
+       ollama pull ${MODELE_QUALITE:-qwen2.5:3b} &&
+       ollama pull ${MODELE_EMBEDDINGS:-bge-m3} &&
+       echo 'Modeles prets.'"
+    restart: "no"
+
+  # Le CRM que le cabinet possède déjà. Même image que l'application : c'est un module du
+  # dépôt, pas un service tiers, et en faire une image séparée n'apporterait rien.
+  crm:
+    build: .
+    image: jurismind:local
+    container_name: jurismind-crm
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: *reglages
+    volumes:
+      - donnees:/app/data
+    command: ["uvicorn", "simulation.crm.app:app", "--host", "0.0.0.0", "--port", "8100"]
+    restart: unless-stopped
+
+  # Du conteneur vide au cabinet consultable. Tourne une fois puis s'arrête ; son témoin
+  # dans le volume empêche de tout régénérer au démarrage suivant.
+  amorce:
+    build: .
+    image: jurismind:local
+    container_name: jurismind-amorce
+    depends_on:
+      postgres:
+        condition: service_healthy
+      crm:
+        condition: service_started
+      modeles:
+        condition: service_completed_successfully
+    environment: *reglages
+    volumes:
+      - donnees:/app/data
+    command: ["/app/docker/amorcer.sh"]
+    restart: "no"
+
+  api:
+    build: .
+    image: jurismind:local
+    container_name: jurismind-api
+    depends_on:
+      amorce:
+        condition: service_completed_successfully
+    environment: *reglages
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - donnees:/app/data
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  ollama:
+  donnees:

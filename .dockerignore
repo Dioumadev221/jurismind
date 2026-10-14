@@ -1,0 +1,39 @@
+# Ce qui ne doit jamais entrer dans le contexte de construction.
+#
+# Deux raisons, et la seconde est la plus importante. La première est la vitesse : envoyer
+# 25 Mo de corpus généré et un environnement virtuel au démon Docker à chaque construction
+# est du temps perdu. La seconde est qu'un fichier présent dans le contexte peut finir dans
+# une couche de l'image — et `.env` porte les secrets, `data/comptes-demo.txt` les mots de
+# passe. Une image publiée les emporterait avec elle, de façon irréversible.
+
+# --- secrets et données ---
+.env
+.env.*
+!.env.example
+data/
+
+# --- environnements et caches Python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# --- historique et outillage ---
+.git/
+.github/
+.gitignore
+.claude/
+
+# --- documentation et maquettes : inutiles à l'exécution ---
+docs/
+design/
+*.md
+!README.md
+
+# --- tests : l'image d'exécution n'en a pas besoin ---
+tests/

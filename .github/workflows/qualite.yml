@@ -86,3 +86,43 @@ jobs:
 
       - name: Tests
         run: uv run pytest -q
+
+  # « Déployable » est une affirmation tant qu'une machine neuve ne l'a pas vérifiée. Ce job
+  # construit l'image depuis rien, la démarre, et exige qu'elle réponde. Il tourne en
+  # parallèle des tests : une image qui ne se construit plus doit se voir le jour même, pas
+  # le jour où quelqu'un essaie de l'installer.
+  image:
+    name: L'image se construit et démarre
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construire l'image
+        run: docker build -t jurismind:ci .
+
+      - name: Le français de Tesseract est bien dans l'image
+        # Son absence ne casse rien au démarrage : elle fait échouer la lecture des scans,
+        # soit un tiers du corpus. C'est exactement le genre de panne qu'on ne voit qu'en
+        # production, donc exactement celle qu'il faut vérifier ici.
+        run: docker run --rm jurismind:ci tesseract --list-langs | grep -qx fra
+
+      - name: L'application démarre et répond
+        # Sans PostgreSQL, `/sante` répond quand même : c'est voulu, il rend « dégradé »
+        # plutôt qu'une trace. Ce qu'on vérifie ici, c'est que le processus se lance et sert
+        # du HTTP — l'intégration avec la base est couverte par la suite de tests.
+        run: |
+          docker run -d --name essai -p 8000:8000 jurismind:ci
+          for _ in $(seq 30); do
+            if curl -fsS http://localhost:8000/sante >/dev/null 2>&1; then
+              echo "L'API répond."
+              docker rm -f essai
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "L'API n'a pas répondu en 60 s."
+          docker logs essai
+          docker rm -f essai
+          exit 1

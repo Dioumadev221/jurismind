@@ -397,12 +397,40 @@ cannot sign in until one is issued.
 
 ## Getting started
 
-**Prerequisites** — Docker, [uv](https://docs.astral.sh/uv/), [Ollama](https://ollama.com),
-and Tesseract with the French language pack for OCR.
+**One command. Docker is the only prerequisite — no API key, no Python, no Ollama install.**
+
+```bash
+docker compose up
+```
+
+That brings up six services and runs the whole chain unattended: it generates the firm's
+"existing" systems from a seed, applies the schema and its hand-written row-level security
+policies, syncs the connectors, OCRs and indexes the documents, and issues demo accounts.
+
+```
+http://localhost:8000/app    the interface
+http://localhost:8000/docs   the OpenAPI documentation
+
+docker compose exec api cat data/comptes-demo.txt    sign-in credentials
+```
+
+First run downloads ~3 GB of models and indexes the corpus on CPU: **20 to 40 minutes**,
+printed step by step. Later starts are immediate — a marker in the data volume stops the
+seeding from running twice. `docker compose down -v` deletes the volumes and starts over.
+
+**Faster, with an OpenAI key.** Local models are the zero-cost default, not a constraint.
+Put `LLM_FOURNISSEUR=openai` and `OPENAI_API_KEY=…` in `.env` and answers come back in
+seconds instead of tens of seconds; the `ollama` service then sits unused.
+
+<details>
+<summary><b>Running it natively instead</b> — for development, with the test suite</summary>
+
+Needs [uv](https://docs.astral.sh/uv/), [Ollama](https://ollama.com), and Tesseract with the
+French language pack for OCR.
 
 ```bash
 # 1 · Database and dependencies
-docker compose up -d
+docker compose up -d postgres
 uv sync
 cp .env.example .env
 
@@ -423,9 +451,9 @@ uv run python -m jurismind.api.comptes --demo
 
 # 6 · API and web interface
 uv run uvicorn jurismind.api.main:app --port 8000
-# http://localhost:8000      the interface
-# http://localhost:8000/docs the OpenAPI documentation
 ```
+
+</details>
 
 No real data ships with this repository. The corpus is generated, but it imitates a real
 system: technical identifiers, duplicate records, wrong categories, poorly scanned exhibits.
