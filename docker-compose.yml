@@ -120,6 +120,15 @@ services:
           sleep 3
         done
         exec uvicorn simulation.crm.app:app --host 0.0.0.0 --port 8100
+    # Le contrôle de santé de l'image vise l'API sur le port 8000 : appliqué tel quel au CRM,
+    # il le déclarerait défaillant à vie. Chaque service doit être interrogé là où il écoute.
+    # `start_period` est long parce que ce conteneur attend d'abord le cabinet simulé.
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8100/openapi.json >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      start_period: 300s
+      retries: 5
     restart: unless-stopped
 
   # Du conteneur vide au cabinet consultable. Tourne une fois puis s'arrête ; son témoin
