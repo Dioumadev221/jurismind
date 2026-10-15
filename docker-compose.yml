@@ -106,7 +106,20 @@ services:
     environment: *reglages
     volumes:
       - donnees:/app/data
-    command: ["uvicorn", "simulation.crm.app:app", "--host", "0.0.0.0", "--port", "8100"]
+    # Le CRM lit les fiches que l'amorçage produit à sa première étape : il ne peut donc pas
+    # démarrer avant elle. Sans cette attente il planterait en boucle sur un fichier absent
+    # — ce qui finit par se résoudre tout seul, mais affiche une trace Python pendant
+    # plusieurs minutes à qui lance la démonstration. Une attente annoncée vaut mieux qu'un
+    # échec qui se répare.
+    command:
+      - /bin/sh
+      - -c
+      - |
+        until [ -f /app/data/crm/crm.json ]; do
+          echo "CRM : en attente du cabinet simulé…"
+          sleep 3
+        done
+        exec uvicorn simulation.crm.app:app --host 0.0.0.0 --port 8100
     restart: unless-stopped
 
   # Du conteneur vide au cabinet consultable. Tourne une fois puis s'arrête ; son témoin

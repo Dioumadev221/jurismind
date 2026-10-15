@@ -29,8 +29,11 @@ WORKDIR /app
 # Les dépendances changent bien moins souvent que le code : on les installe d'abord, dans
 # leur propre couche, pour qu'une modification du code ne les réinstalle pas.
 COPY pyproject.toml uv.lock ./
+# `--no-dev` écarte pytest, mypy et ruff, qui n'ont rien à faire dans une image d'exécution.
+# `--group simulation` ajoute `reportlab` : le générateur du cabinet est un livrable de cette
+# image, puisque l'amorçage de la démonstration s'en sert à sa toute première étape.
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-install-project --no-dev
+    uv sync --locked --no-install-project --no-dev --group simulation
 
 COPY src/ ./src/
 COPY migrations/ ./migrations/
@@ -41,7 +44,7 @@ COPY simulation/ ./simulation/
 # les dépendances.
 COPY README.md LICENSE ./
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-dev
+    uv sync --locked --no-dev --group simulation
 
 # ------------------------------------------------------------------ étage d'exécution
 FROM python:3.13-slim-bookworm AS execution

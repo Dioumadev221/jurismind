@@ -435,6 +435,10 @@ seeding from running twice. `docker compose down -v` deletes the volumes and sta
 Put `LLM_FOURNISSEUR=openai` and `OPENAI_API_KEY=…` in `.env` and answers come back in
 seconds instead of tens of seconds; the `ollama` service then sits unused.
 
+**Already running Ollama?** Point the stack at it rather than downloading the models a second
+time: set `OLLAMA_BASE_URL=http://host.docker.internal:11434` in `.env`, then
+`docker compose up --scale ollama=0 --scale modeles=0`.
+
 <details>
 <summary><b>Running it natively instead</b> — for development, with the test suite</summary>
 
