@@ -1,16 +1,25 @@
 """Couche d'accès aux modèles.
 
 Le reste du produit demande « un modèle rapide » ou « un modèle de qualité » sans
-savoir s'il parle à Ollama (local) ou à OpenAI : le choix se fait dans `.env`.
+savoir s'il parle à Ollama (local), à OpenAI, ou à des réponses enregistrées pour une
+démonstration publique (`demo`, voir `rejeu.py`) : le choix se fait dans `.env`.
 """
 
 from enum import StrEnum
 from functools import lru_cache
+from pathlib import Path
 
 from langchain_core.embeddings import Embeddings
 from langchain_core.language_models import BaseChatModel
 
 from jurismind.core.config import get_settings
+from jurismind.llm.rejeu import (
+    ChatEnregistre,
+    ChatRejoue,
+    Registre,
+    VecteursEnregistres,
+    VecteursRejoues,
+)
 
 # Nombre de tokens de contexte demandé aux modèles locaux : assez pour 4-5 extraits,
 # mais pas trop, car sur CPU la lecture du contexte est ce qui coûte le plus cher.
@@ -35,6 +44,23 @@ def modele_chat(
     `json=True` force une réponse en JSON. `nom` permet d'imposer un modèle précis
     (utilisé par le banc d'essai) au lieu de celui choisi dans `.env`.
     """
+    reglages = get_settings()
+    if reglages.llm_fournisseur == "demo":
+        return ChatRejoue(chemin=reglages.llm_rejeu, json_impose=json)
+    modele = _modele_chat(vitesse, json, nom)
+    if reglages.llm_enregistrement:
+        return ChatEnregistre(interne=modele, registre=_registre(), json_impose=json)
+    return modele
+
+
+@lru_cache
+def _registre() -> Registre:
+    chemin = get_settings().llm_enregistrement
+    assert chemin is not None
+    return Registre(Path(chemin))
+
+
+def _modele_chat(vitesse: Vitesse, json: bool, nom: str | None) -> BaseChatModel:
     reglages = get_settings()
     if nom is None:
         nom = reglages.modele_rapide if vitesse is Vitesse.RAPIDE else reglages.modele_qualite
@@ -63,12 +89,22 @@ def modele_chat(
             model_kwargs={"response_format": {"type": "json_object"}} if json else {},
         )
 
-    raise ValueError(f"Fournisseur inconnu : {reglages.llm_fournisseur!r} (attendu : ollama ou openai)")
+    raise ValueError(f"Fournisseur inconnu : {reglages.llm_fournisseur!r} (attendu : ollama, openai ou demo)")
 
 
 @lru_cache
 def modele_embeddings() -> Embeddings:
     """Renvoie le modèle qui transforme un texte en vecteur de 1024 nombres."""
+    reglages = get_settings()
+    if reglages.llm_fournisseur == "demo":
+        return VecteursRejoues(reglages.llm_rejeu)
+    modele = _modele_embeddings()
+    if reglages.llm_enregistrement:
+        return VecteursEnregistres(modele, _registre())
+    return modele
+
+
+def _modele_embeddings() -> Embeddings:
     reglages = get_settings()
 
     if reglages.llm_fournisseur == "ollama":
@@ -90,4 +126,4 @@ def modele_embeddings() -> Embeddings:
             model=reglages.modele_embeddings, api_key=reglages.openai_api_key, dimensions=1024
         )
 
-    raise ValueError(f"Fournisseur inconnu : {reglages.llm_fournisseur!r} (attendu : ollama ou openai)")
+    raise ValueError(f"Fournisseur inconnu : {reglages.llm_fournisseur!r} (attendu : ollama, openai ou demo)")

@@ -10,12 +10,13 @@ n'a plus qu'à mettre en forme. Un fait lu en base ne peut pas être inventé.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from jurismind.core.temps import aujourdhui as jour_du_cabinet
 from jurismind.db.models import (
     AccesDossier,
     Client,
@@ -587,7 +588,7 @@ def points_attention(
 
     `aujourdhui` est explicite pour que les règles soient rejouables à l'identique en test.
     """
-    aujourdhui = aujourdhui or datetime.now(UTC).date()
+    aujourdhui = aujourdhui or jour_du_cabinet()
     dossiers = dossiers if dossiers is not None else dossiers_du_client(session, client_id)
     dossier_ids = [dossier["id"] for dossier in dossiers]
     references = {dossier["id"]: dossier["reference"] for dossier in dossiers}
@@ -615,7 +616,7 @@ def points_du_dossier(
     dossier = session.get(Dossier, dossier_id)
     if dossier is None:
         return []  # invisible pour cet utilisateur : l'isolation a joué
-    aujourdhui = aujourdhui or datetime.now(UTC).date()
+    aujourdhui = aujourdhui or jour_du_cabinet()
     lignes = [ligne for ligne in dossiers_du_client(session, dossier.client_id) if ligne["id"] == dossier_id]
     references = {dossier_id: dossier.reference}
 
@@ -637,7 +638,7 @@ def echeances_a_venir(
     C'est la vue qui manquait : en droit, un délai manqué fait perdre un recours, et un
     avocat a besoin de voir ses échéances ensemble, pas dossier par dossier.
     """
-    aujourdhui = aujourdhui or datetime.now(UTC).date()
+    aujourdhui = aujourdhui or jour_du_cabinet()
     lignes = session.execute(
         select(Dossier.id, Dossier.reference).where(Dossier.statut == StatutDossier.EN_COURS)
     ).all()

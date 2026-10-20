@@ -16,8 +16,8 @@ Deux principes tiennent toute la surface :
 import logging
 from typing import Any
 
-from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -27,6 +27,7 @@ from jurismind.api.routes import (
     conformite,
     connexion,
     courrier,
+    demo,
     documents,
     dossiers,
     recherche,
@@ -34,6 +35,7 @@ from jurismind.api.routes import (
 from jurismind.api.schemas import Sante
 from jurismind.core.config import get_settings
 from jurismind.db.session import get_engine
+from jurismind.llm import ModeleIndisponible
 from jurismind.web import STATIQUE
 
 logger = logging.getLogger(__name__)
@@ -73,6 +75,10 @@ ETIQUETTES: list[dict[str, Any]] = [
             "du demandeur, parce qu'un conflit se trouve souvent chez un confrère du cabinet."
         ),
     },
+    {
+        "name": "Démonstration",
+        "description": "Seulement quand `DEMO=true` : comptes ouverts et demandes préparées.",
+    },
     {"name": "Technique", "description": "État du service."},
 ]
 
@@ -94,6 +100,7 @@ for routeur in (
     documents.routeur,
     courrier.routeur,
     conformite.routeur,
+    demo.routeur,
 ):
     app.include_router(routeur)
 
@@ -103,9 +110,26 @@ for routeur in (
 app.mount("/app", StaticFiles(directory=STATIQUE, html=True), name="interface")
 
 
-@app.get("/", include_in_schema=False)
-def accueil() -> RedirectResponse:
-    """La racine mène à l'interface ; la documentation reste sur /docs."""
+@app.exception_handler(ModeleIndisponible)
+def modele_indisponible(_: Request, erreur: ModeleIndisponible) -> JSONResponse:
+    """Aucun modèle pour cette demande : une phrase qui l'explique, pas une trace."""
+    return JSONResponse(status_code=503, content={"detail": str(erreur)})
+
+
+if get_settings().demo:
+    # Le CRM que le cabinet simulé « possède déjà », servi par le même processus : un
+    # hébergement gratuit n'offre qu'un service, et la démonstration doit pouvoir créer une
+    # tâche dans un CRM quand un visiteur valide une proposition.
+    from simulation.crm.app import app as crm_simule
+
+    app.mount("/crm-simule", crm_simule)
+
+
+@app.get("/", include_in_schema=False, response_model=None)
+def accueil() -> FileResponse | RedirectResponse:
+    """En démonstration, la page de présentation du produit ; dans un cabinet, l'interface."""
+    if get_settings().demo:
+        return FileResponse(STATIQUE.parent / "accueil" / "index.html")
     return RedirectResponse(url="/app/")
 
 

@@ -4,6 +4,7 @@ Usage :
     uv run python -m jurismind.extraction --limite 10
     uv run python -m jurismind.extraction --limite 5 --rapide   # modèle rapide, pour essayer
     uv run python -m jurismind.extraction --dossier D2026-0028   # un dossier qui vient de bouger
+    uv run python -m jurismind.extraction --en-cours --limite 0  # les dossiers ouverts, en entier
 """
 
 import argparse
@@ -26,6 +27,7 @@ def main() -> None:
     parser.add_argument("--limite", type=int, default=10, help="nombre de documents à traiter")
     parser.add_argument("--rapide", action="store_true", help="utiliser le petit modèle")
     parser.add_argument("--dossier", help="ne traiter que les actes de ce dossier, ex. D2026-0028")
+    parser.add_argument("--en-cours", action="store_true", help="seulement les dossiers ouverts")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -35,7 +37,9 @@ def main() -> None:
     faits = douteux = 0
 
     with Session(get_engine()) as session:
-        documents = documents_a_extraire(session, limite=args.limite, dossier=args.dossier)
+        documents = documents_a_extraire(
+            session, limite=args.limite or None, dossier=args.dossier, en_cours=args.en_cours
+        )
         print(f"{len(documents)} document(s) à traiter\n")
         for document in documents:
             debut = time.perf_counter()

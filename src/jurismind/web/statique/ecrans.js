@@ -16,6 +16,9 @@ const GRAVITES = {
 };
 
 async function ecranClients() {
+  // En démonstration, on ouvre sur un client dont la synthèse a été préparée.
+  const preparee = typeof demandesDemo === "function" ? demandesDemo("client").find((d) => d.contexte) : null;
+  if (preparee && !etat.clientChoisi) etat.clientRecherche = preparee.contexte;
   const nom = etat.clientRecherche;
   $("#ecran").innerHTML = `
     ${enTete("Intelligence client", "Un client", "Identité, dossiers, échanges, et ce qui mérite votre attention.")}
@@ -33,6 +36,7 @@ async function ecranClients() {
 
   const lancer = () => {
     etat.clientRecherche = $("#champ-client").value.trim();
+    etat.clientChoisi = true;
     chargerClient().catch((e) => ($("#fiche-client").innerHTML = encadreErreur(e)));
   };
   $("#bouton-client").addEventListener("click", lancer);
@@ -82,6 +86,7 @@ async function chargerClient() {
       <p style="margin:-12px 0 0;font-size:12px;color:var(--color-neutral-700)">
         « Visibles » : la fiche ne compte que les dossiers ouverts à votre compte.
       </p>
+      ${typeof noteDemo === "function" ? noteDemo("client", identifiant) : ""}
 
       <div id="zone-synthese"></div>
 
@@ -186,15 +191,38 @@ const EXEMPLES = [
   "Y a-t-il une convention d'honoraires avec ce client ?",
 ];
 
+/** En démonstration, les exemples sont les questions préparées pour ce compte, avec leur issue. */
+function exemplesQuestions() {
+  const preparees = typeof demandesDemo === "function" ? demandesDemo("question") : [];
+  if (!preparees.length) {
+    return `<span style="font-size:12px;color:var(--color-neutral-700)">Exemples :</span>
+      ${EXEMPLES.map((q) => `<button data-exemple="${texte(q)}" class="tag tag-outline" style="background:transparent;cursor:pointer;font:inherit;font-size:12px">${texte(q.slice(0, 44))}…</button>`).join("")}`;
+  }
+  const issue = (d) => {
+    const r = d.resultat || {};
+    if (r.abstention) return r.juste ? "abstention attendue" : "abstention";
+    return r.juste ? "réponse juste" : "réponse fausse";
+  };
+  return `<span style="font-size:12px;color:var(--color-neutral-700);width:100%">Questions préparées pour la démonstration, avec ce que JurisMind en a fait — erreurs comprises :</span>
+    ${preparees
+      .map(
+        (d) => `<button data-exemple="${texte(d.libelle)}" class="tag tag-outline" style="background:transparent;cursor:pointer;font:inherit;font-size:12px;text-align:left">
+          ${texte(d.libelle)} <span style="color:var(--color-accent-700)">· ${texte(issue(d))}</span></button>`,
+      )
+      .join("")}`;
+}
+
 async function ecranQuestions() {
   const dossiers = etat.dossiers.length ? etat.dossiers : await api("/dossiers");
   etat.dossiers = dossiers;
+  const preparees = typeof demandesDemo === "function" ? demandesDemo("question") : [];
+  const parDefaut = etat.question || (preparees[0] && preparees[0].libelle) || EXEMPLES[0];
 
   $("#ecran").innerHTML = `
     ${enTete("Réponses citées", "Une question sur les pièces", "La réponse ne vient que des pièces, avec ses sources — ou bien l'agent s'abstient. La recherche est bornée à vos dossiers par PostgreSQL, avant même d'avoir lieu.")}
     <div class="blueprint" style="padding:18px;display:flex;flex-direction:column;gap:12px">
       <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      <textarea id="champ-question" class="input" style="min-height:64px;font-size:16px;width:100%;box-sizing:border-box">${texte(etat.question || EXEMPLES[0])}</textarea>
+      <textarea id="champ-question" class="input" style="min-height:64px;font-size:16px;width:100%;box-sizing:border-box">${texte(parDefaut)}</textarea>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <span style="font-size:12px;color:var(--color-neutral-700)">Restreindre à</span>
         <select id="champ-dossier" class="input" style="width:auto;min-width:260px;max-width:420px">
@@ -208,8 +236,7 @@ async function ecranQuestions() {
         </button>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <span style="font-size:12px;color:var(--color-neutral-700)">Exemples :</span>
-        ${EXEMPLES.map((q) => `<button data-exemple="${texte(q)}" class="tag tag-outline" style="background:transparent;cursor:pointer;font:inherit;font-size:12px">${texte(q.slice(0, 44))}…</button>`).join("")}
+        ${exemplesQuestions()}
       </div>
     </div>
     <div id="resultat-question"></div>`;
@@ -263,7 +290,11 @@ function ligneExtrait(resultat) {
 async function repondreQuestion() {
   const zone = $("#resultat-question");
   etat.question = $("#champ-question").value.trim();
-  zone.innerHTML = attente("Recherche hybride, puis rédaction et vérification… 20 à 60 secondes sur processeur.");
+  zone.innerHTML = attente(
+    etat.demo
+      ? "Recherche hybride, puis vérification de la réponse du modèle…"
+      : "Recherche hybride, puis rédaction et vérification… 20 à 60 secondes sur processeur.",
+  );
   try {
     const reponse = await api("/questions", {
       method: "POST",
@@ -440,6 +471,7 @@ async function chargerPiece() {
         ${etiquette("Lecture", fiche.lu_par_ocr ? "OCR · français" : "texte direct")}
         ${etiquette("Extraction", extraction ? (extraction.relue ? "relue et validée" : "proposée · non relue") : "aucune", false, true)}
       </div>
+      ${typeof noteDemo === "function" ? noteDemo("document", identifiant) : ""}
 
       <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start">
         <div style="display:flex;flex-direction:column;gap:12px;min-width:0">

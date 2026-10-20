@@ -70,8 +70,12 @@ COPY --from=constructeur --chown=jurismind:jurismind /app/src /app/src
 COPY --from=constructeur --chown=jurismind:jurismind /app/migrations /app/migrations
 COPY --from=constructeur --chown=jurismind:jurismind /app/alembic.ini /app/alembic.ini
 COPY --from=constructeur --chown=jurismind:jurismind /app/simulation /app/simulation
-COPY --chown=jurismind:jurismind docker/amorcer.sh /app/docker/amorcer.sh
-RUN chmod +x /app/docker/amorcer.sh \
+COPY --chown=jurismind:jurismind docker/amorcer.sh docker/demo.sh /app/docker/
+# La démonstration publique : export de la base, réponses enregistrées, scénario. Sans eux,
+# l'image sert quand même le produit complet (`docker compose up`) ; avec eux, elle peut aussi
+# tourner seule, sans modèle, sur un hébergement gratuit (`docker/demo.sh`).
+COPY --chown=jurismind:jurismind demo/ /app/demo/
+RUN chmod +x /app/docker/amorcer.sh /app/docker/demo.sh \
     && mkdir -p /app/data \
     && chown jurismind:jurismind /app/data
 

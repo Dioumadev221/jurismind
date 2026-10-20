@@ -15,6 +15,9 @@ through a single environment variable.
 
 The engineering problem is not retrieval. It is **knowing when not to answer**.
 
+**Live demo:** _link added once deployed_ — a simulated Dakar firm, sign in with one click.
+No real client and no real data: the firm, its 433 exhibits and its CRM are generated.
+
 ---
 
 ## Contents
@@ -32,6 +35,7 @@ The engineering problem is not retrieval. It is **knowing when not to answer**.
 - [Measured results](#measured-results)
 - [API surface](#api-surface)
 - [Getting started](#getting-started)
+- [The public demo](#the-public-demo)
 - [Repository layout](#repository-layout)
 - [Engineering decisions](#engineering-decisions)
 - [Trade-offs and known limitations](#trade-offs-and-known-limitations)
@@ -427,7 +431,8 @@ http://localhost:8000/docs   the OpenAPI documentation
 docker compose exec api cat data/comptes-demo.txt    sign-in credentials
 ```
 
-First run downloads ~3 GB of models and indexes the corpus on CPU: **20 to 40 minutes**,
+First run downloads ~3 GB of models, indexes the corpus and extracts the open matters' key
+fields on CPU: **30 to 60 minutes**,
 printed step by step. Later starts are immediate — a marker in the data volume stops the
 seeding from running twice. `docker compose down -v` deletes the volumes and starts over.
 
@@ -466,7 +471,10 @@ uv run python -m jurismind.ingestion
 # 5 · Demo accounts — passwords written to data/, outside the repository
 uv run python -m jurismind.api.comptes --demo
 
-# 6 · API and web interface
+# 6 · Key fields of the open matters (amounts, deadlines, parties)
+uv run python -m jurismind.extraction --en-cours --limite 0
+
+# 7 · API and web interface
 uv run uvicorn jurismind.api.main:app --port 8000
 ```
 
@@ -487,6 +495,33 @@ uv run python -m jurismind.conformite balayer
 
 ---
 
+## The public demo
+
+A free hosting tier has no room for a 3 GB model, and a CPU answer takes tens of seconds.
+The public demo therefore **replays the model** instead of running it, and runs everything
+else for real:
+
+1. **Record**, on a machine with the models: `python -m jurismind.demo enregistrer` drives a
+   scenario through the API exactly as a visitor would — questions taken from the answer
+   key, three that must be refused, matter summaries, client briefs, exhibit analyses, mail
+   triage — and logs every model call, keyed by a hash of the exact prompt.
+2. **Export**: `python -m jurismind.demo exporter` freezes the indexed database in
+   `demo/base.sql.gz`, next to the recording and the scenario.
+3. **Serve**: [`docker/demo.sh`](docker/demo.sh) restores the export into an empty
+   PostgreSQL (Neon's free tier), then on every restart puts back what visitors changed.
+
+What runs live on the server: hybrid retrieval, the five verification gates, row-level
+security, the deterministic agent steps, proposal validation, the CRM write-back (to an
+in-process simulated CRM). What is replayed: the model's text, and only for a prompt that
+was recorded. An unrecorded question gets a sentence saying so — never an invented answer.
+The interface lists the prepared requests, with the outcome measured at recording time,
+including the wrong ones.
+
+The cabinet date is frozen (`DATE_DU_CABINET`) so that deadlines computed at recording time
+are still the ones shown months later. Deployment steps: [docs/DEPLOY_FR.md](docs/DEPLOY_FR.md).
+
+---
+
 ## Repository layout
 
 ```
@@ -504,10 +539,12 @@ src/jurismind/
 ├── web/            web interface — HTML, CSS and plain JS, served by the API
 │                   the matter screen is its centre: parties, team with access,
 │                   running deadlines, and five tabs over one case file
-└── evaluation/     measurement harnesses
+├── evaluation/     measurement harnesses
+└── demo/           record, export and restore the public demo
 migrations/         Alembic, including hand-written RLS policies
 simulation/         legacy database, fake CRM, document generator
-docs/               design document and 9 ADRs
+demo/               the public demo: database export, recorded model calls, scenario
+docs/               design document and 12 ADRs
 ```
 
 > **A note on language.** The codebase and design documents are written in French. The
@@ -535,6 +572,9 @@ was rejected.
 | [0007](docs/adr/0007-classement-et-releve-des-clauses.md) | Closed vocabulary, quoted clauses | 40 exhibits filed as `DIVERS`, and paraphrased clauses |
 | [0008](docs/adr/0008-validation-humaine-en-base.md) | Approvals persisted, not `interrupt()` | approval arrives tomorrow, from someone else |
 | [0009](docs/adr/0009-conflits-interets.md) | Conflicts: over-report rather than under-report | the firm acting against a company bearing a current client's name |
+| [0010](docs/adr/0010-controles-juger-sur-ce-que-le-modele-a-vu.md) | Gates judge what the model actually saw | a reference gate silencing right answers when OCR mangled a header |
+| [0011](docs/adr/0011-passe-implication.md) | A fifth gate that reads the source | "Dakar", correctly quoted, answering a question no exhibit asks |
+| [0012](docs/adr/0012-demonstration-publique-rejouee.md) | Public demo replays the model, runs everything else | 3 GB of models against a 512 MB free tier |
 
 The full design document — actors, permission matrix, data model, ten-step plan — is in
 **[docs/conception.md](docs/conception.md)**.
@@ -545,6 +585,9 @@ The full design document — actors, permission matrix, data model, ten-step pla
 
 Stated plainly, because a demonstration project that claims to be finished is lying.
 
+- **The public demo answers only what was recorded.** Any other question falls back to
+  keyword search and a polite refusal; the full product needs the models, locally or
+  through OpenAI.
 - **Agent endpoints are synchronous** and take 20–100 s on CPU. In production they would go
   through the `taches` queue, which already exists in the schema.
 - **No email is ever sent.** A validated draft is approved for sending; a human sends it.

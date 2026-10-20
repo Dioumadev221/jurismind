@@ -21,7 +21,6 @@ from __future__ import annotations
 import logging
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime
 from typing import Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
@@ -51,6 +50,7 @@ from jurismind.agents.propositions import (
     enregistrer,
     tache_pour_prospect,
 )
+from jurismind.core.temps import aujourdhui as jour_du_cabinet
 from jurismind.db.models import (
     Communication,
     Confiance,
@@ -302,7 +302,7 @@ def construire_graphe(session: Session) -> Any:
         if candidat is None and not deja_proposee(session, echange.id, TypeProposition.TACHE_CRM):
             societe = societe_de(echange.expediteur)
             if societe:
-                echeance = echeance_relance(datetime.now(UTC).date())
+                echeance = echeance_relance(jour_du_cabinet())
                 deposees.append(
                     enregistrer(
                         session,

@@ -29,7 +29,7 @@ from sqlalchemy.orm import Session
 
 from jurismind.core.texte import references_brutes
 from jurismind.db.models import Communication, Document, Dossier, Extrait
-from jurismind.llm import modele_embeddings
+from jurismind.llm import ModeleIndisponible, modele_embeddings
 
 logger = logging.getLogger(__name__)
 
@@ -216,9 +216,15 @@ def rechercher(
 ) -> list[Resultat]:
     """Recherche hybride, dans les seuls dossiers visibles par la session en cours."""
     filtres = filtres or Filtres()
-    vecteur = vecteur if vecteur is not None else modele_embeddings().embed_query(question)
+    if vecteur is None:
+        try:
+            vecteur = modele_embeddings().embed_query(question)
+        except ModeleIndisponible:
+            # Démonstration sans modèle, question jamais vue : on cherche par les mots et par
+            # les références, qui ne demandent aucun modèle, plutôt que de ne rien rendre.
+            logger.info("Pas de vecteur pour cette question : voie vectorielle ignorée.")
 
-    vectoriels = recherche_vectorielle(session, vecteur, filtres)
+    vectoriels = recherche_vectorielle(session, vecteur, filtres) if vecteur is not None else []
     textuels = recherche_plein_texte(session, question, filtres)
     references = recherche_par_reference(session, question, filtres)
     logger.debug(

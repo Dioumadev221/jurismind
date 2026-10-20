@@ -121,6 +121,7 @@ async function ecranDossier() {
     lienClient.addEventListener("click", (evenement) => {
       evenement.preventDefault();
       etat.clientRecherche = fiche.client;
+      etat.clientChoisi = true;
       aller("clients");
     });
   }
@@ -333,10 +334,14 @@ function formulaireAssistant(fiche) {
     <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
       ${SUGGESTIONS.map((phrase) => `<button data-suggestion="${texte(phrase)}" class="tag tag-outline" style="background:transparent;cursor:pointer;font:inherit;font-size:12px">${texte(phrase)}</button>`).join("")}
     </div>
-    <p style="margin:10px 0 0;font-size:12px;color:var(--color-neutral-700)">
+    ${
+      etat.demo
+        ? noteDemo("dossier", fiche.reference)
+        : `<p style="margin:10px 0 0;font-size:12px;color:var(--color-neutral-700)">
       L'agent lit ${fiche.nombre_documents} pièce(s) sous vos droits. Un modèle local tourne sur le
       processeur : compter 20 à 100 secondes. Une chronologie, elle, revient instantanément.
-    </p>
+    </p>`
+    }
     <div id="reponse-assistant" style="margin-top:20px"></div>`;
 }
 

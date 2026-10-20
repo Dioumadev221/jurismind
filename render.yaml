@@ -1,0 +1,24 @@
+# Render Blueprint : New > Blueprint > ce dépôt. La base vient de Neon (gratuit, pgvector
+# inclus) : coller sa chaîne de connexion dans DATABASE_URL quand Render la demande.
+#
+# Le plan gratuit n'a ni GPU ni la mémoire d'un modèle : la démonstration rejoue des réponses
+# de modèles enregistrées (voir docs/DEPLOY_FR.md), et calcule tout le reste en direct.
+services:
+  - type: web
+    name: jurismind
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerCommand: /app/docker/demo.sh
+    healthCheckPath: /sante
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: CONTACT_URL
+        sync: false
+      # Le mot de passe du rôle PostgreSQL soumis à l'isolation, créé au premier démarrage.
+      - key: POSTGRES_APP_PASSWORD
+        generateValue: true
+      # La clé qui signe les jetons. Tirée au hasard par Render : jamais la valeur du dépôt.
+      - key: API_SECRET
+        generateValue: true

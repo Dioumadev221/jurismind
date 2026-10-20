@@ -48,32 +48,40 @@ psycopg.connect(
 ).close()\""
 
 echo
-echo "── 1/5  Cabinet simulé ($TAILLE, graine $GRAINE) ───────────────────────────────"
+echo "── 1/6  Cabinet simulé ($TAILLE, graine $GRAINE) ───────────────────────────────"
 # Produit la base « existante » du cabinet, les fiches du CRM et les pièces (PDF, DOCX,
 # scans). C'est le point de départ : JurisMind ne crée jamais de données métier, il lit
 # celles qui existent déjà.
 python -m simulation --taille "$TAILLE" --seed "$GRAINE"
 
 echo
-echo "── 2/5  Schéma JurisMind ───────────────────────────────────────────────────────"
+echo "── 2/6  Schéma JurisMind ───────────────────────────────────────────────────────"
 # Les migrations portent aussi les règles d'isolation PostgreSQL (Row-Level Security),
 # écrites à la main : ce n'est pas que de la structure, c'est la sécurité du produit.
 alembic upgrade head
 
 echo
-echo "── 3/5  Connecteurs (base existante + CRM) ─────────────────────────────────────"
+echo "── 3/6  Connecteurs (base existante + CRM) ─────────────────────────────────────"
 # Toutes les routes métier du CRM exigent une clé ; `/openapi.json` est servi sans jeton et
 # prouve que l'application est montée, pas seulement que le port écoute.
 attendre "le CRM simulé" "curl -fsS ${CRM_BASE_URL:-http://crm:8100}/openapi.json"
 python -m jurismind.connectors
 
 echo
-echo "── 4/5  Lecture des pièces, OCR et vecteurs ────────────────────────────────────"
+echo "── 4/6  Lecture des pièces, OCR et vecteurs ────────────────────────────────────"
 attendre "Ollama" "curl -fsS ${OLLAMA_BASE_URL:-http://ollama:11434}/api/tags"
 python -m jurismind.ingestion
 
 echo
-echo "── 5/5  Comptes de démonstration ───────────────────────────────────────────────"
+echo "── 5/6  Valeurs des actes des dossiers ouverts ─────────────────────────────────"
+# Montants, dates et délais lus dans chaque acte : c'est ce que l'échéancier et les points
+# d'attention comptent. Seuls les dossiers ouverts sont traités — ce sont les seuls dont
+# les délais courent encore. Les autres se traitent plus tard, à la demande :
+#     docker compose exec api python -m jurismind.extraction --limite 0
+python -m jurismind.extraction --en-cours --limite 0
+
+echo
+echo "── 6/6  Comptes de démonstration ───────────────────────────────────────────────"
 # Les mots de passe sont écrits dans data/comptes-demo.txt, à l'intérieur du volume :
 # jamais dans l'image, jamais dans le dépôt, jamais dans les journaux.
 python -m jurismind.api.comptes --demo

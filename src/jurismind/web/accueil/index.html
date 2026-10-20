@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JurisMind — l'IA d'un cabinet d'avocats qui cite ses sources</title>
+<meta name="description" content="JurisMind branche une IA sur la base de dossiers, le CRM et les pièces d'un cabinet d'avocats. Recherche hybride, réponses citées et vérifiées, agents sous validation humaine, isolation des données par PostgreSQL.">
+<link rel="stylesheet" href="/app/styles.css">
+<style>
+  html, body { margin: 0; }
+  [hidden] { display: none !important; }
+  body { background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); line-height: 1.55; }
+  a { color: var(--color-accent-700); }
+  .page { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  header.barre { display: flex; align-items: center; gap: 12px; padding: 18px 0; }
+  header.barre nav { margin-left: auto; display: flex; gap: 18px; font-size: 14px; flex-wrap: wrap; justify-content: flex-end; }
+  header.barre nav a { color: var(--color-neutral-800); text-decoration: none; }
+  header.barre nav a:hover { color: var(--color-accent-700); }
+  .marque { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+  .marque strong { font-family: var(--font-heading); font-weight: 600; font-size: 21px; letter-spacing: -0.01em; }
+  .surtitre { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent-700); }
+  h1 { font-size: clamp(38px, 6vw, 64px); line-height: 1.02; margin: 14px 0 18px; letter-spacing: -0.01em; }
+  h2 { font-size: clamp(28px, 3.6vw, 38px); margin: 6px 0 14px; line-height: 1.1; }
+  h3 { font-size: 21px; margin: 0 0 6px; }
+  .accroche { font-size: 19px; max-width: 700px; color: var(--color-neutral-800); margin: 0; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+  .bouton { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; font-family: var(--font-heading); font-weight: 600; font-size: 17px; text-decoration: none; border: 1px solid var(--color-accent); }
+  .bouton.plein { background: var(--color-accent); color: #fff; }
+  .bouton.plein:hover { background: var(--color-accent-700); }
+  .bouton.vide { color: var(--color-accent-800); background: transparent; }
+  .bouton.vide:hover { background: var(--color-accent-100); }
+  section { padding: 64px 0; border-top: 1px solid var(--color-divider); }
+  .hero { padding: 56px 0 48px; border-top: none; }
+  .avis { margin-top: 22px; font-size: 13px; color: var(--color-neutral-700); max-width: 700px; }
+  .grille { display: grid; gap: 0; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); border: 1px solid var(--color-divider); }
+  .grille > div { padding: 22px 24px; border-right: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider); background: var(--color-bg); }
+  .grille p { margin: 0; font-size: 15px; color: var(--color-neutral-800); }
+  .capture { margin-top: 36px; border: 1px solid var(--color-divider); background: var(--color-surface); box-shadow: var(--shadow-md); }
+  .capture img { display: block; width: 100%; height: auto; }
+  .capture figcaption { padding: 10px 14px; font-size: 13px; color: var(--color-neutral-700); border-top: 1px solid var(--color-divider); background: var(--color-bg); }
+  .etapes { counter-reset: etape; display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+  .etapes li { counter-increment: etape; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--color-divider); }
+  .etapes li::before { content: counter(etape, decimal-leading-zero); font-family: var(--font-heading); font-weight: 600; font-size: 22px; color: var(--color-accent); }
+  .etapes strong { font-weight: 600; }
+  .etapes p { margin: 2px 0 0; font-size: 15px; color: var(--color-neutral-800); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-neutral-700); font-weight: 500; }
+  td.chiffre { font-family: var(--font-heading); font-weight: 600; font-size: 22px; white-space: nowrap; color: var(--color-accent-800); }
+  .deux { display: grid; gap: 40px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); align-items: start; }
+  .liste { margin: 0; padding-left: 18px; font-size: 15px; color: var(--color-neutral-800); }
+  .liste li { margin: 6px 0; }
+  .etiquettes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .etiquettes span { font-size: 13px; padding: 4px 9px; border: 1px solid var(--color-divider); background: var(--color-neutral-100); }
+  footer { padding: 36px 0 56px; border-top: 1px solid var(--color-divider); font-size: 13px; color: var(--color-neutral-700); display: flex; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
+  @media (max-width: 640px) {
+    header.barre { flex-wrap: wrap; }
+    header.barre nav { margin-left: 0; width: 100%; justify-content: flex-start; }
+    .etapes li { grid-template-columns: 34px 1fr; }
+    td.chiffre { font-size: 18px; }
+    th, td { padding: 9px 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="barre">
+    <a class="marque" href="/">
+      <span class="blueprint" style="width:34px;height:34px;display:grid;place-items:center;color:var(--color-accent)">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>
+      </span>
+      <strong>JurisMind</strong>
+    </a>
+    <nav>
+      <a href="#principes">Principes</a>
+      <a href="#fonctionnement">Fonctionnement</a>
+      <a href="#mesures">Mesures</a>
+      <a href="/docs">API</a>
+      <a href="https://github.com/Dioumadev221/jurismind">Code</a>
+    </nav>
+  </header>
+
+  <!-- ------------------------------------------------------------------ hero -->
+  <section class="hero">
+    <div class="surtitre">IA juridique · droit sénégalais et OHADA</div>
+    <h1>Une IA de cabinet qui cite ses sources,<br>ou qui dit qu'elle ne sait pas.</h1>
+    <p class="accroche">
+      JurisMind se branche sur ce qu'un cabinet d'avocats possède déjà : son logiciel de dossiers,
+      son CRM, ses pièces scannées. Il retrouve l'information, comprend un dossier et prépare le
+      travail répétitif. Chaque réponse est vérifiée par le code avant d'être affichée, et rien ne
+      sort du cabinet sans le clic d'un avocat.
+    </p>
+    <div class="actions">
+      <a class="bouton plein" href="/app/">Ouvrir la démonstration</a>
+      <a class="bouton vide" href="/docs">Documentation de l'API</a>
+      <a class="bouton vide" href="https://github.com/Dioumadev221/jurismind">Le code source</a>
+      <a class="bouton vide" id="lien-contact" hidden>Un projet pour votre cabinet ?</a>
+    </div>
+    <p class="avis">
+      Démonstration sur un cabinet simulé : 69 dossiers, 40 clients, 433 pièces dont 135 scans,
+      397 échanges, tous générés. Aucune donnée réelle. Les réponses des modèles y sont rejouées
+      depuis un enregistrement ; la recherche, les contrôles et les droits, eux, s'exécutent en direct.
+    </p>
+
+    <figure class="capture">
+      <img src="/app/img/question.png" alt="Une question sur les pièces : la réponse, ses sources citées, et le résultat de chacun des contrôles" loading="lazy" width="1440" height="900" onerror="this.closest('figure').hidden = true">
+      <figcaption>Une question sur les pièces : la réponse, la source qui la justifie, et les cinq contrôles qui l'ont laissée passer.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ------------------------------------------------------------- principes -->
+  <section id="principes">
+    <div class="surtitre">Trois principes</div>
+    <h2>En droit, une réponse inventée coûte plus cher que pas de réponse.</h2>
+    <p class="accroche" style="margin-bottom:28px">
+      Un délai faux fait perdre un recours ; un montant faux finit dans des conclusions. Tout le
+      produit est construit autour de cette asymétrie.
+    </p>
+    <div class="grille">
+      <div>
+        <h3>Le code calcule, le modèle rédige</h3>
+        <p>Chronologies, délais, priorités, rattachement d'un courrier à son dossier : tout est
+        déduit de la base par des règles. Le modèle interprète une demande et met un résultat en
+        phrases. Une date lue dans une table ne peut pas être inventée.</p>
+      </div>
+      <div>
+        <h3>Rien n'est affiché sans vérification</h3>
+        <p>Les sources citées doivent exister, chaque chiffre doit figurer dans la pièce, la phrase
+        recopiée doit s'y trouver, et la source doit vraiment dire ce qui est affirmé. Au moindre
+        échec, JurisMind s'abstient, et l'abstention est présentée comme un résultat.</p>
+      </div>
+      <div>
+        <h3>La base applique les droits</h3>
+        <p>L'isolation repose sur le Row-Level Security de PostgreSQL : chaque requête s'exécute
+        sous l'identité de l'avocat. Deux avocats ouvrent la même page et voient 43 et 26 dossiers,
+        sans un seul en commun. Un endpoint mal écrit ne peut rien faire fuiter.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------- fonctionnement -->
+  <section id="fonctionnement">
+    <div class="deux">
+      <div>
+        <div class="surtitre">Fonctionnement</div>
+        <h2>Des archives qu'on ne lisait plus à un dossier qu'on interroge.</h2>
+        <ol class="etapes">
+          <li><div><strong>Connecteurs vers l'existant.</strong><p>Le logiciel de dossiers et le CRM sont lus à travers une couche anticorruption : doublons fusionnés prudemment, catégories « DIVERS » reclassées, rien d'écrasé.</p></div></li>
+          <li><div><strong>Lecture des pièces.</strong><p>PDF, Word et scans passés à l'OCR français, découpés selon la structure juridique (articles, « PAR CES MOTIFS ») plutôt qu'au nombre de caractères.</p></div></li>
+          <li><div><strong>Recherche hybride.</strong><p>Le sens (pgvector), les mots (plein texte français) et les références exactes comme « FA-2025-978 », fusionnés par RRF, dans les seuls dossiers que la base laisse voir.</p></div></li>
+          <li><div><strong>Réponse vérifiée.</strong><p>Le modèle répond en JSON avec ses sources et une citation ; cinq contrôles écrits en code décident si la réponse s'affiche.</p></div></li>
+          <li><div><strong>Agents sous validation.</strong><p>Assistance dossier, intelligence client, analyse de pièce, tri du courrier. Ils proposent ; un avocat valide, et c'est la validation qui produit l'effet, jusque dans le CRM.</p></div></li>
+        </ol>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <figure class="capture" style="margin-top:0">
+          <img src="/app/img/dossier.png" alt="L'écran d'un dossier : parties, équipe ayant accès, délais qui courent et chronologie" loading="lazy" width="1440" height="900" onerror="this.closest('figure').hidden = true">
+          <figcaption>L'écran du dossier : l'équipe qui y a accès, les délais qui courent, la chronologie construite par le code.</figcaption>
+        </figure>
+        <figure class="capture" style="margin-top:0">
+          <img src="/app/img/courrier.png" alt="Le tri du courrier : chaque email entrant reçoit un dossier, une priorité et un brouillon, en attente de validation" loading="lazy" width="1440" height="900" onerror="this.closest('figure').hidden = true">
+          <figcaption>Le courrier entrant trié : dossier, priorité, brouillon. Rien ne part sans validation.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------------- mesures -->
+  <section id="mesures">
+    <div class="surtitre">Mesuré, pas affirmé</div>
+    <h2>Des chiffres produits par des commandes du dépôt.</h2>
+    <p class="accroche" style="margin-bottom:24px">
+      Sur le corpus simulé, avec un modèle de 3 milliards de paramètres sur processeur, sans carte
+      graphique. Les réponses attendues sont connues, puisque les pièces ont été générées à partir
+      de faits consignés.
+    </p>
+    <table>
+      <thead><tr><th>Mesure</th><th>Résultat</th><th>Ce que ça veut dire</th></tr></thead>
+      <tbody>
+        <tr><td>Abstention quand la réponse n'existe pas</td><td class="chiffre">100 %</td><td>« Quelle est la capitale du Sénégal ? » : refusé, alors que le modèle citait une vraie phrase d'une vraie pièce.</td></tr>
+        <tr><td>Réponses inventées, sur 40 questions</td><td class="chiffre">1 / 40</td><td>Le chiffre qui compte le plus, publié tel quel.</td></tr>
+        <tr><td>Justesse quand il répond</td><td class="chiffre">87,5 %</td><td>92,6 % hors des cinq questions dont l'OCR a détruit la réponse.</td></tr>
+        <tr><td>Rappel de la recherche</td><td class="chiffre">90,6 %</td><td>La bonne pièce est retrouvée parmi les extraits fournis au modèle.</td></tr>
+        <tr><td>Extraction structurée, 98 champs sur 30 actes</td><td class="chiffre">100 %</td><td>Montants, dates, délais, parties, y compris sur des scans.</td></tr>
+        <tr><td>Tests automatisés</td><td class="chiffre">360+</td><td>Contre un vrai PostgreSQL avec pgvector, en intégration continue.</td></tr>
+      </tbody>
+    </table>
+    <p class="avis">
+      Le cinquième contrôle a fait passer la justesse brute de 90,6 % à 87,5 % : il a fait taire une
+      réponse juste pour en refuser une inventée. En droit, ce compromis se prend dans ce sens. Les
+      décisions et ce qu'elles ont coûté sont écrites dans onze notes d'architecture (ADR) du dépôt.
+    </p>
+  </section>
+
+  <!-- ------------------------------------------------------- ce qu'on essaie -->
+  <section>
+    <div class="deux">
+      <div>
+        <div class="surtitre">Dans la démonstration</div>
+        <h2>Ce que vous pouvez essayer.</h2>
+        <ul class="liste">
+          <li>Entrer comme deux avocats différents, et constater qu'ils ne voient pas les mêmes dossiers.</li>
+          <li>Poser les questions préparées : montants de factures, délais de mise en demeure, préavis, et des questions sans réponse.</li>
+          <li>Ouvrir un dossier : parties, équipe, délais qui courent, chronologie instantanée.</li>
+          <li>Consulter l'échéancier du cabinet, recalculé depuis les actes.</li>
+          <li>Faire analyser une pièce scannée, et lire ce que l'OCR en a tiré.</li>
+          <li>Valider ou rejeter les propositions de l'agent de courrier.</li>
+          <li>Vérifier un conflit d'intérêts avant d'accepter un nouveau client.</li>
+        </ul>
+        <div class="actions"><a class="bouton plein" href="/app/">Ouvrir la démonstration</a></div>
+      </div>
+      <div>
+        <div class="surtitre">Limites assumées</div>
+        <h2>Ce qu'il ne fait pas.</h2>
+        <ul class="liste">
+          <li>Il n'envoie aucun email : un brouillon validé est « approuvé pour envoi », un humain l'envoie.</li>
+          <li>Sur processeur, une réponse prend de 20 à 100 secondes ; avec une clé OpenAI, quelques secondes.</li>
+          <li>Le contrôle des conflits compare des noms : il ne voit pas une société qui a changé de nom, ni une filiale.</li>
+          <li>Dans cette démonstration en ligne, seules les demandes préparées reçoivent une réponse du modèle.</li>
+        </ul>
+        <div class="surtitre" style="margin-top:32px">Technique</div>
+        <div class="etiquettes" style="margin-top:10px">
+          <span>Python 3.13</span><span>FastAPI</span><span>PostgreSQL 16</span><span>pgvector</span><span>Row-Level Security</span><span>LangGraph</span><span>LangChain</span><span>Tesseract OCR</span><span>Ollama</span><span>OpenAI</span><span>SQLAlchemy 2</span><span>Alembic</span><span>Docker</span><span>GitHub Actions</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>JurisMind · projet de démonstration · licence MIT</span>
+    <span><a href="/app/">Démonstration</a> · <a href="/docs">API</a> · <a href="https://github.com/Dioumadev221/jurismind">GitHub</a></span>
+  </footer>
+</div>
+
+<script>
+  // Le lien de contact vient du serveur (CONTACT_URL) : la page reste statique.
+  fetch("/demo").then((r) => (r.ok ? r.json() : null)).then((demo) => {
+    if (demo && demo.contact_url) {
+      const lien = document.getElementById("lien-contact");
+      lien.href = demo.contact_url;
+      lien.hidden = false;
+    }
+  }).catch(() => {});
+</script>
+</body>
+</html>

@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session
 
 from jurismind.core.config import get_settings
 from jurismind.db.models import Document, Dossier, Extraction, StatutExtraction, StatutTraitement
+from jurismind.db.models.metier import StatutDossier
 from jurismind.extraction.schemas import ActeJuridique, schema_pour
 from jurismind.llm import Vitesse, modele_chat
 
@@ -229,12 +230,14 @@ def valider(
 
 
 def documents_a_extraire(
-    session: Session, limite: int | None = None, dossier: str | None = None
+    session: Session, limite: int | None = None, dossier: str | None = None, en_cours: bool = False
 ) -> list[Document]:
     """Documents lus, dont la catégorie a un schéma, et sans proposition à jour.
 
     `dossier` restreint à une référence : c'est ce qu'on veut en exploitation quand un
-    dossier vient de bouger, plutôt que de relancer une campagne complète.
+    dossier vient de bouger, plutôt que de relancer une campagne complète. `en_cours` se
+    limite aux dossiers ouverts : ce sont les seuls dont les délais courent encore, donc
+    ceux qui alimentent l'échéancier — une heure de calcul au lieu de cinq sur processeur.
     """
     deja_faits = select(Extraction.document_id)
     requete = (
@@ -246,8 +249,12 @@ def documents_a_extraire(
         )
         .order_by(Document.id)
     )
+    if dossier or en_cours:
+        requete = requete.join(Dossier, Document.dossier_id == Dossier.id)
     if dossier:
-        requete = requete.join(Dossier, Document.dossier_id == Dossier.id).where(Dossier.reference == dossier)
+        requete = requete.where(Dossier.reference == dossier)
+    if en_cours:
+        requete = requete.where(Dossier.statut == StatutDossier.EN_COURS)
     documents = [
         document
         for document in session.scalars(requete)

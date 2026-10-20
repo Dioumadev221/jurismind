@@ -297,6 +297,7 @@ async function montrerApplication() {
   $("#nom-utilisateur").textContent = etat.compte.nom_complet;
   $("#role-utilisateur").textContent = etat.compte.role;
   $("#initiales").textContent = initiales(etat.compte.nom_complet);
+  if (typeof rendreBandeauDemo === "function") rendreBandeauDemo();
   aller(etat.ecran);
   sante();
 }
@@ -308,7 +309,8 @@ async function sante() {
     $("#voyant-base").style.background = etatService.base ? "var(--color-accent)" : "var(--color-neutral-500)";
     $("#etat-base").textContent = `Base PostgreSQL · ${etatService.base ? "répond" : "injoignable"}`;
     $("#voyant-modeles").style.background = "var(--color-accent)";
-    $("#etat-modeles").textContent = `Modèles · ${etatService.modeles}`;
+    $("#etat-modeles").textContent =
+      etatService.modeles === "demo" ? "Modèles · réponses enregistrées" : `Modèles · ${etatService.modeles}`;
   } catch {
     $("#etat-base").textContent = "Base PostgreSQL · inconnue";
   }
