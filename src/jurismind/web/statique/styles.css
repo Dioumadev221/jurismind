@@ -2,12 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@400;600&display=swap');
 
 :root {
-  --color-bg: #f2f2f3;
-  --color-surface: #e9e9ea;
-  --color-text: #1d1f20;
-  --color-accent: #5980a6;
-  --color-accent-2: #728fab;
-  --color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
+  --color-bg: #f6f6f3;
+  --color-surface: #ecebe6;
+  --color-text: #1a1d21;
+  --color-accent: #33618f;
+  --color-accent-2: #5c7d9e;
+  --color-divider: color-mix(in srgb, #1a1d21 14%, transparent);
 
   /* Tonal ramps — generated in OKLCH on one shared lightness scale, so the
      same step of any role matches the others in visual value. */
@@ -21,15 +21,15 @@
   --color-neutral-800: #424244;
   --color-neutral-900: #2b2b2d;
 
-  --color-accent-100: #eef6ff;
-  --color-accent-200: #d6ebff;
-  --color-accent-300: #b5d9fd;
-  --color-accent-400: #94bce3;
-  --color-accent-500: #749dc4;
-  --color-accent-600: #597ea3;
-  --color-accent-700: #416180;
-  --color-accent-800: #2c455d;
-  --color-accent-900: #1d2d3d;
+  --color-accent-100: #edf3f9;
+  --color-accent-200: #d5e2ef;
+  --color-accent-300: #b0c7de;
+  --color-accent-400: #84a4c4;
+  --color-accent-500: #5a82aa;
+  --color-accent-600: #33618f;
+  --color-accent-700: #264b72;
+  --color-accent-800: #1b3756;
+  --color-accent-900: #12253b;
 
   --color-accent-2-100: #eef6ff;
   --color-accent-2-200: #d6ebff;
@@ -276,6 +276,9 @@ textarea.input { min-height: 90px; resize: vertical; }
 .dialog-body { font-size: 14px; opacity: 0.85; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
 
+/* — a warm highlight, used sparingly (landing page, demo marks) — */
+:root { --color-gold: #b3874a; --color-gold-100: #f6eee2; }
+
 /* — blueprint frame: components are wireframe objects (see .blueprint
      and .corner above) — square, transparent, hairline-bordered — */
 .card, .btn, .input, .tag, .seg, .dialog { border-radius: 0; }
@@ -284,3 +287,34 @@ textarea.input { min-height: 90px; resize: vertical; }
 .btn-primary { border-color: var(--color-accent); }
 .btn-ghost { border-color: transparent; }
 
+
+/* ------------------------------------------------------------ démonstration publique */
+.note-demo {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-accent-900);
+  background: var(--color-accent-100);
+  border-left: 2px solid var(--color-accent);
+  padding: 8px 12px;
+}
+.compte-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.compte-demo:hover,
+.compte-demo:focus-visible {
+  border-color: var(--color-accent);
+  background: var(--color-accent-100);
+}

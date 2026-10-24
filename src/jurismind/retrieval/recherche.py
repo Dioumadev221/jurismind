@@ -29,7 +29,7 @@ from sqlalchemy.orm import Session
 
 from jurismind.core.texte import references_brutes
 from jurismind.db.models import Communication, Document, Dossier, Extrait
-from jurismind.llm import modele_embeddings
+from jurismind.llm import ModeleIndisponible, modele_embeddings
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +128,11 @@ def recherche_vectorielle(
     """Extraits les plus proches par le sens, avec leur similarité (1 = identique)."""
     distance = Extrait.embedding.cosine_distance(vecteur).label("distance")
     requete = _appliquer_filtres(select(Extrait, distance).where(Extrait.embedding.is_not(None)), filtres)
-    lignes = session.execute(requete.order_by(distance).limit(limite)).all()
+    # Recherche exacte, pas par l'index HNSW. L'index est approché, et l'isolation filtre ses
+    # candidats après coup : un avocat qui ne voit qu'une partie du cabinet recevait moins de
+    # 30 extraits, et pas les mêmes d'une base à l'autre. Trier sur `distance + 0` écarte
+    # l'index ; à quelques milliers d'extraits, le parcours complet prend quelques millisecondes.
+    lignes = session.execute(requete.order_by(distance + 0, Extrait.id).limit(limite)).all()
     return [(extrait, 1 - float(ecart)) for extrait, ecart in lignes]
 
 
@@ -142,7 +146,8 @@ def recherche_plein_texte(
     requete = _appliquer_filtres(
         select(Extrait).where(Extrait.recherche_texte.op("@@")(requete_texte)), filtres
     )
-    return list(session.scalars(requete.order_by(pertinence.desc()).limit(limite)))
+    # L'identifiant départage les ex aequo : sans lui, l'ordre dépend du rangement physique.
+    return list(session.scalars(requete.order_by(pertinence.desc(), Extrait.id).limit(limite)))
 
 
 def recherche_par_reference(
@@ -164,7 +169,7 @@ def recherche_par_reference(
         for reference in references
     ]
     requete = _appliquer_filtres(select(Extrait).where(or_(*conditions)), filtres)
-    return list(session.scalars(requete.limit(limite)))
+    return list(session.scalars(requete.order_by(Extrait.id).limit(limite)))
 
 
 def fusionner(
@@ -216,9 +221,15 @@ def rechercher(
 ) -> list[Resultat]:
     """Recherche hybride, dans les seuls dossiers visibles par la session en cours."""
     filtres = filtres or Filtres()
-    vecteur = vecteur if vecteur is not None else modele_embeddings().embed_query(question)
+    if vecteur is None:
+        try:
+            vecteur = modele_embeddings().embed_query(question)
+        except ModeleIndisponible:
+            # Démonstration sans modèle, question jamais vue : on cherche par les mots et par
+            # les références, qui ne demandent aucun modèle, plutôt que de ne rien rendre.
+            logger.info("Pas de vecteur pour cette question : voie vectorielle ignorée.")
 
-    vectoriels = recherche_vectorielle(session, vecteur, filtres)
+    vectoriels = recherche_vectorielle(session, vecteur, filtres) if vecteur is not None else []
     textuels = recherche_plein_texte(session, question, filtres)
     references = recherche_par_reference(session, question, filtres)
     logger.debug(

@@ -30,7 +30,7 @@ def connexion(demande: DemandeConnexion) -> Jeton:
         # Le même message dans les deux cas : ne pas dire si l'adresse existe.
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Adresse ou mot de passe incorrect",
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     jeton, duree = creer_jeton(utilisateur.id, utilisateur.role)

@@ -48,7 +48,7 @@ function texte(valeur) {
 /** 13750000 → « 13 750 000 », comme l'écrit un acte. */
 function montant(valeur) {
   if (valeur === null || valeur === undefined) return "—";
-  return Number(valeur).toLocaleString("fr-FR").replace(/ | /g, " ");
+  return Number(valeur).toLocaleString("en-US");
 }
 
 class ApiErreur extends Error {
@@ -67,10 +67,10 @@ async function api(chemin, options = {}) {
   const reponse = await fetch(chemin, { ...options, headers: { ...entetes, ...options.headers } });
   if (reponse.status === 401 && etat.jeton) {
     deconnecter();
-    throw new ApiErreur(401, "Session expirée, reconnectez-vous.");
+    throw new ApiErreur(401, "Session expired, please sign in again.");
   }
   if (!reponse.ok) {
-    let detail = `Erreur ${reponse.status}`;
+    let detail = `Error ${reponse.status}`;
     try {
       detail = (await reponse.json()).detail ?? detail;
     } catch {
@@ -121,14 +121,14 @@ function initiales(nomComplet) {
  * la sienne, on y entre en ouvrant une ligne, et c'est « Dossiers » qui doit rester surligné.
  */
 const ECRANS = {
-  dossiers: { titre: "Dossiers", rendre: () => ecranDossiers() },
-  dossier: { titre: "Dossier", menu: "dossiers", rendre: () => ecranDossier() },
-  echeances: { titre: "Échéances", rendre: () => ecranEcheances() },
+  dossiers: { titre: "Matters", rendre: () => ecranDossiers() },
+  dossier: { titre: "Matter", menu: "dossiers", rendre: () => ecranDossier() },
+  echeances: { titre: "Deadlines", rendre: () => ecranEcheances() },
   clients: { titre: "Clients", rendre: () => ecranClients() },
-  questions: { titre: "Questions", rendre: () => ecranQuestions() },
-  pieces: { titre: "Pièces", rendre: () => ecranPieces() },
-  courrier: { titre: "Courrier", rendre: () => ecranCourrier() },
-  conflits: { titre: "Conflits d'intérêts", rendre: () => ecranConflits() },
+  questions: { titre: "Ask the files", rendre: () => ecranQuestions() },
+  pieces: { titre: "Documents", rendre: () => ecranPieces() },
+  courrier: { titre: "Inbox", rendre: () => ecranCourrier() },
+  conflits: { titre: "Conflict check", rendre: () => ecranConflits() },
 };
 
 /** Le bandeau de titre, identique sur tous les écrans. */
@@ -148,23 +148,28 @@ function patienter(message) {
   $("#ecran").innerHTML = attente(message);
 }
 
-/** 2026-09-19 → « 19/09 » : la colonne reste étroite et la lecture rapide. */
+const MOIS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** 2026-09-19 → « 19 Sep » : la colonne reste étroite et la lecture rapide. */
 function dateCourte(valeur) {
   if (!valeur) return "—";
   const [annee, mois, jour] = String(valeur).slice(0, 10).split("-");
-  return annee ? `${jour}/${mois}` : String(valeur);
+  return annee && mois ? `${Number(jour)} ${MOIS[Number(mois) - 1]}` : String(valeur);
 }
 
-/** 2026-09-17 → « 17/09/2026 ». */
+/** 2026-09-17 → « 17 Sep 2026 ». */
 function dateLongue(valeur) {
-  if (!valeur) return "sans date";
+  if (!valeur) return "undated";
   const [annee, mois, jour] = String(valeur).slice(0, 10).split("-");
-  return annee ? `${jour}/${mois}/${annee}` : String(valeur);
+  return annee && mois ? `${Number(jour)} ${MOIS[Number(mois) - 1]} ${annee}` : String(valeur);
 }
+
+/** Les rôles de la base, tels qu'un lecteur anglophone les attend. */
+const ROLES = { admin: "Administrator", avocat: "Lawyer", assistant: "Legal assistant" };
 
 function encadreErreur(erreur) {
   return `<div class="card" style="padding:18px;border-color:var(--color-accent-300);background:var(--color-accent-100)">
-      <div style="font-family:var(--font-heading);font-weight:600;font-size:17px;margin-bottom:4px">Impossible d'afficher cet écran</div>
+      <div style="font-family:var(--font-heading);font-weight:600;font-size:17px;margin-bottom:4px">This screen could not be displayed</div>
       <div style="font-size:13px;color:var(--color-accent-900)">${texte(erreur.detail || erreur.message)}</div>
     </div>`;
 }
@@ -174,15 +179,15 @@ function montrerErreur(erreur) {
 }
 
 const MATIERES = {
-  RECOUV: "Recouvrement",
+  RECOUV: "Debt recovery",
   COMM: "Commercial",
-  BAIL: "Bail",
-  CONTRAT: "Contrat",
-  SOC: "Société",
+  BAIL: "Lease",
+  CONTRAT: "Contract",
+  SOC: "Corporate",
 };
 
 async function ecranDossiers() {
-  patienter("Chargement de vos dossiers…");
+  patienter("Loading your matters…");
   etat.dossiers = await api("/dossiers");
 
   const enCours = etat.dossiers.filter((d) => d.statut === "en_cours");
@@ -194,9 +199,9 @@ async function ecranDossiers() {
     /* la file de décisions n'est pas essentielle à cet écran */
   }
 
-  const familles = ["Tous", ...new Set(enCours.map((d) => MATIERES[d.matiere] || d.matiere))];
+  const familles = ["All", ...new Set(enCours.map((d) => MATIERES[d.matiere] || d.matiere))];
   const visibles =
-    etat.filtre === "Tous"
+    etat.filtre === "All"
       ? enCours
       : enCours.filter((d) => (MATIERES[d.matiere] || d.matiere) === etat.filtre);
 
@@ -204,24 +209,24 @@ async function ecranDossiers() {
   const badge = $("#compte-decisions");
   badge.hidden = decisions === 0;
   badge.textContent = decisions;
-  $("#texte-perimetre").textContent = `Périmètre : ${etat.dossiers.length} dossiers`;
+  $("#texte-perimetre").textContent = `Access: ${etat.dossiers.length} matters`;
 
   $("#ecran").innerHTML = `
     <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:260px">
-        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:4px">Portefeuille</div>
-        <h1 style="font-size:34px;margin:0">Mes dossiers</h1>
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:4px">Portfolio</div>
+        <h1 style="font-size:34px;margin:0">My matters</h1>
         <p style="margin:6px 0 0;font-size:13px;color:var(--color-neutral-700)">
-          Liste produite par PostgreSQL sous votre identité : elle ne contient que les dossiers ouverts à votre compte.
+          PostgreSQL builds this list under your identity: it only contains the matters your account can open.
         </p>
       </div>
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));border:1px solid var(--color-divider)">
-      ${indicateur("Dossiers visibles", etat.dossiers.length)}
-      ${indicateur("En cours", enCours.length)}
-      ${indicateur("Enjeu en cours (FCFA)", montant(enjeu))}
-      ${indicateur("Décisions en attente", decisions, true, false)}
+      ${indicateur("Visible matters", etat.dossiers.length)}
+      ${indicateur("Active", enCours.length)}
+      ${indicateur("Amount at stake (FCFA)", montant(enjeu))}
+      ${indicateur("Pending approvals", decisions, true, false)}
     </div>
 
     <div style="display:flex;flex-direction:column;border:1px solid var(--color-divider)">
@@ -235,13 +240,13 @@ async function ecranDossiers() {
             .join("")}
         </div>
         <div style="flex:1"></div>
-        <span style="font-size:12px;color:var(--color-neutral-700)">${visibles.length} dossier(s) · statut en cours</span>
+        <span style="font-size:12px;color:var(--color-neutral-700)">${visibles.length} active matter(s)</span>
       </div>
       <div style="overflow-x:auto">
         <table class="table" style="min-width:860px">
-          <thead><tr><th style="padding-left:14px">Référence</th><th>Intitulé</th><th>Matière</th><th>Juridiction</th><th style="text-align:right">Enjeu (FCFA)</th><th>Statut</th></tr></thead>
+          <thead><tr><th style="padding-left:14px">Reference</th><th>Title</th><th>Practice area</th><th>Court</th><th style="text-align:right">At stake (FCFA)</th><th>Status</th></tr></thead>
           <tbody>
-            ${visibles.map(ligneDossier).join("") || `<tr><td colspan="6" style="padding:18px;color:var(--color-neutral-700)">Aucun dossier dans cette matière.</td></tr>`}
+            ${visibles.map(ligneDossier).join("") || `<tr><td colspan="6" style="padding:18px;color:var(--color-neutral-700)">No matter in this practice area.</td></tr>`}
           </tbody>
         </table>
       </div>
@@ -275,7 +280,7 @@ function ligneDossier(dossier) {
       <td><span class="tag tag-neutral">${texte(MATIERES[dossier.matiere] || dossier.matiere)}</span></td>
       <td style="font-size:13px;color:var(--color-neutral-800)">${texte(dossier.juridiction || "—")}</td>
       <td style="text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap">${texte(montant(dossier.enjeu_fcfa))}</td>
-      <td><span class="tag tag-accent">En cours</span></td>
+      <td><span class="tag tag-accent">Active</span></td>
     </tr>`;
 }
 
@@ -295,8 +300,9 @@ async function montrerApplication() {
   $("#connexion").hidden = true;
   $("#application").hidden = false;
   $("#nom-utilisateur").textContent = etat.compte.nom_complet;
-  $("#role-utilisateur").textContent = etat.compte.role;
+  $("#role-utilisateur").textContent = ROLES[etat.compte.role] || etat.compte.role;
   $("#initiales").textContent = initiales(etat.compte.nom_complet);
+  if (typeof rendreBandeauDemo === "function") rendreBandeauDemo();
   aller(etat.ecran);
   sante();
 }
@@ -306,11 +312,12 @@ async function sante() {
   try {
     const etatService = await api("/sante");
     $("#voyant-base").style.background = etatService.base ? "var(--color-accent)" : "var(--color-neutral-500)";
-    $("#etat-base").textContent = `Base PostgreSQL · ${etatService.base ? "répond" : "injoignable"}`;
+    $("#etat-base").textContent = `PostgreSQL · ${etatService.base ? "online" : "unreachable"}`;
     $("#voyant-modeles").style.background = "var(--color-accent)";
-    $("#etat-modeles").textContent = `Modèles · ${etatService.modeles}`;
+    $("#etat-modeles").textContent =
+      etatService.modeles === "demo" ? "Models · recorded answers" : `Models · ${etatService.modeles}`;
   } catch {
-    $("#etat-base").textContent = "Base PostgreSQL · inconnue";
+    $("#etat-base").textContent = "PostgreSQL · unknown";
   }
 }
 
@@ -322,16 +329,16 @@ $("#formulaire-connexion").addEventListener("submit", async (evenement) => {
   const bouton = $("#bouton-connexion");
   erreur.hidden = true;
   bouton.disabled = true;
-  bouton.textContent = "Connexion…";
+  bouton.textContent = "Signing in…";
   try {
     await connecter($("#champ-email").value.trim(), $("#champ-mot-de-passe").value);
     await montrerApplication();
   } catch (echec) {
-    erreur.textContent = echec.detail || "Le service ne répond pas.";
+    erreur.textContent = echec.detail || "The service is not responding.";
     erreur.hidden = false;
   } finally {
     bouton.disabled = false;
-    bouton.textContent = "Se connecter";
+    bouton.textContent = "Sign in";
   }
 });
 

@@ -1,0 +1,2309 @@
+{
+  "accounts": [
+    {
+      "id": "ACC-00001",
+      "name": "Sahel Pêche",
+      "type": "company",
+      "industry": "Pêche",
+      "city": "Mbour",
+      "phone": "+221339675487",
+      "website": "www.sahel-peche-sa.example",
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2023-11-01",
+      "updated_at": "2026-07-29"
+    },
+    {
+      "id": "ACC-00002",
+      "name": "Cheikh Cissé",
+      "type": "person",
+      "industry": null,
+      "city": "Thiès",
+      "phone": "+221784795536",
+      "website": null,
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2022-05-18",
+      "updated_at": "2026-08-21"
+    },
+    {
+      "id": "ACC-00003",
+      "name": "SAHEL BTP SA",
+      "type": "company",
+      "industry": "BTP",
+      "city": "Thiès",
+      "phone": "+221339631739",
+      "website": "www.sahel-btp-sa.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "005528972 3V1",
+      "created_at": "2024-10-27",
+      "updated_at": "2026-09-09"
+    },
+    {
+      "id": "ACC-00004",
+      "name": "Sahel Télécom GIE",
+      "type": "company",
+      "industry": "Télécom",
+      "city": "Dakar",
+      "phone": "+221336976156",
+      "website": "www.sahel-telecom-gie.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2020-01-10",
+      "updated_at": "2026-09-08"
+    },
+    {
+      "id": "ACC-00005",
+      "name": "Aïssatou Cissé",
+      "type": "person",
+      "industry": null,
+      "city": "Dakar",
+      "phone": "+221759811197",
+      "website": null,
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2023-10-30",
+      "updated_at": "2026-08-06"
+    },
+    {
+      "id": "ACC-00006",
+      "name": "Serigne Sow",
+      "type": "person",
+      "industry": null,
+      "city": "Saint-Louis",
+      "phone": "+221778394374",
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2019-08-08",
+      "updated_at": "2026-09-05"
+    },
+    {
+      "id": "ACC-00007",
+      "name": "Pape Samb",
+      "type": "person",
+      "industry": null,
+      "city": "Kaolack",
+      "phone": "+221784823079",
+      "website": null,
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2019-12-06",
+      "updated_at": "2026-08-05"
+    },
+    {
+      "id": "ACC-00008",
+      "name": "Malick Diop",
+      "type": "person",
+      "industry": null,
+      "city": "Rufisque",
+      "phone": "+221781594082",
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2019-09-04",
+      "updated_at": "2026-08-17"
+    },
+    {
+      "id": "ACC-00009",
+      "name": "ALASSANE NDOUR",
+      "type": "person",
+      "industry": null,
+      "city": "Rufisque",
+      "phone": "+221766408764",
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2024-08-30",
+      "updated_at": "2026-09-14"
+    },
+    {
+      "id": "ACC-00010",
+      "name": "Pape Cissé",
+      "type": "person",
+      "industry": null,
+      "city": "Touba",
+      "phone": "+221755622541",
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2019-07-30",
+      "updated_at": "2026-07-15"
+    },
+    {
+      "id": "ACC-00011",
+      "name": "Casamance Logistique SA",
+      "type": "company",
+      "industry": "Logistique",
+      "city": "Dakar",
+      "phone": "+221334381975",
+      "website": "www.casamance-logistique-sa.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "002191066 3A1",
+      "created_at": "2021-10-31",
+      "updated_at": "2026-07-30"
+    },
+    {
+      "id": "ACC-00012",
+      "name": "Mariama Lo",
+      "type": "person",
+      "industry": null,
+      "city": "Dakar",
+      "phone": "+221777899392",
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2020-04-26",
+      "updated_at": "2026-08-12"
+    },
+    {
+      "id": "ACC-00013",
+      "name": "Dakar Télécom SARL",
+      "type": "company",
+      "industry": "Télécom",
+      "city": "Dakar",
+      "phone": "+221332685810",
+      "website": "www.dakar-telecom-sarl.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "007818496 2G1",
+      "created_at": "2019-06-14",
+      "updated_at": "2026-06-25"
+    },
+    {
+      "id": "ACC-00014",
+      "name": "Casamance Services SA",
+      "type": "company",
+      "industry": "Services",
+      "city": "Mbour",
+      "phone": "+221332182380",
+      "website": "www.casamance-services-sa.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "006022741 3A1",
+      "created_at": "2021-06-24",
+      "updated_at": "2026-07-03"
+    },
+    {
+      "id": "ACC-00015",
+      "name": "DAKAR HÔTELLERIE SARL",
+      "type": "company",
+      "industry": "Hôtellerie",
+      "city": "Mbour",
+      "phone": "+221332656680",
+      "website": "www.dakar-hotellerie-sarl.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "001739653 1C1",
+      "created_at": "2019-12-15",
+      "updated_at": "2026-07-21"
+    },
+    {
+      "id": "ACC-00016",
+      "name": "Casamance Logistique SUARL",
+      "type": "company",
+      "industry": "Logistique",
+      "city": "Dakar",
+      "phone": "+221335219541",
+      "website": "www.casamance-logistique-suarl.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2024-06-20",
+      "updated_at": "2026-07-12"
+    },
+    {
+      "id": "ACC-00017",
+      "name": "Djoloff Agro SARL",
+      "type": "company",
+      "industry": "Agro",
+      "city": "Dakar",
+      "phone": "+221332828443",
+      "website": "www.djoloff-agro-sarl.example",
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "009546409 2V2",
+      "created_at": "2023-06-16",
+      "updated_at": "2026-08-14"
+    },
+    {
+      "id": "ACC-00018",
+      "name": "Sénégal Distribution SUARL",
+      "type": "company",
+      "industry": "Distribution",
+      "city": "Dakar",
+      "phone": "+221334077449",
+      "website": "www.senegal-distribution-suarl.example",
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "008235969 1C3",
+      "created_at": "2019-02-27",
+      "updated_at": "2026-07-27"
+    },
+    {
+      "id": "ACC-00019",
+      "name": "Sine Services",
+      "type": "company",
+      "industry": "Services",
+      "city": "Thiès",
+      "phone": "+221331954096",
+      "website": "www.sine-services-sa.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2022-01-04",
+      "updated_at": "2026-09-17"
+    },
+    {
+      "id": "ACC-00020",
+      "name": "Niayes Import-Export SARL",
+      "type": "company",
+      "industry": "Import-Export",
+      "city": "Saint-Louis",
+      "phone": "+221331518141",
+      "website": "www.niayes-import-export-sarl.example",
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "002788238 2B1",
+      "created_at": "2021-04-26",
+      "updated_at": "2026-07-25"
+    },
+    {
+      "id": "ACC-00021",
+      "name": "SALOUM ÉNERGIE SUARL",
+      "type": "company",
+      "industry": "Énergie",
+      "city": "Rufisque",
+      "phone": "+221338847672",
+      "website": "www.saloum-energie-suarl.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2020-08-29",
+      "updated_at": "2026-09-05"
+    },
+    {
+      "id": "ACC-00022",
+      "name": "Djoloff Immobilier SUARL",
+      "type": "company",
+      "industry": "Immobilier",
+      "city": "Dakar",
+      "phone": "+221339556378",
+      "website": "www.djoloff-immobilier-suarl.example",
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "007381734 2A2",
+      "created_at": "2024-12-03",
+      "updated_at": "2026-08-30"
+    },
+    {
+      "id": "ACC-00023",
+      "name": "NIAYES DISTRIBUTION SARL",
+      "type": "company",
+      "industry": "Distribution",
+      "city": "Rufisque",
+      "phone": "+221334353768",
+      "website": "www.niayes-distribution-sarl.example",
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2018-12-26",
+      "updated_at": "2026-07-19"
+    },
+    {
+      "id": "ACC-00024",
+      "name": "Modou Samb",
+      "type": "person",
+      "industry": null,
+      "city": "Ziguinchor",
+      "phone": "+221785849524",
+      "website": null,
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2025-03-04",
+      "updated_at": "2026-08-27"
+    },
+    {
+      "id": "ACC-00025",
+      "name": "Sahel Agro SAS",
+      "type": "company",
+      "industry": "Agro",
+      "city": "Dakar",
+      "phone": "+221337935860",
+      "website": "www.sahel-agro-sas.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2023-03-07",
+      "updated_at": "2026-08-09"
+    },
+    {
+      "id": "ACC-00026",
+      "name": "Kajoor Hôtellerie GIE",
+      "type": "company",
+      "industry": "Hôtellerie",
+      "city": "Dakar",
+      "phone": "+221336517169",
+      "website": "www.kajoor-hotellerie-gie.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "003955087 3V3",
+      "created_at": "2021-07-24",
+      "updated_at": "2026-08-04"
+    },
+    {
+      "id": "ACC-00027",
+      "name": "Ouest Africa Pêche SARL",
+      "type": "company",
+      "industry": "Pêche",
+      "city": "Dakar",
+      "phone": "+221331107634",
+      "website": "www.ouest-africa-peche-sarl.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2025-04-20",
+      "updated_at": "2026-07-03"
+    },
+    {
+      "id": "ACC-00028",
+      "name": "Baobab Distribution SARL",
+      "type": "company",
+      "industry": "Distribution",
+      "city": "Dakar",
+      "phone": "+221334526480",
+      "website": "www.baobab-distribution-sarl.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "005081983 2V2",
+      "created_at": "2020-02-13",
+      "updated_at": "2026-09-06"
+    },
+    {
+      "id": "ACC-00029",
+      "name": "Dakar Textile SA",
+      "type": "company",
+      "industry": "Textile",
+      "city": "Dakar",
+      "phone": "+221333801516",
+      "website": "www.dakar-textile-sa.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2020-03-11",
+      "updated_at": "2026-08-04"
+    },
+    {
+      "id": "ACC-00030",
+      "name": "Dakar Pharma SA",
+      "type": "company",
+      "industry": "Pharma",
+      "city": "Dakar",
+      "phone": "+221335616648",
+      "website": "www.dakar-pharma-sa.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "007982241 3V3",
+      "created_at": "2025-01-08",
+      "updated_at": "2026-07-23"
+    },
+    {
+      "id": "ACC-00031",
+      "name": "Ouest Africa Hôtellerie SA",
+      "type": "company",
+      "industry": "Hôtellerie",
+      "city": "Dakar",
+      "phone": "+221335482086",
+      "website": "www.ouest-africa-hotellerie-sa.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "006101803 3G2",
+      "created_at": "2022-03-05",
+      "updated_at": "2026-09-04"
+    },
+    {
+      "id": "ACC-00032",
+      "name": "Casamance Distribution SA",
+      "type": "company",
+      "industry": "Distribution",
+      "city": "Touba",
+      "phone": "+221336996591",
+      "website": "www.casamance-distribution-sa.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "008893693 3G2",
+      "created_at": "2019-03-04",
+      "updated_at": "2026-07-24"
+    },
+    {
+      "id": "ACC-00033",
+      "name": "Souleymane Fall",
+      "type": "person",
+      "industry": null,
+      "city": "Thiès",
+      "phone": "+221759441094",
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2021-02-17",
+      "updated_at": "2026-06-24"
+    },
+    {
+      "id": "ACC-00034",
+      "name": "Astou Kane",
+      "type": "person",
+      "industry": null,
+      "city": "Mbour",
+      "phone": "+221706642859",
+      "website": null,
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": null,
+      "created_at": "2020-01-13",
+      "updated_at": "2026-09-09"
+    },
+    {
+      "id": "ACC-00035",
+      "name": "Baobab BTP SARL",
+      "type": "company",
+      "industry": "BTP",
+      "city": "Dakar",
+      "phone": "+221337018494",
+      "website": "www.baobab-btp-sarl.example",
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "client",
+      "ninea": "009518424 2A2",
+      "created_at": "2018-11-25",
+      "updated_at": "2026-07-20"
+    },
+    {
+      "id": "ACC-00036",
+      "name": "Casamance Pharma SARL",
+      "type": "company",
+      "industry": null,
+      "city": "Dakar",
+      "phone": null,
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "prospect",
+      "ninea": null,
+      "created_at": "2026-09-17",
+      "updated_at": "2026-09-17"
+    },
+    {
+      "id": "ACC-00037",
+      "name": "Téranga Transport SARL",
+      "type": "company",
+      "industry": null,
+      "city": "Dakar",
+      "phone": null,
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "prospect",
+      "ninea": null,
+      "created_at": "2026-08-31",
+      "updated_at": "2026-08-31"
+    },
+    {
+      "id": "ACC-00038",
+      "name": "Casamance Services SARL",
+      "type": "company",
+      "industry": null,
+      "city": "Dakar",
+      "phone": null,
+      "website": null,
+      "owner": "c.diallo@teranga-avocats.example",
+      "lifecycle_stage": "prospect",
+      "ninea": null,
+      "created_at": "2026-09-04",
+      "updated_at": "2026-09-04"
+    },
+    {
+      "id": "ACC-00039",
+      "name": "Ouest Africa BTP SA",
+      "type": "company",
+      "industry": null,
+      "city": "Dakar",
+      "phone": null,
+      "website": null,
+      "owner": "m.dieng@teranga-avocats.example",
+      "lifecycle_stage": "prospect",
+      "ninea": null,
+      "created_at": "2026-09-19",
+      "updated_at": "2026-09-19"
+    }
+  ],
+  "contacts": [
+    {
+      "id": "CT-00001",
+      "account_id": "ACC-00001",
+      "first_name": "Souleymane",
+      "last_name": "Mbengue",
+      "title": "Directeur général",
+      "email": "souleymane.mbengue@sahel-peche-sa.example",
+      "phone": "+221 77 487 20 80"
+    },
+    {
+      "id": "CT-00002",
+      "account_id": "ACC-00001",
+      "first_name": "Adama",
+      "last_name": "Camara",
+      "title": "Directeur administratif et financier",
+      "email": "adama.camara@sahel-peche-sa.example",
+      "phone": "+221 78 821 18 15"
+    },
+    {
+      "id": "CT-00003",
+      "account_id": "ACC-00002",
+      "first_name": "Cheikh",
+      "last_name": "Cissé",
+      "title": "Client",
+      "email": "cheikh.cisse36@mail.example",
+      "phone": "+221 78 479 55 36"
+    },
+    {
+      "id": "CT-00004",
+      "account_id": "ACC-00003",
+      "first_name": "Omar",
+      "last_name": "Gueye",
+      "title": "Directeur général",
+      "email": "omar.gueye@sahel-btp-sa.example",
+      "phone": "+221 77 316 82 50"
+    },
+    {
+      "id": "CT-00005",
+      "account_id": "ACC-00006",
+      "first_name": "Serigne",
+      "last_name": "Sow",
+      "title": "Client",
+      "email": "serigne.sow38@mail.example",
+      "phone": "+221 77 839 43 74"
+    },
+    {
+      "id": "CT-00006",
+      "account_id": "ACC-00007",
+      "first_name": "Pape",
+      "last_name": "Samb",
+      "title": "Client",
+      "email": "pape.samb82@mail.example",
+      "phone": "+221 78 482 30 79"
+    },
+    {
+      "id": "CT-00007",
+      "account_id": "ACC-00008",
+      "first_name": "Malick",
+      "last_name": "Diop",
+      "title": "Client",
+      "email": "malick.diop15@mail.example",
+      "phone": "+221 78 159 40 82"
+    },
+    {
+      "id": "CT-00008",
+      "account_id": "ACC-00009",
+      "first_name": "Alassane",
+      "last_name": "Ndour",
+      "title": "Client",
+      "email": "alassane.ndour17@mail.example",
+      "phone": "+221 76 640 87 64"
+    },
+    {
+      "id": "CT-00009",
+      "account_id": "ACC-00010",
+      "first_name": "Pape",
+      "last_name": "Cissé",
+      "title": "Client",
+      "email": "pape.cisse86@mail.example",
+      "phone": "+221 75 562 25 41"
+    },
+    {
+      "id": "CT-00010",
+      "account_id": "ACC-00011",
+      "first_name": "Yacine",
+      "last_name": "Sarr",
+      "title": "Directeur général",
+      "email": "yacine.sarr@casamance-logistique-sa.example",
+      "phone": "+221 75 235 83 83"
+    },
+    {
+      "id": "CT-00011",
+      "account_id": "ACC-00012",
+      "first_name": "Mariama",
+      "last_name": "Lo",
+      "title": "Client",
+      "email": "mariama.lo56@mail.example",
+      "phone": "+221 77 789 93 92"
+    },
+    {
+      "id": "CT-00012",
+      "account_id": "ACC-00013",
+      "first_name": "Abdoulaye",
+      "last_name": "Sarr",
+      "title": "Directeur administratif et financier",
+      "email": "abdoulaye.sarr@dakar-telecom-sarl.example",
+      "phone": "+221 76 322 17 84"
+    },
+    {
+      "id": "CT-00013",
+      "account_id": "ACC-00014",
+      "first_name": "Ndeye",
+      "last_name": "Wade",
+      "title": "Directeur général",
+      "email": "ndeye.wade@casamance-services-sa.example",
+      "phone": "+221 76 308 97 91"
+    },
+    {
+      "id": "CT-00014",
+      "account_id": "ACC-00015",
+      "first_name": "Fatou",
+      "last_name": "Sow",
+      "title": "Gérant",
+      "email": "fatou.sow@dakar-hotellerie-sarl.example",
+      "phone": "+221 77 807 29 79"
+    },
+    {
+      "id": "CT-00015",
+      "account_id": "ACC-00015",
+      "first_name": "Adama",
+      "last_name": "Camara",
+      "title": "Directeur administratif et financier",
+      "email": "adama.camara@dakar-hotellerie-sarl.example",
+      "phone": "+221 75 251 65 26"
+    },
+    {
+      "id": "CT-00016",
+      "account_id": "ACC-00015",
+      "first_name": "Adama",
+      "last_name": "Sagna",
+      "title": "Responsable juridique",
+      "email": "adama.sagna@dakar-hotellerie-sarl.example",
+      "phone": "+221 77 466 36 97"
+    },
+    {
+      "id": "CT-00017",
+      "account_id": "ACC-00016",
+      "first_name": "Binta",
+      "last_name": "Thiam",
+      "title": "Directeur administratif et financier",
+      "email": "binta.thiam@casamance-logistique-suarl.example",
+      "phone": "+221 76 940 39 38"
+    },
+    {
+      "id": "CT-00018",
+      "account_id": "ACC-00017",
+      "first_name": "Marième",
+      "last_name": "Thiam",
+      "title": "Gérant",
+      "email": "marieme.thiam@djoloff-agro-sarl.example",
+      "phone": "+221 76 546 87 75"
+    },
+    {
+      "id": "CT-00019",
+      "account_id": "ACC-00018",
+      "first_name": "Dieynaba",
+      "last_name": "Wade",
+      "title": "Gérant",
+      "email": "dieynaba.wade@senegal-distribution-suarl.example",
+      "phone": "+221 76 667 26 34"
+    },
+    {
+      "id": "CT-00020",
+      "account_id": "ACC-00018",
+      "first_name": "Dieynaba",
+      "last_name": "Lo",
+      "title": "Directeur administratif et financier",
+      "email": "dieynaba.lo@senegal-distribution-suarl.example",
+      "phone": "+221 78 730 82 48"
+    },
+    {
+      "id": "CT-00021",
+      "account_id": "ACC-00018",
+      "first_name": "Fatou",
+      "last_name": "Mbaye",
+      "title": "Responsable juridique",
+      "email": "fatou.mbaye@senegal-distribution-suarl.example",
+      "phone": "+221 76 315 65 84"
+    },
+    {
+      "id": "CT-00022",
+      "account_id": "ACC-00019",
+      "first_name": "Ndeye",
+      "last_name": "Diallo",
+      "title": "Directeur général",
+      "email": "ndeye.diallo@sine-services-sa.example",
+      "phone": "+221 77 147 41 70"
+    },
+    {
+      "id": "CT-00023",
+      "account_id": "ACC-00019",
+      "first_name": "Ibrahima",
+      "last_name": "Sy",
+      "title": "Directeur administratif et financier",
+      "email": "ibrahima.sy@sine-services-sa.example",
+      "phone": "+221 70 744 83 34"
+    },
+    {
+      "id": "CT-00024",
+      "account_id": "ACC-00020",
+      "first_name": "Souleymane",
+      "last_name": "Lo",
+      "title": "Gérant",
+      "email": "souleymane.lo@niayes-import-export-sarl.example",
+      "phone": "+221 75 672 86 50"
+    },
+    {
+      "id": "CT-00025",
+      "account_id": "ACC-00021",
+      "first_name": "Binta",
+      "last_name": "Fall",
+      "title": "Gérant",
+      "email": "binta.fall@saloum-energie-suarl.example",
+      "phone": "+221 76 340 44 52"
+    },
+    {
+      "id": "CT-00026",
+      "account_id": "ACC-00021",
+      "first_name": "Oumy",
+      "last_name": "Fall",
+      "title": "Directeur administratif et financier",
+      "email": "oumy.fall@saloum-energie-suarl.example",
+      "phone": "+221 78 254 39 59"
+    },
+    {
+      "id": "CT-00027",
+      "account_id": "ACC-00021",
+      "first_name": "Modou",
+      "last_name": "Fall",
+      "title": "Responsable juridique",
+      "email": "modou.fall@saloum-energie-suarl.example",
+      "phone": "+221 70 517 52 79"
+    },
+    {
+      "id": "CT-00028",
+      "account_id": "ACC-00022",
+      "first_name": "Idrissa",
+      "last_name": "Sagna",
+      "title": "Gérant",
+      "email": "idrissa.sagna@djoloff-immobilier-suarl.example",
+      "phone": "+221 78 599 38 44"
+    },
+    {
+      "id": "CT-00029",
+      "account_id": "ACC-00022",
+      "first_name": "Fatou",
+      "last_name": "Cissé",
+      "title": "Directeur administratif et financier",
+      "email": "fatou.cisse@djoloff-immobilier-suarl.example",
+      "phone": "+221 76 784 96 61"
+    },
+    {
+      "id": "CT-00030",
+      "account_id": "ACC-00022",
+      "first_name": "Souleymane",
+      "last_name": "Tall",
+      "title": "Responsable juridique",
+      "email": "souleymane.tall@djoloff-immobilier-suarl.example",
+      "phone": "+221 78 737 78 13"
+    },
+    {
+      "id": "CT-00031",
+      "account_id": "ACC-00023",
+      "first_name": "Dieynaba",
+      "last_name": "Gueye",
+      "title": "Gérant",
+      "email": "dieynaba.gueye@niayes-distribution-sarl.example",
+      "phone": "+221 70 358 20 70"
+    },
+    {
+      "id": "CT-00032",
+      "account_id": "ACC-00023",
+      "first_name": "Oumy",
+      "last_name": "Ndiaye",
+      "title": "Directeur administratif et financier",
+      "email": "oumy.ndiaye@niayes-distribution-sarl.example",
+      "phone": "+221 76 329 93 18"
+    },
+    {
+      "id": "CT-00033",
+      "account_id": "ACC-00025",
+      "first_name": "Coumba",
+      "last_name": "Sow",
+      "title": "Directeur général",
+      "email": "coumba.sow@sahel-agro-sas.example",
+      "phone": "+221 76 970 97 86"
+    },
+    {
+      "id": "CT-00034",
+      "account_id": "ACC-00025",
+      "first_name": "Mouhamed",
+      "last_name": "Diagne",
+      "title": "Directeur administratif et financier",
+      "email": "mouhamed.diagne@sahel-agro-sas.example",
+      "phone": "+221 77 455 78 64"
+    },
+    {
+      "id": "CT-00035",
+      "account_id": "ACC-00025",
+      "first_name": "Ibrahima",
+      "last_name": "Diouf",
+      "title": "Responsable juridique",
+      "email": "ibrahima.diouf@sahel-agro-sas.example",
+      "phone": "+221 76 112 63 72"
+    },
+    {
+      "id": "CT-00036",
+      "account_id": "ACC-00026",
+      "first_name": "Mouhamed",
+      "last_name": "Gueye",
+      "title": "Directeur général",
+      "email": "mouhamed.gueye@kajoor-hotellerie-gie.example",
+      "phone": "+221 76 972 41 21"
+    },
+    {
+      "id": "CT-00037",
+      "account_id": "ACC-00026",
+      "first_name": "Binta",
+      "last_name": "Faye",
+      "title": "Directeur administratif et financier",
+      "email": "binta.faye@kajoor-hotellerie-gie.example",
+      "phone": "+221 70 683 88 95"
+    },
+    {
+      "id": "CT-00038",
+      "account_id": "ACC-00027",
+      "first_name": "Marième",
+      "last_name": "Niang",
+      "title": "Gérant",
+      "email": "marieme.niang@ouest-africa-peche-sarl.example",
+      "phone": "+221 75 876 40 98"
+    },
+    {
+      "id": "CT-00039",
+      "account_id": "ACC-00028",
+      "first_name": "Binta",
+      "last_name": "Gueye",
+      "title": "Gérant",
+      "email": "binta.gueye@baobab-distribution-sarl.example",
+      "phone": "+221 76 357 39 25"
+    },
+    {
+      "id": "CT-00040",
+      "account_id": "ACC-00028",
+      "first_name": "Serigne",
+      "last_name": "Sow",
+      "title": "Directeur administratif et financier",
+      "email": "serigne.sow@baobab-distribution-sarl.example",
+      "phone": "+221 75 880 98 33"
+    },
+    {
+      "id": "CT-00041",
+      "account_id": "ACC-00029",
+      "first_name": "Yacine",
+      "last_name": "Sy",
+      "title": "Directeur administratif et financier",
+      "email": "yacine.sy@dakar-textile-sa.example",
+      "phone": "+221 76 288 16 42"
+    },
+    {
+      "id": "CT-00042",
+      "account_id": "ACC-00029",
+      "first_name": "Malick",
+      "last_name": "Sow",
+      "title": "Responsable juridique",
+      "email": "malick.sow@dakar-textile-sa.example",
+      "phone": "+221 77 510 72 19"
+    },
+    {
+      "id": "CT-00043",
+      "account_id": "ACC-00030",
+      "first_name": "Pape",
+      "last_name": "Camara",
+      "title": "Directeur général",
+      "email": "pape.camara@dakar-pharma-sa.example",
+      "phone": "+221 75 161 88 22"
+    },
+    {
+      "id": "CT-00044",
+      "account_id": "ACC-00030",
+      "first_name": "Modou",
+      "last_name": "Sène",
+      "title": "Directeur administratif et financier",
+      "email": "modou.sene@dakar-pharma-sa.example",
+      "phone": "+221 78 370 94 20"
+    },
+    {
+      "id": "CT-00045",
+      "account_id": "ACC-00030",
+      "first_name": "Khady",
+      "last_name": "Mbengue",
+      "title": "Responsable juridique",
+      "email": "khady.mbengue@dakar-pharma-sa.example",
+      "phone": "+221 77 260 10 62"
+    },
+    {
+      "id": "CT-00046",
+      "account_id": "ACC-00032",
+      "first_name": "Malick",
+      "last_name": "Thiam",
+      "title": "Directeur général",
+      "email": "malick.thiam@casamance-distribution-sa.example",
+      "phone": "+221 70 441 51 95"
+    },
+    {
+      "id": "CT-00047",
+      "account_id": "ACC-00032",
+      "first_name": "Khady",
+      "last_name": "Seck",
+      "title": "Directeur administratif et financier",
+      "email": "khady.seck@casamance-distribution-sa.example",
+      "phone": "+221 70 810 73 46"
+    },
+    {
+      "id": "CT-00048",
+      "account_id": "ACC-00034",
+      "first_name": "Astou",
+      "last_name": "Kane",
+      "title": "Client",
+      "email": "astou.kane62@mail.example",
+      "phone": "+221 70 664 28 59"
+    },
+    {
+      "id": "CT-00049",
+      "account_id": "ACC-00035",
+      "first_name": "Souleymane",
+      "last_name": "Mbengue",
+      "title": "Gérant",
+      "email": "souleymane.mbengue@baobab-btp-sarl.example",
+      "phone": "+221 70 453 52 80"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "OPP-00001",
+      "account_id": "ACC-00001",
+      "name": "Recouvrement de portefeuille de créances",
+      "stage": "negociation",
+      "amount": 6500000,
+      "currency": "XOF",
+      "close_date": "2026-12-21",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00002",
+      "account_id": "ACC-00002",
+      "name": "Recouvrement de portefeuille de créances",
+      "stage": "proposition",
+      "amount": 13500000,
+      "currency": "XOF",
+      "close_date": "2026-12-13",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00003",
+      "account_id": "ACC-00003",
+      "name": "Mandat – Sahel BTP SA – Contrat de prestation de services avec Atlantique Transport SA",
+      "stage": "gagnee",
+      "amount": 5500000,
+      "currency": "XOF",
+      "close_date": "2026-05-31",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00004",
+      "account_id": "ACC-00003",
+      "name": "Mandat – Sahel BTP SA – Contrat de fourniture avec Saloum Pêche SA",
+      "stage": "gagnee",
+      "amount": 5250000,
+      "currency": "XOF",
+      "close_date": "2026-06-02",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00005",
+      "account_id": "ACC-00003",
+      "name": "Accompagnement ouverture d'une agence à Kaolack",
+      "stage": "negociation",
+      "amount": 8500000,
+      "currency": "XOF",
+      "close_date": "2026-11-29",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00006",
+      "account_id": "ACC-00005",
+      "name": "Mandat – Aïssatou Cissé c/ Casamance Transport SA – Bail commercial",
+      "stage": "gagnee",
+      "amount": 5250000,
+      "currency": "XOF",
+      "close_date": "2026-04-01",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00007",
+      "account_id": "ACC-00007",
+      "name": "Mandat – Pape Samb c/ Djoloff BTP SARL – Bail commercial",
+      "stage": "gagnee",
+      "amount": 2500000,
+      "currency": "XOF",
+      "close_date": "2026-03-02",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00008",
+      "account_id": "ACC-00007",
+      "name": "Mandat – Pape Samb c/ Dakar Distribution GIE – Bail commercial",
+      "stage": "gagnee",
+      "amount": 1000000,
+      "currency": "XOF",
+      "close_date": "2026-05-03",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00009",
+      "account_id": "ACC-00008",
+      "name": "Mandat – Malick Diop c/ Djoloff Distribution GIE – Bail commercial",
+      "stage": "gagnee",
+      "amount": 2250000,
+      "currency": "XOF",
+      "close_date": "2022-05-27",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00010",
+      "account_id": "ACC-00009",
+      "name": "Mandat – Alassane Ndour c/ Sahel Agro SUARL – Recouvrement",
+      "stage": "gagnee",
+      "amount": 3000000,
+      "currency": "XOF",
+      "close_date": "2025-03-27",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00011",
+      "account_id": "ACC-00010",
+      "name": "Mandat – Pape Cissé c/ Djoloff Hôtellerie SARL – Bail commercial",
+      "stage": "gagnee",
+      "amount": 2000000,
+      "currency": "XOF",
+      "close_date": "2025-01-03",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00012",
+      "account_id": "ACC-00010",
+      "name": "Mandat – Constitution de la société Cap-Vert Logistique SARL",
+      "stage": "gagnee",
+      "amount": 1250000,
+      "currency": "XOF",
+      "close_date": "2026-09-16",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00013",
+      "account_id": "ACC-00011",
+      "name": "Mandat – Casamance Logistique SA c/ Saloum Télécom SARL – Recouvrement",
+      "stage": "gagnee",
+      "amount": 1500000,
+      "currency": "XOF",
+      "close_date": "2026-04-01",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00014",
+      "account_id": "ACC-00012",
+      "name": "Mandat – Constitution de la société Ouest Africa Pharma SARL",
+      "stage": "gagnee",
+      "amount": 1250000,
+      "currency": "XOF",
+      "close_date": "2026-03-29",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00015",
+      "account_id": "ACC-00013",
+      "name": "Mandat – Dakar Télécom SARL c/ Sahel Textile SARL – Recouvrement",
+      "stage": "gagnee",
+      "amount": 5500000,
+      "currency": "XOF",
+      "close_date": "2024-07-08",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00016",
+      "account_id": "ACC-00013",
+      "name": "Mandat – Dakar Télécom SARL c/ Casamance Agro GIE – Non-paiement de travaux réalisés",
+      "stage": "gagnee",
+      "amount": 2750000,
+      "currency": "XOF",
+      "close_date": "2026-06-08",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00017",
+      "account_id": "ACC-00013",
+      "name": "Mandat – Dakar Télécom SARL c/ Sahel Logistique GIE – Bail commercial",
+      "stage": "gagnee",
+      "amount": 5750000,
+      "currency": "XOF",
+      "close_date": "2026-09-06",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00018",
+      "account_id": "ACC-00014",
+      "name": "Accompagnement ouverture d'une agence à Dakar",
+      "stage": "proposition",
+      "amount": 6000000,
+      "currency": "XOF",
+      "close_date": "2026-12-26",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00019",
+      "account_id": "ACC-00015",
+      "name": "Accompagnement ouverture d'une agence à Dakar",
+      "stage": "qualification",
+      "amount": 11000000,
+      "currency": "XOF",
+      "close_date": "2026-11-22",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00020",
+      "account_id": "ACC-00016",
+      "name": "Mandat – Casamance Logistique SUARL – Contrat de distribution exclusive avec Saloum BTP SA",
+      "stage": "gagnee",
+      "amount": 4750000,
+      "currency": "XOF",
+      "close_date": "2025-01-03",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00021",
+      "account_id": "ACC-00016",
+      "name": "Mandat – Casamance Logistique SUARL c/ Dakar Pêche GIE – Inexécution d'un contrat de fourniture",
+      "stage": "gagnee",
+      "amount": 5250000,
+      "currency": "XOF",
+      "close_date": "2026-04-25",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00022",
+      "account_id": "ACC-00017",
+      "name": "Mandat – Djoloff Agro SARL – Contrat de fourniture avec Atlantique Logistique SA",
+      "stage": "gagnee",
+      "amount": 4250000,
+      "currency": "XOF",
+      "close_date": "2026-03-13",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00023",
+      "account_id": "ACC-00018",
+      "name": "Mise en conformité des contrats commerciaux",
+      "stage": "proposition",
+      "amount": 4000000,
+      "currency": "XOF",
+      "close_date": "2026-10-12",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00024",
+      "account_id": "ACC-00019",
+      "name": "Mandat – Sine Services SA c/ Cap-Vert Hôtellerie SARL – Inexécution d'un contrat de fourniture",
+      "stage": "gagnee",
+      "amount": 4000000,
+      "currency": "XOF",
+      "close_date": "2026-03-11",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00025",
+      "account_id": "ACC-00019",
+      "name": "Mandat – Sine Services SA c/ Baobab Immobilier SARL – Bail commercial",
+      "stage": "gagnee",
+      "amount": 1500000,
+      "currency": "XOF",
+      "close_date": "2026-09-10",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00026",
+      "account_id": "ACC-00019",
+      "name": "Recouvrement de portefeuille de créances",
+      "stage": "proposition",
+      "amount": 13500000,
+      "currency": "XOF",
+      "close_date": "2027-01-14",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00027",
+      "account_id": "ACC-00020",
+      "name": "Mandat – Niayes Import-Export SARL c/ Atlantique Services SAS – Bail commercial",
+      "stage": "gagnee",
+      "amount": 1250000,
+      "currency": "XOF",
+      "close_date": "2025-07-29",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00028",
+      "account_id": "ACC-00022",
+      "name": "Accompagnement ouverture d'une agence à Dakar",
+      "stage": "negociation",
+      "amount": 9500000,
+      "currency": "XOF",
+      "close_date": "2027-01-13",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00029",
+      "account_id": "ACC-00023",
+      "name": "Mandat – Niayes Distribution SARL c/ Dakar Immobilier GIE – Recouvrement",
+      "stage": "gagnee",
+      "amount": 4250000,
+      "currency": "XOF",
+      "close_date": "2026-07-15",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00030",
+      "account_id": "ACC-00023",
+      "name": "Mise en conformité des contrats commerciaux",
+      "stage": "proposition",
+      "amount": 12500000,
+      "currency": "XOF",
+      "close_date": "2026-12-02",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00031",
+      "account_id": "ACC-00025",
+      "name": "Accompagnement ouverture d'une agence à Rufisque",
+      "stage": "qualification",
+      "amount": 4000000,
+      "currency": "XOF",
+      "close_date": "2026-10-17",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00032",
+      "account_id": "ACC-00026",
+      "name": "Mandat – Kajoor Hôtellerie GIE c/ Sine Immobilier SAS – Recouvrement",
+      "stage": "gagnee",
+      "amount": 2000000,
+      "currency": "XOF",
+      "close_date": "2025-09-22",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00033",
+      "account_id": "ACC-00027",
+      "name": "Mandat – Ouest Africa Pêche SARL c/ Cap-Vert Transport SARL – Inexécution d'un contrat de fourniture",
+      "stage": "gagnee",
+      "amount": 1000000,
+      "currency": "XOF",
+      "close_date": "2025-04-20",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00034",
+      "account_id": "ACC-00027",
+      "name": "Mandat – Ouest Africa Pêche SARL c/ Djoloff Import-Export SARL – Recouvrement",
+      "stage": "gagnee",
+      "amount": 2000000,
+      "currency": "XOF",
+      "close_date": "2026-02-11",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00035",
+      "account_id": "ACC-00027",
+      "name": "Recouvrement de portefeuille de créances",
+      "stage": "qualification",
+      "amount": 4000000,
+      "currency": "XOF",
+      "close_date": "2026-12-10",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00036",
+      "account_id": "ACC-00028",
+      "name": "Mandat – Baobab Distribution SARL c/ Sénégal Distribution SARL – Recouvrement",
+      "stage": "gagnee",
+      "amount": 3000000,
+      "currency": "XOF",
+      "close_date": "2022-09-21",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00037",
+      "account_id": "ACC-00028",
+      "name": "Mandat – Baobab Distribution SARL c/ Téranga Télécom GIE – Livraison de marchandises non conformes",
+      "stage": "gagnee",
+      "amount": 5250000,
+      "currency": "XOF",
+      "close_date": "2024-09-11",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00038",
+      "account_id": "ACC-00030",
+      "name": "Mandat – Dakar Pharma SA c/ Casamance Hôtellerie GIE – Non-paiement de travaux réalisés",
+      "stage": "gagnee",
+      "amount": 2250000,
+      "currency": "XOF",
+      "close_date": "2026-08-16",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00039",
+      "account_id": "ACC-00030",
+      "name": "Recouvrement de portefeuille de créances",
+      "stage": "negociation",
+      "amount": 4000000,
+      "currency": "XOF",
+      "close_date": "2027-01-05",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00040",
+      "account_id": "ACC-00031",
+      "name": "Mandat – Ouest Africa Hôtellerie SA c/ Sahel Textile GIE – Recouvrement",
+      "stage": "gagnee",
+      "amount": 5500000,
+      "currency": "XOF",
+      "close_date": "2025-10-05",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00041",
+      "account_id": "ACC-00032",
+      "name": "Mandat – Casamance Distribution SA – Contrat de fourniture avec Cap-Vert Hôtellerie GIE",
+      "stage": "gagnee",
+      "amount": 3750000,
+      "currency": "XOF",
+      "close_date": "2024-03-29",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00042",
+      "account_id": "ACC-00032",
+      "name": "Mandat – Casamance Distribution SA c/ Kajoor Import-Export SA – Recouvrement",
+      "stage": "gagnee",
+      "amount": 3500000,
+      "currency": "XOF",
+      "close_date": "2025-11-08",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00043",
+      "account_id": "ACC-00032",
+      "name": "Mandat – Casamance Distribution SA c/ Sine Services SARL – Recouvrement",
+      "stage": "gagnee",
+      "amount": 3000000,
+      "currency": "XOF",
+      "close_date": "2026-04-07",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00044",
+      "account_id": "ACC-00032",
+      "name": "Audit juridique annuel",
+      "stage": "negociation",
+      "amount": 7000000,
+      "currency": "XOF",
+      "close_date": "2026-11-06",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00045",
+      "account_id": "ACC-00033",
+      "name": "Mandat – Souleymane Fall c/ Baobab Transport SUARL – Bail commercial",
+      "stage": "gagnee",
+      "amount": 5750000,
+      "currency": "XOF",
+      "close_date": "2026-04-05",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "OPP-00046",
+      "account_id": "ACC-00034",
+      "name": "Mandat – Astou Kane c/ Baobab Énergie SUARL – Inexécution d'un contrat de fourniture",
+      "stage": "gagnee",
+      "amount": 5250000,
+      "currency": "XOF",
+      "close_date": "2023-07-30",
+      "owner": "c.diallo@teranga-avocats.example"
+    }
+  ],
+  "activities": [
+    {
+      "id": "ACT-00001",
+      "account_id": "ACC-00001",
+      "type": "appel",
+      "date": "2026-06-19",
+      "subject": "Souleymane Mbengue s'inquiète des délais de la justice commerciale",
+      "note": "Souleymane Mbengue s'inquiète des délais de la justice commerciale.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00002",
+      "account_id": "ACC-00001",
+      "type": "dejeuner",
+      "date": "2025-12-06",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00003",
+      "account_id": "ACC-00001",
+      "type": "appel",
+      "date": "2026-01-14",
+      "subject": "Souleymane Mbengue évoque un projet d'extension à Touba (besoin probable d'un ba",
+      "note": "Souleymane Mbengue évoque un projet d'extension à Touba (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00004",
+      "account_id": "ACC-00001",
+      "type": "dejeuner",
+      "date": "2026-04-14",
+      "subject": "Déjeuner avec Souleymane Mbengue",
+      "note": "Déjeuner avec Souleymane Mbengue. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00005",
+      "account_id": "ACC-00002",
+      "type": "appel",
+      "date": "2026-07-06",
+      "subject": "Point sur le dossier « Constitution de la société Sahel Pharma SARL »",
+      "note": "Point sur le dossier « Constitution de la société Sahel Pharma SARL ». Le client est satisfait du suivi.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00006",
+      "account_id": "ACC-00003",
+      "type": "dejeuner",
+      "date": "2025-12-31",
+      "subject": "Omar Gueye s'inquiète des délais de la justice commerciale",
+      "note": "Omar Gueye s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00007",
+      "account_id": "ACC-00003",
+      "type": "reunion",
+      "date": "2025-09-26",
+      "subject": "Point sur le dossier « Sahel BTP SA – Contrat de sous-traitance avec Sahel Immob",
+      "note": "Point sur le dossier « Sahel BTP SA – Contrat de sous-traitance avec Sahel Immobilier SARL ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00008",
+      "account_id": "ACC-00003",
+      "type": "reunion",
+      "date": "2025-11-08",
+      "subject": "Omar Gueye évoque un projet d'extension à Dakar (besoin probable d'un bail comme",
+      "note": "Omar Gueye évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00009",
+      "account_id": "ACC-00004",
+      "type": "dejeuner",
+      "date": "2025-09-06",
+      "subject": "Déjeuner avec Abdoulaye Diouf",
+      "note": "Déjeuner avec Abdoulaye Diouf. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00010",
+      "account_id": "ACC-00004",
+      "type": "reunion",
+      "date": "2026-08-14",
+      "subject": "Point sur le dossier « Sahel Télécom GIE c/ Ouest Africa Distribution SA – Recou",
+      "note": "Point sur le dossier « Sahel Télécom GIE c/ Ouest Africa Distribution SA – Recouvrement ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00011",
+      "account_id": "ACC-00005",
+      "type": "appel",
+      "date": "2026-06-21",
+      "subject": "Aïssatou Cissé évoque un projet d'extension à Rufisque (besoin probable d'un bai",
+      "note": "Aïssatou Cissé évoque un projet d'extension à Rufisque (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00012",
+      "account_id": "ACC-00006",
+      "type": "appel",
+      "date": "2025-08-17",
+      "subject": "Déjeuner avec Serigne Sow",
+      "note": "Déjeuner avec Serigne Sow. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00013",
+      "account_id": "ACC-00006",
+      "type": "appel",
+      "date": "2025-10-05",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00014",
+      "account_id": "ACC-00006",
+      "type": "reunion",
+      "date": "2025-11-22",
+      "subject": "Point sur le dossier « Serigne Sow c/ Baobab Télécom SARL – Bail commercial »",
+      "note": "Point sur le dossier « Serigne Sow c/ Baobab Télécom SARL – Bail commercial ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00015",
+      "account_id": "ACC-00006",
+      "type": "reunion",
+      "date": "2026-01-15",
+      "subject": "Serigne Sow s'inquiète des délais de la justice commerciale",
+      "note": "Serigne Sow s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00016",
+      "account_id": "ACC-00007",
+      "type": "reunion",
+      "date": "2026-03-21",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00017",
+      "account_id": "ACC-00007",
+      "type": "appel",
+      "date": "2025-11-29",
+      "subject": "Pape Samb évoque un projet d'extension à Dakar (besoin probable d'un bail commer",
+      "note": "Pape Samb évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00018",
+      "account_id": "ACC-00008",
+      "type": "dejeuner",
+      "date": "2026-08-09",
+      "subject": "Point sur le dossier « Malick Diop c/ Djoloff Distribution GIE – Bail commercial",
+      "note": "Point sur le dossier « Malick Diop c/ Djoloff Distribution GIE – Bail commercial ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00019",
+      "account_id": "ACC-00009",
+      "type": "reunion",
+      "date": "2026-07-15",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00020",
+      "account_id": "ACC-00009",
+      "type": "appel",
+      "date": "2025-12-23",
+      "subject": "Alassane Ndour s'inquiète des délais de la justice commerciale",
+      "note": "Alassane Ndour s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00021",
+      "account_id": "ACC-00009",
+      "type": "dejeuner",
+      "date": "2026-01-17",
+      "subject": "Alassane Ndour évoque un projet d'extension à Dakar (besoin probable d'un bail c",
+      "note": "Alassane Ndour évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00022",
+      "account_id": "ACC-00010",
+      "type": "appel",
+      "date": "2026-05-20",
+      "subject": "Déjeuner avec Pape Cissé",
+      "note": "Déjeuner avec Pape Cissé. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00023",
+      "account_id": "ACC-00010",
+      "type": "dejeuner",
+      "date": "2026-01-20",
+      "subject": "Pape Cissé évoque un projet d'extension à Mbour (besoin probable d'un bail comme",
+      "note": "Pape Cissé évoque un projet d'extension à Mbour (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00024",
+      "account_id": "ACC-00011",
+      "type": "reunion",
+      "date": "2026-06-10",
+      "subject": "Yacine Sarr s'inquiète des délais de la justice commerciale",
+      "note": "Yacine Sarr s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00025",
+      "account_id": "ACC-00011",
+      "type": "reunion",
+      "date": "2025-09-05",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00026",
+      "account_id": "ACC-00011",
+      "type": "reunion",
+      "date": "2026-01-19",
+      "subject": "Déjeuner avec Yacine Sarr",
+      "note": "Déjeuner avec Yacine Sarr. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00027",
+      "account_id": "ACC-00012",
+      "type": "appel",
+      "date": "2025-09-02",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00028",
+      "account_id": "ACC-00012",
+      "type": "appel",
+      "date": "2026-05-08",
+      "subject": "Point sur le dossier « Mariama Lo c/ Téranga Énergie GIE – Bail commercial »",
+      "note": "Point sur le dossier « Mariama Lo c/ Téranga Énergie GIE – Bail commercial ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00029",
+      "account_id": "ACC-00012",
+      "type": "dejeuner",
+      "date": "2026-03-18",
+      "subject": "Mariama Lo s'inquiète des délais de la justice commerciale",
+      "note": "Mariama Lo s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00030",
+      "account_id": "ACC-00013",
+      "type": "appel",
+      "date": "2025-11-08",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00031",
+      "account_id": "ACC-00014",
+      "type": "reunion",
+      "date": "2026-02-19",
+      "subject": "Ndeye Wade évoque un projet d'extension à Saint-Louis (besoin probable d'un bail",
+      "note": "Ndeye Wade évoque un projet d'extension à Saint-Louis (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00032",
+      "account_id": "ACC-00014",
+      "type": "reunion",
+      "date": "2026-06-16",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00033",
+      "account_id": "ACC-00014",
+      "type": "dejeuner",
+      "date": "2026-07-16",
+      "subject": "Ndeye Wade s'inquiète des délais de la justice commerciale",
+      "note": "Ndeye Wade s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00034",
+      "account_id": "ACC-00014",
+      "type": "dejeuner",
+      "date": "2026-05-21",
+      "subject": "Déjeuner avec Ndeye Wade",
+      "note": "Déjeuner avec Ndeye Wade. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00035",
+      "account_id": "ACC-00015",
+      "type": "reunion",
+      "date": "2025-12-23",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00036",
+      "account_id": "ACC-00015",
+      "type": "reunion",
+      "date": "2026-09-04",
+      "subject": "Fatou Sow s'inquiète des délais de la justice commerciale",
+      "note": "Fatou Sow s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00037",
+      "account_id": "ACC-00015",
+      "type": "appel",
+      "date": "2025-10-14",
+      "subject": "Point sur le dossier « Dakar Hôtellerie SARL c/ Sahel Pharma SA – Recouvrement »",
+      "note": "Point sur le dossier « Dakar Hôtellerie SARL c/ Sahel Pharma SA – Recouvrement ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00038",
+      "account_id": "ACC-00016",
+      "type": "reunion",
+      "date": "2026-05-25",
+      "subject": "Mariama Cissé évoque un projet d'extension à Dakar (besoin probable d'un bail co",
+      "note": "Mariama Cissé évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00039",
+      "account_id": "ACC-00016",
+      "type": "appel",
+      "date": "2026-02-04",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00040",
+      "account_id": "ACC-00016",
+      "type": "appel",
+      "date": "2026-03-15",
+      "subject": "Déjeuner avec Mariama Cissé",
+      "note": "Déjeuner avec Mariama Cissé. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00041",
+      "account_id": "ACC-00017",
+      "type": "appel",
+      "date": "2026-06-14",
+      "subject": "Marième Thiam évoque un projet d'extension à Dakar (besoin probable d'un bail co",
+      "note": "Marième Thiam évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00042",
+      "account_id": "ACC-00017",
+      "type": "appel",
+      "date": "2025-12-05",
+      "subject": "Marième Thiam s'inquiète des délais de la justice commerciale",
+      "note": "Marième Thiam s'inquiète des délais de la justice commerciale.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00043",
+      "account_id": "ACC-00017",
+      "type": "reunion",
+      "date": "2026-02-28",
+      "subject": "Point sur le dossier « Djoloff Agro SARL – Contrat de fourniture avec Atlantique",
+      "note": "Point sur le dossier « Djoloff Agro SARL – Contrat de fourniture avec Atlantique Logistique SA ». Le client est satisfait du suivi.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00044",
+      "account_id": "ACC-00017",
+      "type": "dejeuner",
+      "date": "2026-06-27",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00045",
+      "account_id": "ACC-00018",
+      "type": "appel",
+      "date": "2025-11-06",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00046",
+      "account_id": "ACC-00019",
+      "type": "appel",
+      "date": "2026-08-21",
+      "subject": "Point sur le dossier « Sine Services SA c/ Cap-Vert Immobilier SARL – Recouvreme",
+      "note": "Point sur le dossier « Sine Services SA c/ Cap-Vert Immobilier SARL – Recouvrement ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00047",
+      "account_id": "ACC-00019",
+      "type": "appel",
+      "date": "2025-08-17",
+      "subject": "Ndeye Diallo évoque un projet d'extension à Touba (besoin probable d'un bail com",
+      "note": "Ndeye Diallo évoque un projet d'extension à Touba (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00048",
+      "account_id": "ACC-00019",
+      "type": "dejeuner",
+      "date": "2026-08-13",
+      "subject": "Déjeuner avec Ndeye Diallo",
+      "note": "Déjeuner avec Ndeye Diallo. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00049",
+      "account_id": "ACC-00019",
+      "type": "reunion",
+      "date": "2026-01-21",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00050",
+      "account_id": "ACC-00020",
+      "type": "reunion",
+      "date": "2025-09-11",
+      "subject": "Souleymane Lo évoque un projet d'extension à Dakar (besoin probable d'un bail co",
+      "note": "Souleymane Lo évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00051",
+      "account_id": "ACC-00020",
+      "type": "dejeuner",
+      "date": "2025-09-02",
+      "subject": "Souleymane Lo s'inquiète des délais de la justice commerciale",
+      "note": "Souleymane Lo s'inquiète des délais de la justice commerciale.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00052",
+      "account_id": "ACC-00020",
+      "type": "reunion",
+      "date": "2025-12-26",
+      "subject": "Déjeuner avec Souleymane Lo",
+      "note": "Déjeuner avec Souleymane Lo. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00053",
+      "account_id": "ACC-00021",
+      "type": "dejeuner",
+      "date": "2025-11-25",
+      "subject": "Point sur le dossier « Saloum Énergie SUARL c/ Cap-Vert Énergie SARL – Recouvrem",
+      "note": "Point sur le dossier « Saloum Énergie SUARL c/ Cap-Vert Énergie SARL – Recouvrement ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00054",
+      "account_id": "ACC-00022",
+      "type": "dejeuner",
+      "date": "2026-02-06",
+      "subject": "Idrissa Sagna évoque un projet d'extension à Dakar (besoin probable d'un bail co",
+      "note": "Idrissa Sagna évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00055",
+      "account_id": "ACC-00022",
+      "type": "reunion",
+      "date": "2026-06-12",
+      "subject": "Déjeuner avec Idrissa Sagna",
+      "note": "Déjeuner avec Idrissa Sagna. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00056",
+      "account_id": "ACC-00023",
+      "type": "appel",
+      "date": "2026-01-31",
+      "subject": "Point sur le dossier « Niayes Distribution SARL c/ Dakar Immobilier GIE – Recouv",
+      "note": "Point sur le dossier « Niayes Distribution SARL c/ Dakar Immobilier GIE – Recouvrement ». Le client est satisfait du suivi.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00057",
+      "account_id": "ACC-00023",
+      "type": "dejeuner",
+      "date": "2026-05-07",
+      "subject": "Dieynaba Gueye s'inquiète des délais de la justice commerciale",
+      "note": "Dieynaba Gueye s'inquiète des délais de la justice commerciale.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00058",
+      "account_id": "ACC-00024",
+      "type": "reunion",
+      "date": "2026-03-04",
+      "subject": "Déjeuner avec Modou Samb",
+      "note": "Déjeuner avec Modou Samb. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00059",
+      "account_id": "ACC-00025",
+      "type": "appel",
+      "date": "2025-10-25",
+      "subject": "Déjeuner avec Coumba Sow",
+      "note": "Déjeuner avec Coumba Sow. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00060",
+      "account_id": "ACC-00026",
+      "type": "dejeuner",
+      "date": "2025-12-07",
+      "subject": "Mouhamed Gueye évoque un projet d'extension à Dakar (besoin probable d'un bail c",
+      "note": "Mouhamed Gueye évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00061",
+      "account_id": "ACC-00027",
+      "type": "reunion",
+      "date": "2025-09-01",
+      "subject": "Déjeuner avec Marième Niang",
+      "note": "Déjeuner avec Marième Niang. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00062",
+      "account_id": "ACC-00027",
+      "type": "dejeuner",
+      "date": "2025-08-22",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00063",
+      "account_id": "ACC-00028",
+      "type": "dejeuner",
+      "date": "2026-02-10",
+      "subject": "Binta Gueye évoque un projet d'extension à Rufisque (besoin probable d'un bail c",
+      "note": "Binta Gueye évoque un projet d'extension à Rufisque (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00064",
+      "account_id": "ACC-00028",
+      "type": "dejeuner",
+      "date": "2026-04-06",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00065",
+      "account_id": "ACC-00028",
+      "type": "dejeuner",
+      "date": "2026-05-18",
+      "subject": "Déjeuner avec Binta Gueye",
+      "note": "Déjeuner avec Binta Gueye. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00066",
+      "account_id": "ACC-00029",
+      "type": "appel",
+      "date": "2026-06-01",
+      "subject": "Point sur le dossier « Dakar Textile SA c/ Sahel Import-Export SA – Recouvrement",
+      "note": "Point sur le dossier « Dakar Textile SA c/ Sahel Import-Export SA – Recouvrement ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00067",
+      "account_id": "ACC-00029",
+      "type": "dejeuner",
+      "date": "2026-09-07",
+      "subject": "Awa Sène évoque un projet d'extension à Touba (besoin probable d'un bail commerc",
+      "note": "Awa Sène évoque un projet d'extension à Touba (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00068",
+      "account_id": "ACC-00029",
+      "type": "dejeuner",
+      "date": "2026-04-30",
+      "subject": "Déjeuner avec Awa Sène",
+      "note": "Déjeuner avec Awa Sène. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00069",
+      "account_id": "ACC-00030",
+      "type": "dejeuner",
+      "date": "2025-11-18",
+      "subject": "Pape Camara s'inquiète des délais de la justice commerciale",
+      "note": "Pape Camara s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00070",
+      "account_id": "ACC-00030",
+      "type": "reunion",
+      "date": "2026-04-18",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00071",
+      "account_id": "ACC-00030",
+      "type": "dejeuner",
+      "date": "2025-09-09",
+      "subject": "Pape Camara évoque un projet d'extension à Saint-Louis (besoin probable d'un bai",
+      "note": "Pape Camara évoque un projet d'extension à Saint-Louis (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00072",
+      "account_id": "ACC-00030",
+      "type": "reunion",
+      "date": "2026-03-07",
+      "subject": "Point sur le dossier « Dakar Pharma SA c/ Casamance Hôtellerie GIE – Non-paiemen",
+      "note": "Point sur le dossier « Dakar Pharma SA c/ Casamance Hôtellerie GIE – Non-paiement de travaux réalisés ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00073",
+      "account_id": "ACC-00031",
+      "type": "dejeuner",
+      "date": "2025-12-16",
+      "subject": "Serigne Touré évoque un projet d'extension à Dakar (besoin probable d'un bail co",
+      "note": "Serigne Touré évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00074",
+      "account_id": "ACC-00032",
+      "type": "appel",
+      "date": "2026-01-12",
+      "subject": "Malick Thiam s'inquiète des délais de la justice commerciale",
+      "note": "Malick Thiam s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00075",
+      "account_id": "ACC-00032",
+      "type": "dejeuner",
+      "date": "2025-10-20",
+      "subject": "Déjeuner avec Malick Thiam",
+      "note": "Déjeuner avec Malick Thiam. Envisage de nous confier le recouvrement de l'ensemble de ses créances clients.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00076",
+      "account_id": "ACC-00032",
+      "type": "dejeuner",
+      "date": "2026-06-10",
+      "subject": "Le client trouve nos honoraires élevés ; proposer un forfait annuel",
+      "note": "Le client trouve nos honoraires élevés ; proposer un forfait annuel.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00077",
+      "account_id": "ACC-00032",
+      "type": "dejeuner",
+      "date": "2025-11-07",
+      "subject": "Point sur le dossier « Casamance Distribution SA – Contrat de fourniture avec Ca",
+      "note": "Point sur le dossier « Casamance Distribution SA – Contrat de fourniture avec Cap-Vert Hôtellerie GIE ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00078",
+      "account_id": "ACC-00033",
+      "type": "appel",
+      "date": "2026-06-24",
+      "subject": "Souleymane Fall évoque un projet d'extension à Dakar (besoin probable d'un bail ",
+      "note": "Souleymane Fall évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00079",
+      "account_id": "ACC-00033",
+      "type": "appel",
+      "date": "2025-11-07",
+      "subject": "Point sur le dossier « Souleymane Fall c/ Baobab Transport SUARL – Bail commerci",
+      "note": "Point sur le dossier « Souleymane Fall c/ Baobab Transport SUARL – Bail commercial ». Le client est satisfait du suivi.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00080",
+      "account_id": "ACC-00033",
+      "type": "reunion",
+      "date": "2025-11-03",
+      "subject": "Souleymane Fall s'inquiète des délais de la justice commerciale",
+      "note": "Souleymane Fall s'inquiète des délais de la justice commerciale.",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00081",
+      "account_id": "ACC-00034",
+      "type": "appel",
+      "date": "2026-01-31",
+      "subject": "Astou Kane évoque un projet d'extension à Dakar (besoin probable d'un bail comme",
+      "note": "Astou Kane évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "ACT-00082",
+      "account_id": "ACC-00035",
+      "type": "reunion",
+      "date": "2026-06-23",
+      "subject": "Souleymane Mbengue évoque un projet d'extension à Dakar (besoin probable d'un ba",
+      "note": "Souleymane Mbengue évoque un projet d'extension à Dakar (besoin probable d'un bail commercial et de contrats de travail).",
+      "owner": "m.dieng@teranga-avocats.example"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TSK-00001",
+      "account_id": "ACC-00001",
+      "title": "Organiser un point trimestriel",
+      "due_date": "2026-10-04",
+      "status": "terminee",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00002",
+      "account_id": "ACC-00006",
+      "title": "Envoyer la proposition d'honoraires",
+      "due_date": "2026-10-19",
+      "status": "ouverte",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00003",
+      "account_id": "ACC-00007",
+      "title": "Organiser un point trimestriel",
+      "due_date": "2026-09-21",
+      "status": "ouverte",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00004",
+      "account_id": "ACC-00009",
+      "title": "Envoyer la proposition d'honoraires",
+      "due_date": "2026-10-04",
+      "status": "terminee",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00005",
+      "account_id": "ACC-00010",
+      "title": "Relancer Pape Cissé",
+      "due_date": "2026-10-10",
+      "status": "ouverte",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00006",
+      "account_id": "ACC-00011",
+      "title": "Envoyer la proposition d'honoraires",
+      "due_date": "2026-09-17",
+      "status": "terminee",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00007",
+      "account_id": "ACC-00014",
+      "title": "Organiser un point trimestriel",
+      "due_date": "2026-09-14",
+      "status": "ouverte",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00008",
+      "account_id": "ACC-00016",
+      "title": "Envoyer la proposition d'honoraires",
+      "due_date": "2026-09-09",
+      "status": "ouverte",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00009",
+      "account_id": "ACC-00018",
+      "title": "Organiser un point trimestriel",
+      "due_date": "2026-10-10",
+      "status": "ouverte",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00010",
+      "account_id": "ACC-00019",
+      "title": "Envoyer la proposition d'honoraires",
+      "due_date": "2026-10-03",
+      "status": "ouverte",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00011",
+      "account_id": "ACC-00020",
+      "title": "Organiser un point trimestriel",
+      "due_date": "2026-09-28",
+      "status": "ouverte",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00012",
+      "account_id": "ACC-00031",
+      "title": "Organiser un point trimestriel",
+      "due_date": "2026-09-23",
+      "status": "ouverte",
+      "owner": "m.dieng@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00013",
+      "account_id": "ACC-00034",
+      "title": "Relancer Astou Kane",
+      "due_date": "2026-10-13",
+      "status": "ouverte",
+      "owner": "c.diallo@teranga-avocats.example"
+    },
+    {
+      "id": "TSK-00014",
+      "account_id": "ACC-00035",
+      "title": "Organiser un point trimestriel",
+      "due_date": "2026-10-18",
+      "status": "ouverte",
+      "owner": "m.dieng@teranga-avocats.example"
+    }
+  ]
+}

@@ -35,6 +35,10 @@ x-reglages: &reglages
   MODELE_QUALITE: ${MODELE_QUALITE:-qwen2.5:3b}
   MODELE_EMBEDDINGS: ${MODELE_EMBEDDINGS:-bge-m3}
   OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  # Le cabinet simulé est « arrêté » au 19 septembre 2026. Ses délais sont comptés depuis ce
+  # jour-là ; à la date réelle, ils finiraient tous échus et l'échéancier vide. Un vrai
+  # cabinet laisse cette variable vide.
+  DATE_DU_CABINET: ${DATE_DU_CABINET:-2026-09-19}
 
 services:
   postgres:

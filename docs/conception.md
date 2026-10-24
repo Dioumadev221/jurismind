@@ -493,12 +493,13 @@ qui voient ce dossier ; une proposition sans dossier est visible des avocats et 
 | 9b | Interface web : huit écrans issus d'une maquette, qui ne parlent qu'à l'API | F10 | ✅ |
 | 9c | Écran du dossier (parties, équipe, délais, 5 onglets) et échéancier inter-dossiers | F7, F11 | ✅ |
 | 10 | README, CI GitHub Actions, licence, ADR et résultats publiés | — | ✅ (reste la vidéo) |
+| 11 | Démonstration publique : modèle rejoué, base exportée, remise à zéro à chaque démarrage, page d'accueil (ADR 0012) | — | ✅ (reste l'enregistrement sur une machine équipée) |
 
 Chaque étape : tests verts, commit(s) propres, mise à jour de ce document.
 
 ### Qualité du dépôt
-README (problème, décisions, résultats mesurés, démarrage, limites assumées), 8 ADR dans
-`docs/adr/`, ruff + mypy + 297 tests, CI GitHub Actions sur un vrai PostgreSQL avec pgvector
+README (problème, décisions, résultats mesurés, démarrage, limites assumées), 12 ADR dans
+`docs/adr/`, ruff + mypy + 362 tests, CI GitHub Actions sur un vrai PostgreSQL avec pgvector
 — l'isolation reposant sur le RLS, aucune base en mémoire ne saurait la vérifier —, commits
 *Conventional Commits*, `.env.example`, licence MIT, aucune donnée réelle ni secret dans le
 dépôt.
