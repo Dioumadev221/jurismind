@@ -16,13 +16,13 @@ function Executer {
 }
 
 Write-Host "1/4  Champs clés des dossiers en cours (ignoré s'ils sont déjà extraits)"
-Executer exec api python -m jurismind.extraction --en-cours --limite 0
+Executer exec -T api python -m jurismind.extraction --en-cours --limite 0
 
 Write-Host "2/4  Scénario joué avec les vrais modèles (quelques dizaines de minutes sur processeur)"
-Executer exec api python -m jurismind.demo enregistrer
+Executer exec -T api python -m jurismind.demo enregistrer
 
 Write-Host "3/4  Base figée"
-Executer exec postgres sh -c "pg_dump -U jurismind --no-owner --no-privileges --exclude-schema demo_origine jurismind | gzip -9 > /tmp/base.sql.gz"
+Executer exec -T postgres sh -c "pg_dump -U jurismind --no-owner --no-privileges --exclude-schema demo_origine jurismind | gzip -9 > /tmp/base.sql.gz"
 
 Write-Host "4/4  Fichiers copiés dans demo/"
 New-Item -ItemType Directory -Force demo | Out-Null
