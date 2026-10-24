@@ -38,7 +38,7 @@
       "resultat": {
         "abstention": false,
         "texte": "[basse] Demande de rendez-vous — de yacine-sagna@teranga-transport-sarl.example (prospect)\n   → aucun dossier\n   priorité : aucun dossier en cours concerné\n   résumé   : Yacine Sagna de Téranga Transport SARL demande un rendez-vous pour discuter de la création d'une filiale au Sénégal et attend une réponse du cabinet d'avocats.\n   propositions déposées : aucune\n\n[basse] Demande de rendez-vous — de",
-        "secondes": 99.2
+        "secondes": 113.8
       }
     },
     {
@@ -58,7 +58,7 @@
         "abstention": true,
         "texte": "Je ne trouve pas cette information dans les pièces du dossier.",
         "juste": false,
-        "secondes": 77.3
+        "secondes": 90.8
       }
     },
     {
@@ -78,7 +78,7 @@
         "abstention": false,
         "texte": "Le montant de la facture FA-2024-964 est de 2 050 000 FCFA.",
         "juste": true,
-        "secondes": 59.0
+        "secondes": 72.2
       }
     },
     {
@@ -96,9 +96,9 @@
       ],
       "resultat": {
         "abstention": false,
-        "texte": "L'ordonnance d'injonction de payer n° 1782/2025 met à la charge du débiteur la somme de 9 750 FCFA.",
-        "juste": false,
-        "secondes": 55.9
+        "texte": "L'ordonnance d'injonction de payer n° 1782/2025 met à la charge du débiteur la somme de 9 750 000 FCFA.",
+        "juste": true,
+        "secondes": 68.2
       }
     },
     {
@@ -118,7 +118,7 @@
         "abstention": false,
         "texte": "La mise en demeure accorde un délai de 30 jours à Djoloff Hôtellerie SARL.",
         "juste": true,
-        "secondes": 54.6
+        "secondes": 63.8
       }
     },
     {
@@ -138,7 +138,7 @@
         "abstention": false,
         "texte": "La mise en demeure accorde un délai de huit jours à Cap-Vert Énergie SARL.",
         "juste": false,
-        "secondes": 60.8
+        "secondes": 70.7
       }
     },
     {
@@ -158,7 +158,7 @@
         "abstention": false,
         "texte": "Le contrat signé avec Cap-Vert Hôtellerie GIE prévoit un préavis de résiliation de 90 jours.",
         "juste": true,
-        "secondes": 46.1
+        "secondes": 53.7
       }
     },
     {
@@ -179,7 +179,7 @@
         "abstention": false,
         "texte": "L'ordonnance a été signifiée à Sine Services SARL le 01/06/2026.",
         "juste": true,
-        "secondes": 38.6
+        "secondes": 45.9
       }
     },
     {
@@ -197,7 +197,7 @@
         "abstention": true,
         "texte": "Je ne trouve pas cette information dans les pièces du dossier.",
         "juste": true,
-        "secondes": 144.3
+        "secondes": 161.6
       }
     },
     {
@@ -215,7 +215,7 @@
         "abstention": true,
         "texte": "Je ne trouve pas cette information dans les pièces du dossier.",
         "juste": true,
-        "secondes": 51.1
+        "secondes": 52.4
       }
     },
     {
@@ -233,7 +233,7 @@
         "abstention": true,
         "texte": "Je ne trouve pas cette information dans les pièces du dossier.",
         "juste": true,
-        "secondes": 82.9
+        "secondes": 95.3
       }
     },
     {
@@ -249,7 +249,7 @@
       "resultat": {
         "abstention": false,
         "texte": "La procédure concerne Casamance Distribution SA contre Sine Services SARL pour recouvrement de dettes. Les parties sont en litige sur la conformité des marchandises livrées et la responsabilité de Casamance Distribution SA. Les montants en jeu sont de 15 550 000 FCFA. La prochaine étape est la décision du Tribunal de commerce hors classe de Dakar, qui doit statuer sur les conclusions en réponse et",
-        "secondes": 105.2
+        "secondes": 117.1
       }
     },
     {
@@ -265,7 +265,7 @@
       "resultat": {
         "abstention": false,
         "texte": "La procédure concerne Ouest Africa Pêche SARL contre Dakar Distribution SUARL pour recouvrement de 12,650,000 FCFA. La procédure est en cours avec une ordonnance d'injonction de payer rendue le 28/07/2026. La prochaine étape est la réponse de Dakar Distribution SUARL à la requête en injonction de payer. Les parties sont au stade de la réponse de la défense.",
-        "secondes": 103.2
+        "secondes": 114.0
       }
     },
     {
@@ -281,7 +281,7 @@
       "resultat": {
         "abstention": false,
         "texte": "La procédure concerne Sine Services SA contre Cap-Vert Hôtellerie SARL pour inexécution d'un contrat de fourniture. Les parties sont liées par un contrat signé le 19/03/2025. Les montants en jeu s'élèvent à 73 500 000 FCFA. La prochaine étape est la mise en délibéré de la décision du Tribunal de commerce, qui a rendu un jugement défavorable à Sine Services SA. Le prochain événement prévu est la mi",
-        "secondes": 100.9
+        "secondes": 112.9
       }
     },
     {
@@ -297,7 +297,7 @@
       "resultat": {
         "abstention": false,
         "texte": "Casamance Distribution SA est en litige avec Sine Services SARL pour un recouvrement de 15 550 000 FCFA. Le dossier est en cours de délibération. Le client est satisfait du suivi du contrat de fourniture avec Cap-Vert Hôtellerie GIE. Le suivi du dossier de recouvrement est en cours depuis plusieurs mois, avec plusieurs échanges notifiés et reçus.\n\nDossiers :\n  D2026-0012 — Casamance Distribution S",
-        "secondes": 58.4
+        "secondes": 61.2
       }
     },
     {
@@ -313,7 +313,7 @@
       "resultat": {
         "abstention": false,
         "texte": "Le client est Ouest Africa Pêche SARL, une société pêchée basée à Dakar. Nous traitons des dossiers de recouvrement et d'inexécution de contrats pour cette société. Le dossier D2026-0020, Ouest Africa Pêche SARL c/ Dakar Distribution SUARL, est en cours avec un enjeu de 12 650 000 FCFA. Le dossier D2025-0006, Ouest Africa Pêche SARL c/ Cap-Vert Transport SARL, est clos avec un enjeu de 63 000 000 ",
-        "secondes": 72.7
+        "secondes": 76.7
       }
     },
     {
@@ -329,7 +329,7 @@
       "resultat": {
         "abstention": false,
         "texte": "Le client SINE SERVICES SA est en litige avec trois sociétés immobilières et hôtelières. Les dossiers en cours sont : D2026-0028 (BAIL, enjeu 3 500 000 FCFA), D2026-0024 (RECOUV, enjeu 13 750 000 FCFA), et D2026-0005 (COMM, enjeu 73 500 000 FCFA). La relation avec le client est positive, avec une activité de suivi et un déjeuner prévu.\n\nDossiers :\n  D2026-0028 — Sine Services SA c/ Baobab Immobili",
-        "secondes": 70.0
+        "secondes": 68.8
       }
     },
     {
@@ -345,7 +345,7 @@
       "resultat": {
         "abstention": false,
         "texte": "Facture FA-2025-924\nType reconnu : FACTURE\n\nLa facture FA-2025-924 de Casamance Distribution SA à Sine Services SARL pour une fourniture de commerce de gros et de détail de 10 250 000 FCFA, conformément aux conditions de paiement à 30 jours de la date de la facture par virement bancaire. Le retard de paiement entraînera l'application d'intérêts au taux légal.\n\nCe qui engage :\n  - délai — « à 30 jo",
-        "secondes": 69.9
+        "secondes": 71.6
       }
     },
     {
@@ -361,7 +361,7 @@
       "resultat": {
         "abstention": false,
         "texte": "Mise en demeure adressée à Cap-Vert Hôtellerie SARL\nType reconnu : MISE_EN_DEMEURE\n\nLe Cabinet Téranga Avocats met en demeure Cap-Vert Hôtellerie SARL de régler une dette de 73 500 000 FCFA à compter de la réception de la mise en demeure, sous peine d'engager une procédure judiciaire si le paiement n'est pas effectué dans un délai de 15 jours. Le conseil de Sine Services SA, qui défend les intérêt",
-        "secondes": 81.8
+        "secondes": 83.6
       }
     },
     {
@@ -377,7 +377,7 @@
       "resultat": {
         "abstention": false,
         "texte": "Jugement du Tribunal de commerce (lu par OCR)\nType reconnu : JUGEMENT\n\nLe jugement traite un différend entre la société Sine Servides et la société Cap-Vert Hôtellerie concernant la non-exécution d'un contrat de fourniture. La demande de Sine Servides a été déboutée, et elle est condamnée aux dépens. Les parties ont échangé des documents et correspondances, mais la demande de préjudice n'a pas été",
-        "secondes": 84.5
+        "secondes": 85.5
       }
     },
     {
@@ -393,7 +393,7 @@
       "resultat": {
         "abstention": false,
         "texte": "Contrat du 19/03/2025 avec Cap-Vert Hôtellerie SARL (lu par OCR)\nType reconnu : CONTRAT\n\nLe contrat entre Sine Services SA et Cap-Vert Hôtellerie SARL définit les conditions de fourniture de services sur le territoire BFC, avec une durée renouvelable par tacite reconduction, des pénalités pour retard d'exécution, un préavis de résiliation de 60 jours et une obligation de confidentialité des inform",
-        "secondes": 82.5
+        "secondes": 88.8
       }
     },
     {
@@ -409,7 +409,7 @@
       "resultat": {
         "abstention": false,
         "texte": "Procès-verbal de signification de l'ordonnance\nType reconnu : PV_SIGNIFICATION\n\nLe Huissier de Justice a signifié à la société Sine Services SARL, une ordonnance d'injonction de payer à la société Casamance Distribution SA. L'ordonnance est rendue par le Tribunal de commerce hors classe de Dakar. Le débiteur a 15 jours pour former opposition, sinon l'ordonnance deviendra définitive.\n\nCe qui engage",
-        "secondes": 90.7
+        "secondes": 89.5
       }
     },
     {
@@ -429,7 +429,7 @@
         "abstention": false,
         "texte": "Le montant de la facture FA-2025-717 est de 1 300 000 FCFA.",
         "juste": true,
-        "secondes": 61.0
+        "secondes": 60.1
       }
     },
     {
@@ -449,12 +449,12 @@
         "abstention": false,
         "texte": "Le montant de la facture FA-2025-277 est de 7 350 000 FCFA.",
         "juste": true,
-        "secondes": 62.1
+        "secondes": 57.4
       }
     }
   ],
   "bilan": {
     "questions": 12,
-    "justes": 9
+    "justes": 10
   }
 }
