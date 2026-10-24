@@ -361,7 +361,7 @@ async function interrogerDossier(reference) {
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         <div style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--color-neutral-700);flex-wrap:wrap">
           <span class="${reponse.abstention ? "tag tag-outline" : "tag tag-accent"}">intention : ${texte(reponse.intention)}</span>
-          <span>${reponse.secondes.toFixed(0)} s · ${reponse.abstention ? "abstention" : `${reponse.citations.length} source(s) citée(s)`}</span>
+          <span>${duree(reponse.secondes)} · ${reponse.abstention ? "abstention" : `${reponse.citations.length} source(s) citée(s)`}</span>
         </div>
         <p style="margin:0;font-size:15px;line-height:1.6;white-space:pre-wrap;text-wrap:pretty">${texte(reponse.texte)}</p>
         ${

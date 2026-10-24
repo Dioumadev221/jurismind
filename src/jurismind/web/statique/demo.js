@@ -57,6 +57,14 @@ function noteDemo(nature, cible) {
   } Tout ce qui ne demande pas de modèle (chronologie, points d'attention, échéances, conflits) fonctionne partout.</p>`;
 }
 
+/**
+ * La durée d'une réponse. Rejouée, elle est instantanée : afficher « 0 s » laisserait croire que
+ * le modèle répond ainsi sur processeur. On dit donc qu'elle est rejouée.
+ */
+function duree(secondes) {
+  return etat.demo ? "réponse rejouée" : `${secondes.toFixed(0)} s`;
+}
+
 // --------------------------------------------------------------------- écran d'entrée
 
 function rendreEntreeDemo() {

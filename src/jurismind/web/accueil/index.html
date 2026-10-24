@@ -184,13 +184,14 @@
         <tr><td>Justesse quand il répond</td><td class="chiffre">87,5 %</td><td>92,6 % hors des cinq questions dont l'OCR a détruit la réponse.</td></tr>
         <tr><td>Rappel de la recherche</td><td class="chiffre">90,6 %</td><td>La bonne pièce est retrouvée parmi les extraits fournis au modèle.</td></tr>
         <tr><td>Extraction structurée, 98 champs sur 30 actes</td><td class="chiffre">100 %</td><td>Montants, dates, délais, parties, y compris sur des scans.</td></tr>
+        <tr id="ligne-scenario" hidden><td>Questions préparées pour cette démonstration</td><td class="chiffre" id="bilan-scenario"></td><td>Le scénario rejoué ici, tiré du corrigé et non choisi : chaque question affiche son issue, erreurs comprises.</td></tr>
         <tr><td>Tests automatisés</td><td class="chiffre">360+</td><td>Contre un vrai PostgreSQL avec pgvector, en intégration continue.</td></tr>
       </tbody>
     </table>
     <p class="avis">
       Le cinquième contrôle a fait passer la justesse brute de 90,6 % à 87,5 % : il a fait taire une
       réponse juste pour en refuser une inventée. En droit, ce compromis se prend dans ce sens. Les
-      décisions et ce qu'elles ont coûté sont écrites dans onze notes d'architecture (ADR) du dépôt.
+      décisions et ce qu'elles ont coûté sont écrites dans douze notes d'architecture (ADR) du dépôt.
     </p>
   </section>
 
@@ -237,6 +238,10 @@
 <script>
   // Le lien de contact vient du serveur (CONTACT_URL) : la page reste statique.
   fetch("/demo").then((r) => (r.ok ? r.json() : null)).then((demo) => {
+    if (demo && demo.bilan && demo.bilan.questions) {
+      document.getElementById("bilan-scenario").textContent = `${demo.bilan.justes} / ${demo.bilan.questions}`;
+      document.getElementById("ligne-scenario").hidden = false;
+    }
     if (demo && demo.contact_url) {
       const lien = document.getElementById("lien-contact");
       lien.href = demo.contact_url;

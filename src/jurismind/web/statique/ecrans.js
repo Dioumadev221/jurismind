@@ -174,7 +174,7 @@ async function faireLePoint(identifiant) {
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-neutral-700)">
           <span class="${reponse.abstention ? "tag tag-outline" : "tag tag-accent"}">${reponse.abstention ? "Abstention" : "Synthèse"}</span>
-          <span>${reponse.secondes.toFixed(0)} s · intention « ${texte(reponse.intention)} »</span>
+          <span>${duree(reponse.secondes)} · intention « ${texte(reponse.intention)} »</span>
         </div>
         ${corps}
       </div>`;
@@ -200,7 +200,7 @@ function exemplesQuestions() {
   }
   const issue = (d) => {
     const r = d.resultat || {};
-    if (r.abstention) return r.juste ? "abstention attendue" : "abstention";
+    if (r.abstention) return r.juste ? "abstention attendue" : "abstention à tort";
     return r.juste ? "réponse juste" : "réponse fausse";
   };
   return `<span style="font-size:12px;color:var(--color-neutral-700);width:100%">Questions préparées pour la démonstration, avec ce que JurisMind en a fait — erreurs comprises :</span>
@@ -316,7 +316,7 @@ function blocReponse(reponse) {
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-neutral-700)">
           <span class="tag tag-accent">Réponse vérifiée</span>
-          <span>${reponse.sources_examinees} extrait(s) examiné(s) · ${reponse.secondes.toFixed(0)} s</span>
+          <span>${reponse.sources_examinees} extrait(s) examiné(s) · ${duree(reponse.secondes)}</span>
         </div>
         <p style="margin:0;font-size:18px;line-height:1.55;text-wrap:pretty">${texte(reponse.texte)}</p>
       </div>
@@ -344,7 +344,7 @@ function blocAbstention(reponse) {
       <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
       <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-neutral-700)">
         <span class="tag tag-outline">Abstention</span>
-        <span>${reponse.sources_examinees} extrait(s) examiné(s) · ${reponse.secondes.toFixed(0)} s</span>
+        <span>${reponse.sources_examinees} extrait(s) examiné(s) · ${duree(reponse.secondes)}</span>
       </div>
       <p style="margin:0;font-size:18px;line-height:1.55">${texte(reponse.texte)}</p>
       <p style="margin:0;font-size:13px;color:var(--color-neutral-700)">
@@ -601,7 +601,7 @@ async function analyserPiece(identifiant) {
         <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-neutral-700);flex-wrap:wrap">
           <span class="tag tag-accent">${texte(reponse.donnees.categorie_detectee || "non déterminé")}</span>
           ${reponse.donnees.desaccord_categorie ? `<span class="tag tag-outline">désaccord avec la saisie du cabinet</span>` : ""}
-          <span>${reponse.secondes.toFixed(0)} s</span>
+          <span>${duree(reponse.secondes)}</span>
         </div>
         ${reponse.donnees.resume ? `<p style="margin:0;font-size:14px;line-height:1.6">${texte(reponse.donnees.resume)}</p>` : `<p style="margin:0;font-size:13px;color:var(--color-neutral-700)">Le résumé a été écarté par les vérifications : il avançait un chiffre absent du document.</p>`}
         <div>
