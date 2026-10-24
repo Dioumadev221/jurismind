@@ -15,8 +15,20 @@ through a single environment variable.
 
 The engineering problem is not retrieval. It is **knowing when not to answer**.
 
-**Live demo:** _link added once deployed_ — a simulated Dakar firm, sign in with one click.
 No real client and no real data: the firm, its 433 exhibits and its CRM are generated.
+Run it yourself with `docker compose up` ([Getting started](#getting-started)).
+
+| | |
+|---|---|
+| ![Landing page](docs/media/01-accueil.png) | ![A cited, verified answer](docs/media/02-reponse.png) |
+| The product in one sentence | A cited answer, with the five checks it passed |
+| ![The system declines](docs/media/03-abstention.png) | ![The matter screen](docs/media/04-dossier.png) |
+| No answer in the documents: it declines instead of guessing | A matter: team with access, deadlines, timeline built by code |
+| ![Mail triage](docs/media/05-courrier.png) | ![Deadlines](docs/media/06-echeances.png) |
+| Incoming mail triaged, waiting for a lawyer's approval | Deadlines across all matters, computed from the documents |
+
+The interface is in English; the simulated firm's documents and the AI's answers are in
+French, as in any Senegalese firm.
 
 ---
 

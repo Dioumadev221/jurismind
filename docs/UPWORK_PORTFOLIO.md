@@ -16,7 +16,7 @@ Founder & AI Engineer: product, RAG and agent architecture, data isolation, back
 
 ## Project description
 
-JurisMind lets a law firm query its case files through its existing systems (practice database, documents, CRM). Every answer cites its source exhibit and passes five code checks; when the documents do not support an answer, it says it does not know. LangGraph agents summarise matters, brief clients, analyse exhibits and triage mail, and nothing reaches the CRM without a lawyer's approval. PostgreSQL row-level security keeps each lawyer to their own matters. Local models or OpenAI. Live demo on a simulated firm, no real data.
+JurisMind lets a law firm query its case files through its existing systems (practice database, documents, CRM). Every answer cites its source exhibit and passes five code checks; when the documents do not support an answer, it says it does not know. LangGraph agents summarise matters, brief clients, analyse exhibits and triage mail, and nothing reaches the CRM without a lawyer's approval. PostgreSQL row-level security keeps each lawyer to their own matters. Local models or OpenAI. Built on a simulated firm, no real data.
 
 ## Skills
 
@@ -35,8 +35,7 @@ RAG · LangGraph · LangChain · FastAPI · Python · PostgreSQL · pgvector · 
 
 ## Links
 
-- Live demo: _Render address, once deployed_
-- Code: https://github.com/Dioumadev221/jurismind
+- Code, screenshots and documentation: https://github.com/Dioumadev221/jurismind
 
 ---
 
@@ -45,13 +44,17 @@ RAG · LangGraph · LangChain · FastAPI · Python · PostgreSQL · pgvector · 
 Malt → Mon profil → **Réalisations** → Ajouter. Même règle : produit de démonstration, pas
 une mission client.
 
+## Lien
+
+https://github.com/Dioumadev221/jurismind
+
 ## Titre
 
 JurisMind : assistant IA pour cabinet d'avocats, réponses sourcées et vérifiées (RAG + agents)
 
 ## Description
 
-JurisMind se branche sur les systèmes qu'un cabinet possède déjà (base de gestion des dossiers, serveur de documents, CRM) et rend vingt ans d'archives interrogeables. Chaque réponse cite la pièce dont elle vient, et cinq contrôles écrits en code décident si elle s'affiche : quand les pièces ne permettent pas de répondre, l'outil le dit. Quatre agents LangGraph résument un dossier, préparent un rendez-vous client, analysent une pièce et trient le courrier entrant ; rien n'atteint le CRM sans la validation d'un avocat. L'isolation par PostgreSQL (RLS) garantit qu'un avocat ne voit que ses dossiers, y compris à travers l'IA. Fonctionne sur un simple PC avec des modèles locaux (Ollama), ou avec OpenAI. Démonstration en ligne sur un cabinet dakarois simulé : 433 pièces générées, aucune donnée réelle.
+JurisMind se branche sur les systèmes qu'un cabinet possède déjà (base de gestion des dossiers, serveur de documents, CRM) et rend vingt ans d'archives interrogeables. Chaque réponse cite la pièce dont elle vient, et cinq contrôles écrits en code décident si elle s'affiche : quand les pièces ne permettent pas de répondre, l'outil le dit. Quatre agents LangGraph résument un dossier, préparent un rendez-vous client, analysent une pièce et trient le courrier entrant ; rien n'atteint le CRM sans la validation d'un avocat. L'isolation par PostgreSQL (RLS) garantit qu'un avocat ne voit que ses dossiers, y compris à travers l'IA. Fonctionne sur un simple PC avec des modèles locaux (Ollama), ou avec OpenAI. Construit sur un cabinet dakarois simulé : 433 pièces générées, aucune donnée réelle.
 
 ## Compétences
 
