@@ -134,7 +134,7 @@ def test_une_demande_sans_modele_repond_503_avec_une_phrase(
         headers={"Authorization": f"Bearer {jeton}"},
     )
     assert reponse.status_code == 503
-    assert "Démonstration publique" in reponse.json()["detail"]
+    assert "Public demo" in reponse.json()["detail"]
 
 
 # --------------------------------------------------------------- l'entrée de démonstration
@@ -166,7 +166,7 @@ def test_en_demonstration_seuls_les_comptes_du_scenario_entrent(
 def test_en_demonstration_la_racine_presente_le_produit(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(get_settings(), "demo", True)
     page = cast(httpx.Client, TestClient(app)).get("/", follow_redirects=False)
-    assert page.status_code == 200 and "cite ses sources" in page.text
+    assert page.status_code == 200 and "cites its sources" in page.text
 
 
 # ------------------------------------------------------------------- réglages hébergés

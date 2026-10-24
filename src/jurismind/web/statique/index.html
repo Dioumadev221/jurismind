@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JurisMind — Teranga Avocats</title>
+<title>JurisMind · Teranga Avocats</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   html, body { margin: 0; height: 100%; }
@@ -12,7 +12,21 @@
   [hidden] { display: none !important; }
   /* Les lignes de tableau cliquables : le survol doit se voir sans alourdir la grille. */
   tbody tr[data-cliquable]:hover { background: var(--color-neutral-100); cursor: pointer; }
-  .menu-actif { background: var(--color-accent-100); color: var(--color-accent-900); box-shadow: inset 2px 0 0 var(--color-accent); }
+  /* Le menu, sur fond sombre : la marque du produit, et l'écran de travail reste clair. */
+  aside.barre-laterale { background: var(--color-accent-900); color: #dfe7f0; border-right: 0; }
+  aside.barre-laterale .separe { border-color: rgba(255,255,255,.09) !important; }
+  .menu { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0; cursor: pointer; font: inherit; font-size: 14px; text-align: left; background: transparent; color: inherit; border-radius: 3px; }
+  .menu:hover { background: rgba(255,255,255,.06); color: #fff; }
+  .menu-groupe { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #8ea3bb; padding: 4px 10px 6px; }
+  .menu-actif, .menu-actif:hover { background: rgba(255,255,255,.1); color: #fff; box-shadow: inset 2px 0 0 var(--color-gold); }
+  .pastille { font-size: 11px; padding: 1px 7px; background: var(--color-gold); color: #1a1d21; font-weight: 500; }
+  .logo { width: 34px; height: 34px; display: grid; place-items: center; color: var(--color-accent); }
+  aside.barre-laterale .logo { color: var(--color-gold); }
+  aside.barre-laterale .blueprint > .corner { color: rgba(255,255,255,.35); }
+  #ecran h1 { letter-spacing: -0.02em; }
+  #ecran .table th { background: var(--color-neutral-100); }
+  #connexion { background: radial-gradient(1200px 600px at 15% -10%, var(--color-accent-200), transparent 60%), var(--color-bg); }
+  #formulaire-connexion { background: #fff; box-shadow: var(--shadow-lg); }
 </style>
 </head>
 <body>
@@ -23,7 +37,7 @@
     <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
 
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
-      <div class="blueprint" style="width:34px;height:34px;display:grid;place-items:center;color:var(--color-accent)">
+      <div class="blueprint logo">
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         <svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>
       </div>
@@ -36,27 +50,27 @@
     <div id="entree-demo" hidden></div>
 
     <label class="field" style="display:block;margin-bottom:14px">
-      <span style="display:block;font-size:12px;color:var(--color-neutral-700);margin-bottom:5px">Adresse</span>
+      <span style="display:block;font-size:12px;color:var(--color-neutral-700);margin-bottom:5px">Email</span>
       <input id="champ-email" class="input" type="email" autocomplete="username" required
              placeholder="m.dieng@teranga-avocats.example" style="width:100%;box-sizing:border-box">
     </label>
 
     <label class="field" style="display:block;margin-bottom:20px">
-      <span style="display:block;font-size:12px;color:var(--color-neutral-700);margin-bottom:5px">Mot de passe</span>
+      <span style="display:block;font-size:12px;color:var(--color-neutral-700);margin-bottom:5px">Password</span>
       <input id="champ-mot-de-passe" class="input" type="password" autocomplete="current-password" required
              style="width:100%;box-sizing:border-box">
     </label>
 
     <button id="bouton-connexion" class="btn btn-primary btn-block blueprint" type="submit">
       <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      Se connecter
+      Sign in
     </button>
 
     <p id="erreur-connexion" hidden role="alert"
        style="margin:14px 0 0;font-size:13px;color:var(--color-accent-900);background:var(--color-accent-100);border:1px solid var(--color-accent-300);padding:8px 10px"></p>
 
     <p style="margin:18px 0 0;font-size:11px;color:var(--color-neutral-700);line-height:1.5">
-      Les droits sont appliqués par PostgreSQL : vous ne verrez que les dossiers ouverts à votre compte.
+      Access rights are enforced by PostgreSQL: you only see the matters open to your account.
     </p>
   </form>
 </section>
@@ -65,72 +79,72 @@
 <div id="application" hidden style="display:flex;min-height:100vh">
 
   <!-- ------------------------------------------------------------ Menu -->
-  <aside style="width:244px;flex:none;display:flex;flex-direction:column;border-right:1px solid var(--color-divider);position:sticky;top:0;height:100vh">
-    <div style="display:flex;align-items:center;gap:10px;padding:18px 18px 16px;border-bottom:1px solid var(--color-divider)">
-      <div class="blueprint" style="width:34px;height:34px;display:grid;place-items:center;color:var(--color-accent)">
+  <aside class="barre-laterale" style="width:244px;flex:none;display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
+    <div class="separe" style="display:flex;align-items:center;gap:10px;padding:18px 18px 16px;border-bottom:1px solid">
+      <div class="blueprint logo">
         <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
         <svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>
       </div>
       <div style="display:flex;flex-direction:column;line-height:1.15">
         <span style="font-family:var(--font-heading);font-weight:600;font-size:19px;letter-spacing:-0.01em">JurisMind</span>
-        <span style="font-size:11px;color:var(--color-neutral-700)">Teranga Avocats · Dakar</span>
+        <span style="font-size:11px;color:#8ea3bb">Teranga Avocats · Dakar</span>
       </div>
     </div>
 
     <nav style="display:flex;flex-direction:column;gap:2px;padding:14px 10px;flex:1">
-      <span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600);padding:4px 10px 6px">Travail</span>
+      <span class="menu-groupe">Work</span>
 
-      <button data-ecran="dossiers" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;cursor:pointer;font:inherit;font-size:14px;text-align:left;background:transparent;color:inherit">
+      <button data-ecran="dossiers" class="menu">
         <svg width="17" height="17" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path><rect width="20" height="14" x="2" y="6" rx="2"></rect></svg>
-        <span style="flex:1">Dossiers</span><span id="compte-dossiers" style="font-size:11px;color:var(--color-neutral-700)"></span>
+        <span style="flex:1">Matters</span><span id="compte-dossiers" style="font-size:11px;color:#8ea3bb"></span>
       </button>
 
-      <button data-ecran="echeances" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;cursor:pointer;font:inherit;font-size:14px;text-align:left;background:transparent;color:inherit">
+      <button data-ecran="echeances" class="menu">
         <svg width="17" height="17" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="M12 14v4"></path><path d="M10 16h4"></path></svg>
-        <span style="flex:1">Échéances</span><span id="compte-echeances" hidden style="font-size:11px;padding:1px 7px;background:var(--color-accent);color:var(--color-bg)"></span>
+        <span style="flex:1">Deadlines</span><span id="compte-echeances" hidden class="pastille"></span>
       </button>
 
-      <button data-ecran="clients" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;cursor:pointer;font:inherit;font-size:14px;text-align:left;background:transparent;color:inherit">
+      <button data-ecran="clients" class="menu">
         <svg width="17" height="17" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path><path d="M10 18h4"></path></svg>
         <span style="flex:1">Clients</span>
       </button>
 
-      <button data-ecran="questions" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;cursor:pointer;font:inherit;font-size:14px;text-align:left;background:transparent;color:inherit">
+      <button data-ecran="questions" class="menu">
         <svg width="17" height="17" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        <span style="flex:1">Questions</span>
+        <span style="flex:1">Ask the files</span>
       </button>
 
-      <button data-ecran="pieces" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;cursor:pointer;font:inherit;font-size:14px;text-align:left;background:transparent;color:inherit">
+      <button data-ecran="pieces" class="menu">
         <svg width="17" height="17" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
-        <span style="flex:1">Pièces</span>
+        <span style="flex:1">Documents</span>
       </button>
 
-      <span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600);padding:16px 10px 6px">Décisions</span>
+      <span class="menu-groupe" style="padding-top:18px">Decisions</span>
 
-      <button data-ecran="courrier" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;cursor:pointer;font:inherit;font-size:14px;text-align:left;background:transparent;color:inherit">
+      <button data-ecran="courrier" class="menu">
         <svg width="17" height="17" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
-        <span style="flex:1">Courrier</span>
-        <span id="compte-decisions" hidden style="font-size:11px;padding:1px 7px;background:var(--color-accent);color:var(--color-bg)"></span>
+        <span style="flex:1">Inbox</span>
+        <span id="compte-decisions" hidden class="pastille"></span>
       </button>
 
-      <button data-ecran="conflits" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;cursor:pointer;font:inherit;font-size:14px;text-align:left;background:transparent;color:inherit">
+      <button data-ecran="conflits" class="menu">
         <svg width="17" height="17" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
-        <span style="flex:1">Conflits d'intérêts</span>
+        <span style="flex:1">Conflict check</span>
       </button>
     </nav>
 
-    <div style="padding:12px 18px;border-top:1px solid var(--color-divider);display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--color-neutral-700)">
-      <div style="display:flex;align-items:center;gap:6px"><span id="voyant-base" style="width:6px;height:6px;border-radius:50%;background:var(--color-neutral-400)"></span><span id="etat-base">Base PostgreSQL</span></div>
-      <div style="display:flex;align-items:center;gap:6px"><span id="voyant-modeles" style="width:6px;height:6px;border-radius:50%;background:var(--color-neutral-400)"></span><span id="etat-modeles">Modèles</span></div>
+    <div class="separe" style="padding:12px 18px;border-top:1px solid;display:flex;flex-direction:column;gap:6px;font-size:11px;color:#8ea3bb">
+      <div style="display:flex;align-items:center;gap:6px"><span id="voyant-base" style="width:6px;height:6px;border-radius:50%;background:var(--color-neutral-400)"></span><span id="etat-base">PostgreSQL</span></div>
+      <div style="display:flex;align-items:center;gap:6px"><span id="voyant-modeles" style="width:6px;height:6px;border-radius:50%;background:var(--color-neutral-400)"></span><span id="etat-modeles">Models</span></div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-top:1px solid var(--color-divider)">
-      <div id="initiales" style="width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--color-divider);font-family:var(--font-heading);font-weight:600;font-size:13px"></div>
+    <div class="separe" style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-top:1px solid">
+      <div id="initiales" style="width:32px;height:32px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.25);font-family:var(--font-heading);font-weight:600;font-size:13px;color:#fff"></div>
       <div style="display:flex;flex-direction:column;line-height:1.25;flex:1;min-width:0">
-        <span id="nom-utilisateur" style="font-size:13px;font-weight:500"></span>
-        <span id="role-utilisateur" style="font-size:11px;color:var(--color-neutral-700)"></span>
+        <span id="nom-utilisateur" style="font-size:13px;font-weight:500;color:#fff"></span>
+        <span id="role-utilisateur" style="font-size:11px;color:#8ea3bb"></span>
       </div>
-      <button id="bouton-deconnexion" class="btn btn-ghost btn-icon" title="Se déconnecter" style="flex:none">
+      <button id="bouton-deconnexion" class="btn btn-ghost btn-icon" title="Sign out" style="flex:none;color:#dfe7f0">
         <svg width="16" height="16" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
       </button>
     </div>
@@ -138,15 +152,15 @@
 
   <!-- ----------------------------------------------------------- Contenu -->
   <main style="flex:1;min-width:0;display:flex;flex-direction:column">
-    <header style="display:flex;align-items:center;gap:16px;padding:12px 32px;border-bottom:1px solid var(--color-divider);position:sticky;top:0;background:var(--color-bg);z-index:5">
+    <header style="display:flex;align-items:center;gap:16px;padding:12px 32px;border-bottom:1px solid var(--color-divider);position:sticky;top:0;background:color-mix(in srgb, var(--color-bg) 88%, transparent);backdrop-filter:blur(8px);z-index:5">
       <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--color-neutral-700);min-width:0;white-space:nowrap;flex:none">
         <span>Teranga Avocats</span>
         <svg width="14" height="14" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="m9 18 6-6-6-6"></path></svg>
         <span id="fil-ariane" style="color:var(--color-text)"></span>
       </div>
       <div style="flex:1"></div>
-      <span id="bandeau-demo" hidden class="tag tag-outline" style="white-space:nowrap;flex:none" title="Aucune donnée réelle : le cabinet, ses clients et ses pièces sont générés"></span>
-      <div id="perimetre" title="Isolation appliquée par PostgreSQL (Row-Level Security)" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-accent-800);border:1px solid var(--color-accent-300);padding:5px 9px;white-space:nowrap;flex:none;background:var(--color-accent-100)">
+      <span id="bandeau-demo" hidden class="tag tag-outline" style="white-space:nowrap;flex:none" title="No real data: the firm, its clients and its documents are generated"></span>
+      <div id="perimetre" title="Isolation enforced by PostgreSQL (Row-Level Security)" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-accent-800);border:1px solid var(--color-accent-300);padding:5px 9px;white-space:nowrap;flex:none;background:var(--color-accent-100)">
         <svg width="13" height="13" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         <span id="texte-perimetre"></span>
       </div>

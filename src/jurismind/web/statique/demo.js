@@ -36,7 +36,7 @@ function estPreparee(nature, cible) {
 
 function dateCabinet() {
   const valeur = etat.demo && etat.demo.date_du_cabinet;
-  return valeur ? new Date(`${valeur}T12:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "";
+  return valeur ? new Date(`${valeur}T12:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "";
 }
 
 /**
@@ -46,15 +46,15 @@ function dateCabinet() {
 function noteDemo(nature, cible) {
   if (!etat.demo) return "";
   if (estPreparee(nature, cible)) {
-    return `<p class="note-demo">Démonstration : la réponse du modèle à cette demande a été enregistrée. Recherche, contrôles et droits s'exécutent maintenant, pour de vrai.</p>`;
+    return `<p class="note-demo">Demo: the model's answer to this request was recorded. Search, checks and access rights run live, right now.</p>`;
   }
   const ailleurs = demandesDemo(nature)
     .map((d) => d.contexte ? `${d.cible} (${d.contexte.slice(0, 40)})` : d.cible)
     .slice(0, 3)
     .join(", ");
-  return `<p class="note-demo">Démonstration publique : ce serveur ne fait pas tourner de modèle. ${
-    ailleurs ? `L'agent a été préparé sur ${texte(ailleurs)}.` : ""
-  } Tout ce qui ne demande pas de modèle (chronologie, points d'attention, échéances, conflits) fonctionne partout.</p>`;
+  return `<p class="note-demo">Public demo: this server runs no model. ${
+    ailleurs ? `The agent was prepared on ${texte(ailleurs)}.` : ""
+  } Everything that needs no model (timeline, attention points, deadlines, conflicts) works everywhere.</p>`;
 }
 
 /**
@@ -62,7 +62,7 @@ function noteDemo(nature, cible) {
  * le modèle répond ainsi sur processeur. On dit donc qu'elle est rejouée.
  */
 function duree(secondes) {
-  return etat.demo ? "réponse rejouée" : `${secondes.toFixed(0)} s`;
+  return etat.demo ? "recorded answer, replayed" : `${secondes.toFixed(0)} s`;
 }
 
 // --------------------------------------------------------------------- écran d'entrée
@@ -72,10 +72,10 @@ function rendreEntreeDemo() {
   if (!etat.demo || !zone) return;
   zone.hidden = false;
   zone.innerHTML = `
-    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:8px">Démonstration · cabinet simulé</div>
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:8px">Live demo · simulated firm</div>
     <p style="margin:0 0 14px;font-size:13px;line-height:1.5;color:var(--color-neutral-800)">
-      Un cabinet d'avocats de Dakar inventé de toutes pièces, figé au ${texte(dateCabinet())} : 433 pièces, dont 135 scans lus par OCR.
-      Aucune donnée réelle. Choisissez un compte :
+      A fictional Dakar law firm, frozen on ${texte(dateCabinet())}: 433 documents, 135 of them scans read by OCR.
+      No real data. The firm works in French, like any Senegalese firm. Pick an account:
     </p>
     <div style="display:flex;flex-direction:column;gap:8px">
       ${etat.demo.comptes
@@ -88,7 +88,7 @@ function rendreEntreeDemo() {
         .join("")}
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin:20px 0 4px;font-size:11px;color:var(--color-neutral-600)">
-      <span style="flex:1;border-top:1px solid var(--color-divider)"></span>ou avec un mot de passe<span style="flex:1;border-top:1px solid var(--color-divider)"></span>
+      <span style="flex:1;border-top:1px solid var(--color-divider)"></span>or with a password<span style="flex:1;border-top:1px solid var(--color-divider)"></span>
     </div>`;
   $$(".compte-demo").forEach((bouton) =>
     bouton.addEventListener("click", async () => {
@@ -102,7 +102,7 @@ function rendreEntreeDemo() {
         await montrerApplication();
       } catch (echec) {
         const erreur = $("#erreur-connexion");
-        erreur.textContent = echec.detail || "Le service ne répond pas.";
+        erreur.textContent = echec.detail || "The service is not responding.";
         erreur.hidden = false;
       } finally {
         bouton.disabled = false;
@@ -116,7 +116,7 @@ function rendreBandeauDemo() {
   const bandeau = $("#bandeau-demo");
   if (!bandeau) return;
   bandeau.hidden = !etat.demo;
-  if (etat.demo) bandeau.textContent = `Cabinet simulé · au ${dateCabinet()}`;
+  if (etat.demo) bandeau.textContent = `Simulated firm · as of ${dateCabinet()}`;
 }
 
 chargerDemo().then(() => {

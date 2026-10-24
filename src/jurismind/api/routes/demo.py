@@ -72,7 +72,7 @@ def entrer(demande: DemandeEntree) -> Jeton:
     ouverts = {compte["email"] for compte in scenario().get("comptes", [])}
     if demande.email not in ouverts:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Compte non ouvert à la démonstration"
+            status_code=status.HTTP_403_FORBIDDEN, detail="This account is not open to the demo"
         )
     with Session(get_engine()) as session:
         utilisateur = session.scalars(
@@ -80,7 +80,7 @@ def entrer(demande: DemandeEntree) -> Jeton:
         ).first()
         if utilisateur is None:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="Compte non ouvert à la démonstration"
+                status_code=status.HTTP_403_FORBIDDEN, detail="This account is not open to the demo"
             )
         # Une visite, pas une journée de travail : deux heures suffisent.
         jeton, duree = creer_jeton(utilisateur.id, utilisateur.role, duree_minutes=120)

@@ -7,21 +7,21 @@
       "nom": "Mamadou Dieng",
       "role": "avocat",
       "dossiers": 43,
-      "presentation": "Compte avocat, 43 dossiers : la visite guidée part de ce compte"
+      "presentation": "Lawyer, 43 matters: the guided tour starts here"
     },
     {
       "email": "c.diallo@teranga-avocats.example",
       "nom": "Coumba Diallo",
       "role": "avocat",
       "dossiers": 26,
-      "presentation": "Compte avocat, 26 dossiers : ouvrez-le pour voir l’isolation à l’œuvre"
+      "presentation": "Lawyer, 26 matters: open it to see data isolation at work"
     },
     {
       "email": "c.sy@teranga-avocats.example",
       "nom": "Coumba Sy",
       "role": "assistant",
       "dossiers": 39,
-      "presentation": "Compte assistant juridique, 39 dossiers, hors dossiers confidentiels"
+      "presentation": "Legal assistant, 39 matters, no confidential ones"
     }
   ],
   "demandes": [

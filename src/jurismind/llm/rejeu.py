@@ -37,10 +37,10 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from pydantic import ConfigDict
 
 MESSAGE_INDISPONIBLE = (
-    "Démonstration publique : cette demande n'a pas été préparée, et ce serveur ne fait pas "
-    "tourner de modèle. Essayez une des demandes proposées ; la recherche seule, la chronologie, "
-    "les points d'attention et les échéances fonctionnent partout, sans modèle. Installé avec ses "
-    "modèles (docker compose up), JurisMind répond à n'importe quelle question."
+    "Public demo: this request was not prepared, and this server runs no model. Try one of the "
+    "suggested requests; search alone, the timeline, attention points and deadlines work "
+    "everywhere, with no model. Installed with its models (docker compose up), JurisMind answers "
+    "any question."
 )
 
 

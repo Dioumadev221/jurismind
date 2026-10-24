@@ -124,10 +124,10 @@ def choisir_comptes(session: Session) -> list[Utilisateur]:
 
 def _presentation(utilisateur: Utilisateur, dossiers: int, premier: bool) -> str:
     if utilisateur.role is Role.ASSISTANT:
-        return f"Compte assistant juridique, {dossiers} dossiers, hors dossiers confidentiels"
+        return f"Legal assistant, {dossiers} matters, no confidential ones"
     if premier:
-        return f"Compte avocat, {dossiers} dossiers : la visite guidée part de ce compte"
-    return f"Compte avocat, {dossiers} dossiers : ouvrez-le pour voir l’isolation à l’œuvre"
+        return f"Lawyer, {dossiers} matters: the guided tour starts here"
+    return f"Lawyer, {dossiers} matters: open it to see data isolation at work"
 
 
 # ------------------------------------------------------------------------------ plan

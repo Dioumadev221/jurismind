@@ -149,7 +149,7 @@ def authentifier(email: str, mot_de_passe: str) -> Utilisateur | None:
 jeton_porteur = HTTPBearer(description="Jeton obtenu sur POST /connexion", auto_error=False)
 NON_AUTORISE = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Jeton absent, expiré ou invalide",
+    detail="Missing, expired or invalid token",
     headers={"WWW-Authenticate": "Bearer"},
 )
 
